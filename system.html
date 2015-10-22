@@ -1,0 +1,1418 @@
+<template name="main">
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="../" class="navbar-brand">Supplier Management System</a>
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            {{#if currentUser}}
+                <div class="navbar-collapse collapse" id="navbar-main">
+                    <ul class="nav navbar-nav">
+                        {{#if isInRole 'admin'}}
+                            <li>
+                                <a href="{{pathFor route='companies'}}">Companies</a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'supplier'}}
+                            <li>
+                                <a href="/companies/newCompany">Company Registration</a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'admin, employee'}}
+                            <li>
+                                <a href="{{pathFor route='events'}}">Events</a>
+                            </li>
+                        {{/if}}
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="logout">
+                            <a href="{{pathFor route='home'}}">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            {{/if}}
+        </div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <div class="container">
+        {{> yield}}
+    </div>
+
+    <div class="container">
+        <footer>
+            <center>Copyright 2015-2016</center>
+        </footer>
+    </div>
+
+</template>
+
+<template name="login">
+    <center>
+        <img src="http://i.imgur.com/OqT0qCx.png" alt="Logo" width="400" height="194" align="middle">
+        <br>
+        <br>
+        <br>
+        <br>
+
+        <div class="container">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-md-5 control-label"></label>
+                    <label for="loginUsername" class="sr-only col-md-5">Username</label>
+
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" name="loginUsername" id="loginUsername"
+                               placeholder="Username">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-5 control-label"></label>
+                    <label for="loginUsername" class="sr-only col-md-5">Password</label>
+
+                    <div class="col-md-2">
+                        <input type="password" class="form-control" name="loginPassword" id="loginPassword"
+                               placeholder="Password">
+                    </div>
+                </div>
+                <input type="submit" class="btn btn-lg btn-primary" name="submit" id="submit" value="Sign In">
+            </form>
+        </div>
+
+    </center>
+</template>
+
+<template name="home">
+    {{#if currentUser}}
+        <center>
+            <img src="http://i.imgur.com/OqT0qCx.png" alt="Logo" width="400" height="194" align="middle"><br>
+        </center>
+    {{else}}
+        {{> login}}
+    {{/if}}
+
+
+</template>
+
+<template name="navigation">
+    <ul>
+        <a href="{{pathFor route='home'}}">Home</a>
+        {{#if currentUser}}
+            {{#if isInRole 'admin'}}
+                <a href="{{pathFor route='companies'}}">Companies</a>
+            {{/if}}
+            {{#if isInRole 'admin,employee'}}
+                <a href="{{pathFor route='events'}}">Events</a>
+            {{/if}}
+            {{#if isInRole 'supplier'}}
+                <a href="{{pathFor route='register'}}">New Company</a>
+            {{/if}}
+            <a href="#" class="logout">Logout</a>
+
+        {{else}}
+            <a href="{{pathFor route='login'}}">Login</a>
+        {{/if}}
+
+    </ul>
+</template>
+
+<template name="companies">
+    {{#if currentUser}}
+        {{#if isInRole 'admin'}}
+            <div class="container">
+                <h1>Companies</h1><br><br>
+                <input type="button" class="btn btn-success" value="+ ADD NEW"
+                       onclick="window.location.href='/companies/newCompany'"><br><br>
+                {{> companyListDisplay}}
+                <br>
+                <input type="button" class="btn btn-warning" value="Send Email">
+
+            </div>
+        {{/if}}
+    {{else}}
+        {{redirect}}
+    {{/if}}
+</template>
+
+<template name="companyListDisplay">
+    {{#if currentUser}}
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th>Company Name</th>
+                        <th>Sales Name</th>
+                        <th>Sales Phone</th>
+                        <th>Sales E-Mail</th>
+                        <th></th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#each company}}
+                        <tr class="company">
+                            <td>{{companyName}}</td>
+                            <td>{{salesName}}</td>
+                            <td>{{salesPhone}}</td>
+                            <td>{{salesEmail}}</td>
+                            <td>
+                                <input type="button" class="btn btn-warning" value="Edit"
+                                       onclick="window.location.href='/companies/edit/{{_id}}'">
+                                <input type="button" class="btn btn-danger" value="Remove"></td>
+                        </tr>
+                    {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {{/if}}
+</template>
+
+<template name="addCompanyForm">
+    {{#if currentUser}}
+        {{#if isInRole 'admin, supplier'}}
+
+            <div class="col-md-12">
+                <h1>Company Registration</h1>
+                <br>
+                <br>
+
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Company Name</label>
+
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="companyName" id="companyName">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Company Address</label>
+
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="companyAddress" id="companyAddress">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"></label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Sales Manager</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Name</label>
+
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="salesName" id="salesName">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">E-Mail</label>
+
+                        <div class="col-sm-4">
+                            <input type="email" class="form-control" name="salesEmail" id="salesEmail">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Phone</label>
+
+                        <div class="col-sm-4">
+                            <input type="tel" class="form-control" name="salesPhone" id="salesPhone">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"></label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Quality Manager</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Name</label>
+
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="qualityName" id="qualityName">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">E-Mail</label>
+
+                        <div class="col-sm-4">
+                            <input type="email" class="form-control" name="qualityEmail" id="qualityEmail">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Phone</label>
+
+                        <div class="col-sm-4">
+                            <input type="tel" class="form-control" name="qualityPhone" id="qualityPhone">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"></label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Logistics Manager</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Name</label>
+
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="logisticsName" id="logisticsName">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">E-Mail</label>
+
+                        <div class="col-sm-4">
+                            <input type="email" class="form-control" name="logisticsEmail" id="logisticsEmail">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Phone</label>
+
+                        <div class="col-sm-4">
+                            <input type="tel" class="form-control" name="logisticsPhone" id="logisticsPhone">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"></label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-13 control-label">Person To Receive Performance Reports If Different
+                            Than The 3 People Listed Above</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Name</label>
+
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="differentName" id="differentName">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">E-Mail</label>
+
+                        <div class="col-sm-4">
+                            <input type="email" class="form-control" name="differentEmail" id="differentEmail">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Phone</label>
+
+                        <div class="col-sm-4">
+                            <input type="tel" class="form-control" name="differentPhone" id="differentPhone">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-10 control-label"></label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-13 control-label">Describe Product Manufactured/Provided</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"></label>
+
+                        <div class="col-sm-4">
+                                <textarea class="form-control" rows="3" name="describeInput"
+                                          id="describeInput"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-10 control-label"></label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-13 control-label">Current Quality Certifications (check all that
+                            apply)</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-1 control-label"></label>
+
+                        <div class="col-sm-10">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="cert1" id="cert1" class="show-Option1">ISO9001
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    {{#if showOption1}}
+                        {{> certificationForm1}}
+                    {{/if}}
+                    <div class="form-group">
+                        <label class="col-sm-1 control-label"></label>
+
+                        <div class="col-sm-4">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="cert2" id="cert2" class="show-Option2">ISO14001
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    {{#if showOption2}}
+                        {{> certificationForm2}}
+                    {{/if}}
+                    <div class="form-group">
+                        <label class="col-sm-1 control-label"></label>
+
+                        <div class="col-sm-4">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="cert3" id="cert3" class="show-Option3">TS16949
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    {{#if showOption3}}
+                        {{> certificationForm3}}
+                    {{/if}}
+                    <div class="form-group">
+                        <label class="col-sm-1 control-label"></label>
+
+                        <div class="col-sm-4">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="cert4" id="cert4" class="show-Option4">Other
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    {{#if showOption4}}
+                        {{> certificationForm4}}
+                    {{/if}}
+                    <div class="form-group">
+                        <label class="col-sm-1 control-label"></label>
+
+                        <div class="col-sm-4">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="cert5" id="cert5" class="show-Option5">None
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    {{#if showOption5}}
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+                            <label class="col-sm-5 control-label">Do You Plan To Pursue Certification? If So
+                                When?</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label"></label>
+
+                            <div class="col-sm-4">
+                                <textarea class="form-control" rows="3" name="cert5Text" id="cert5Text"></textarea>
+                            </div>
+                        </div>
+                    {{/if}}
+                    <input type="submit" class="btn btn-lg btn-primary" name="submit" id="submit" value="Submit">
+                    <input type="button" class="btn btn-lg btn-danger" name="cancel" value="Cancel"
+                           onclick="history.go(-1);return true;"/>
+                </form>
+            </div>
+
+        {{/if}}
+    {{/if}}
+</template>
+
+<template name="certificationForm1">
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Expiration Date</label>
+
+        <div class="col-sm-4">
+            <input type="date" class="form-control" name="expirationDate1" id="expirationDate1">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Certification Number</label>
+
+        <div class="col-sm-4">
+            <input type="text" class="form-control" name="certNumber1" id="certNumber1">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Registrar</label>
+
+        <div class="col-sm-4">
+            <input type="text" class="form-control" name="registrar1" id="registrar1">
+        </div>
+    </div>
+</template>
+
+<template name="certificationForm2">
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Expiration Date</label>
+
+        <div class="col-sm-4">
+            <input type="date" class="form-control" name="expirationDate2" id="expirationDate2">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Certification Number</label>
+
+        <div class="col-sm-4">
+            <input type="text" class="form-control" name="certNumber2" id="certNumber2">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Registrar</label>
+
+        <div class="col-sm-4">
+            <input type="text" class="form-control" name="registrar2" id="registrar2">
+        </div>
+    </div>
+</template>
+
+<template name="certificationForm3">
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Expiration Date</label>
+
+        <div class="col-sm-4">
+            <input type="date" class="form-control" name="expirationDate3" id="expirationDate3">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Certification Number</label>
+
+        <div class="col-sm-4">
+            <input type="text" class="form-control" name="certNumber3" id="certNumber3">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Registrar</label>
+
+        <div class="col-sm-4">
+            <input type="text" class="form-control" name="registrar3" id="registrar3">
+        </div>
+    </div>
+</template>
+
+<template name="certificationForm4">
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Certification Type</label>
+
+        <div class="col-sm-4">
+            <input type="text" class="form-control" name="certType4" id="certType4">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Expiration Date</label>
+
+        <div class="col-sm-4">
+            <input type="date" class="form-control" name="expirationDate3" id="expirationDate3">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Certification Number</label>
+
+        <div class="col-sm-4">
+            <input type="text" class="form-control" name="certNumber3" id="certNumber3">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Registrar</label>
+
+        <div class="col-sm-4">
+            <input type="text" class="form-control" name="registrar3" id="registrar3">
+        </div>
+    </div>
+</template>
+
+<template name="detailCompany">
+    {{#if currentUser}}
+        <div class="container">
+            <div class="col-md-10">
+                <h1>{{companyName}} Detail</h1><br><br>
+                <input type="button" class="btn btn-lg btn-info" name="back" value="Back"
+                       onclick="history.go(-1);return true;"/>
+                <br>
+                <br>
+
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Company Address</label>
+
+                        <div class="col-sm-5 form-control-static">
+                            {{companyAddress}}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"></label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Sales Manager</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Name</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{salesName}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">E-Mail</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{salesEmail}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Phone</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{salesPhone}}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"></label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Quality Manager</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Name</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{qualityName}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">E-Mail</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{qualityEmail}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Phone</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{qualityPhone}}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"></label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Logistics Manager</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Name</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{logisticsName}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">E-Mail</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{logisticsEmail}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Phone</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{logisticsPhone}}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"></label>
+                    </div>
+                    {{#if different}}
+                        <div class="form-group">
+                            <label class="col-sm-8 control-label">Person To Receive Performance Reports If Different
+                                Than
+                                The 3 People Listed Above</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Name</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{differentName}}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">E-Mail</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{differentEmail}}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Phone</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{differentPhone}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"></label>
+                        </div>
+                    {{/if}}
+
+                    <div class="form-group">
+                        <label class="col-sm-13 control-label">Products Provided/Manufactured</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"></label>
+
+                        <div class="col-sm-4">
+                            {{describeInput}}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-10 control-label"></label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Certifications</label>
+                    </div>
+                    {{#if showOption1}}
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+
+                            <label class="col-sm-2 control-label">Type</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                ISO9001
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+
+                            <label class="col-sm-2 control-label">Expiration Date</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{expirationDate1}}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+                            <label class="col-sm-2 control-label">Certification #</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{certNumber1}}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+
+                            <label class="col-sm-2 control-label">Registrar</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{registrar1}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"></label>
+                        </div>
+                    {{/if}}
+                    {{#if showOption2}}
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+
+                            <label class="col-sm-2 control-label">Type</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                ISO14001
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+
+                            <label class="col-sm-2 control-label">Expiration Date</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{expirationDate2}}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+                            <label class="col-sm-2 control-label">Certification #</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{certNumber2}}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+
+                            <label class="col-sm-2 control-label">Registrar</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{registrar2}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"></label>
+                        </div>
+                    {{/if}}
+                    {{#if showOption3}}
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+
+                            <label class="col-sm-2 control-label">Type</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                TS16949
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+
+                            <label class="col-sm-2 control-label">Expiration Date</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{expirationDate3}}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+                            <label class="col-sm-2 control-label">Certification #</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{certNumber3}}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+
+                            <label class="col-sm-2 control-label">Registrar</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{registrar3}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"></label>
+                        </div>
+                    {{/if}}
+                    {{#if showOption4}}
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+
+                            <label class="col-sm-2 control-label">Type</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{certType4}}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+
+                            <label class="col-sm-2 control-label">Expiration Date</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{expirationDate4}}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+                            <label class="col-sm-2 control-label">Certification #</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{certNumber4}}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+
+                            <label class="col-sm-2 control-label">Registrar</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{registrar4}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"></label>
+                        </div>
+                    {{/if}}
+                    {{#if showOption5}}
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+
+                            <label class="col-sm-2 control-label">Type</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                None
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+
+                            <label class="col-sm-2 control-label">Reason</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{cert5Text}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"></label>
+                        </div>
+                    {{/if}}
+                    <div class="form-group">
+                        <label class="col-sm-10 control-label"></label>
+                    </div>
+
+                    <div class="form-group">
+                        <span class="col-md-4 control-label"></span>
+                        {{> companyEventListDisplay}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/if}}
+</template>
+
+<template name="editCompany">
+    {{#if currentUser}}
+
+        {{#if isInRole 'admin, supplier'}}
+            <h2> Company Details</h2><br><br>
+            <u>Company Name</u><br>
+            <input type="text" value="{{companyName}}" id="companyName" name="companyItem"><br><br>
+
+            <u>Company Address</u><br>
+            <input type="text" value="{{companyAddress}}" id="companyAddress" name="companyItem"><br><br>
+
+            <u>Sales Manager</u><br>
+            Name: <input type="text" value="{{salesName}}" id="salesName" name="companyItem"><br>
+            E-Mail: <input type="text" value="{{salesEmail}}" id="salesEmail" name="companyItem"><br>
+            Phone: <input type="text" value="{{salesPhone}}" id="salesPhone" name="companyItem"><br><br>
+
+            <u>Quality Manager</u><br>
+            Name: <input type="text" value="{{qualityName}}" id="qualityName" name="companyItem"><br>
+            E-Mail: <input type="text" value="{{qualityEmail}}" id="qualityEmail" name="companyItem"><br>
+            Phone: <input type="text" value="{{qualityPhone}}" id="qualityPhone" name="companyItem"><br><br>
+
+            <u>Logistics Manager</u><br>
+            Name: <input type="text" value="{{logisticsName}}" id="logisticsName" name="companyItem"><br>
+            E-Mail: <input type="text" value="{{logisticsEmail}}" id="logisticsEmail" name="companyItem"><br>
+            Phone: <input type="text" value="{{logisticsPhone}}" id="logisticsPhone" name="companyItem"><br><br>
+
+            <u>Other Contact</u><br>
+            Name: <input type="text" value="{{differentName}}" id="differentName" name="companyItem"><br>
+            E-Mail: <input type="text" value="{{differentEmail}}" id="differentEmail" name="companyItem"><br>
+            Phone: <input type="text" value="{{differentPhone}}" id="differentPhone" name="companyItem"><br><br>
+
+            <u>Provide</u><br>
+        <textarea maxlength="120" cols="60" rows="5" value="{{describeInput}}" id="describeInput" name="companyItem"
+                ></textarea><br><br>
+
+            <u>Certifications</u><br>
+            <input type="checkbox" checked="{{showOption1}}" name="companyItem" id="cert1"
+                   class="show-Option1">ISO9001<br>
+            {{#if showOption1}}
+                Expiration Date: <input type="date" value="{{expirationDate1}}" name="companyItem" id="expirationDate1"><br>
+                Certification #: <input type="text" value="{{certNumber1}}" name="companyItem" id="certNumber1"><br>
+                Registrar: <input type="text" value="{{registrar1}}" name="companyItem" id="registrar1"><br><br>
+            {{/if}}
+            <input type="checkbox" checked="{{showOption2}}" name="companyItem" id="cert2" class="show-Option2">ISO14001<br>
+            {{#if showOption2}}
+                Expiration Date: <input value="{{expirationDate2}}" type="date" name="companyItem" id="expirationDate2"><br>
+                Certification #: <input type="text" value="{{certNumber2}}" name="companyItem" id="certNumber2"><br>
+                Registrar: <input type="text" value="{{registrar2}}" name="companyItem" id="registrar2"><br><br>
+            {{/if}}
+            <input type="checkbox" checked="{{showOption3}}" name="companyItem" id="cert3"
+                   class="show-Option3">TS16949<br>
+            {{#if showOption3}}
+                Expiration Date: <input value="{{expirationDate3}}" type="date" name="companyItem" id="expirationDate3"><br>
+                Certification #: <input type="text" value="{{certNumber3}}" name="companyItem" id="certNumber3"><br>
+                Registrar: <input type="text" value="{{registrar3}}" name="companyItem" id="registrar3"><br><br>
+            {{/if}}
+            <input type="checkbox" checked="{{showOption4}}" name="companyItem" id="cert4"
+                   class="show-Option4">Other<br>
+            {{#if showOption4}}
+                Certification Type: <input type="text" value="{{certType4}}" name="companyItem" id="certType4"><br>
+                Expiration Date: <input value="{{expirationDate4}}" type="date" name="companyItem" id="expirationDate4"><br>
+                Certification #: <input type="text" value="{{certNumber4}}" name="companyItem" id="certNumber4"><br>
+                Registrar: <input type="text" value="{{registrar4}}" name="companyItem" id="registrar4"><br><br>
+            {{/if}}
+            <input type="checkbox" checked="{{showOption5}}" name="companyItem" id="cert5" class="show-Option5">None<br>
+            {{#if showOption5}}
+                Do You Plan To Pursue Certification? If So When?<br>
+                <textarea maxlength="120" cols="40" rows="3" value="{{cert5Text}}" name="companyItem"
+                          id="cert5Text"></textarea><br>
+            {{/if}}
+        {{/if}}
+
+
+    {{/if}}
+</template>
+
+<template name="events">
+    {{#if currentUser}}
+        {{#if isInRole 'admin,employee'}}
+            <div class="container">
+                <h1>Events</h1><br><br>
+                <input type="button" class="btn btn-success" value="+ ADD NEW"
+                       onclick="window.location.href='/events/newEvent'"><br><br>
+                {{> eventListDisplay}}
+            </div>
+        {{/if}}
+    {{/if}}
+</template>
+
+<template name="eventListDisplay">
+    {{#if currentUser}}
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>CAR #</th>
+                        <th>Company Name</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#each event}}
+                        <tr class="event">
+                            <td>{{index}}</td>
+                            <td>{{eventDate}}</td>
+                            <td>{{carNumber}}</td>
+                            <td>{{companyName}}</td>
+                            <td>{{eventType}}</td>
+                            <td>{{statusOption}}</td>
+                            <td>
+                                <input type="button" class="btn btn-warning" value="Edit"
+                                       onclick="window.location.href='/events/edit/{{_id}}'">
+                                <input type="button" class="btn btn-danger" value="Remove"></td>
+                        </tr>
+                    {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {{/if}}
+</template>
+
+<template name="companyEventListDisplay">
+    {{#if currentUser}}
+        <div class="row">
+            <div class="col-md-10">
+                <table class="table table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>CAR #</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#each event}}
+                        <tr class="event">
+                            <td>{{index}}</td>
+                            <td>{{eventDate}}</td>
+                            <td>{{carNumber}}</td>
+                            <td>{{eventType}}</td>
+                            <td>{{statusOption}}</td>
+                            <td>
+                                <input type="button" class="btn btn-warning" value="Edit"
+                                       onclick="window.location.href='/events/edit/{{_id}}'">
+                                <input type="button" class="btn btn-danger" value="Remove"></td>
+                        </tr>
+                    {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {{/if}}
+</template>
+
+<template name="addEventForm">
+    {{#if currentUser}}
+        {{#if isInRole 'admin,employee'}}
+            <div class="container">
+                <div class="col-md-12">
+                    <h1>New Event</h1>
+                    <br>
+                    <br>
+
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Company Name</label>
+
+                            <div class="col-sm-4">
+                                <select id="companySelect" name="companySelect" class="form-control">
+                                    {{#each company}}
+                                        <option value="{{companyName}}">{{companyName}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Date Initiated</label>
+
+                            <div class="col-sm-4">
+                                <input type="date" class="form-control" name="eventDate" id="eventItem">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Type</label>
+
+                            <div class="col-sm-4">
+                                <select id="eventType" name="eventType" class="eventType form-control">
+                                    <option value="Quality">Quality</option>
+                                    <option value="Delivery">Delivery</option>
+                                </select>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">T&L Part Number</label>
+
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="tlPartNumber" name="tlPartNumber">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Purchase Order</label>
+
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="purchaseOrder" name="purchaseOrder">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Lot Number</label>
+
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="lotNumber" name="lotNumber">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">CAR Number</label>
+
+                            <div class="col-sm-4">
+                                <input type="number" class="form-control" id="carNumber" name="carNumber">
+                            </div>
+                        </div>
+
+                        {{#if showDelivery}}
+                            {{> addDeliveryEventForm}}
+                        {{else}}
+                            {{> addQualityEventForm}}
+                        {{/if}}
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Problem Description</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"></label>
+
+                            <div class="col-sm-4">
+                                <textarea class="form-control" rows="3" name="rootCause"
+                                          id="rootCause"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Status</label>
+
+                            <div class="col-sm-4">
+                                <select id="statusOption" name="statusOption" class="form-control">
+                                    <option value="Open">Open</option>
+                                    <option value="Pending Action">Pending Action</option>
+                                    <option value="Closed">Closed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <input type="submit" class="btn btn-lg btn-primary" name="submit" id="submit" value="Submit">
+                        <input type="button" class="btn btn-lg btn-danger" name="cancel" value="Cancel"
+                               onclick="history.go(-1);return true;"/>
+
+                    </form>
+                </div>
+            </div>
+        {{/if}}
+    {{/if}}
+</template>
+
+<template name="addQualityEventForm">
+    {{#if currentUser}}
+        {{#if isInRole 'admin,employee'}}
+            <form>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Quantity Rejected</label>
+
+                    <div class="col-sm-4">
+                        <input type="number" class="form-control" id="quantityReject" name="quantityReject">
+                    </div>
+                </div>
+            </form>
+        {{/if}}
+    {{/if}}
+</template>
+
+<template name="addDeliveryEventForm">
+    {{#if currentUser}}
+        {{#if isInRole 'admin,employee'}}
+            <form>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Required Delivery Date</label>
+
+                    <div class="col-sm-4">
+                        <input type="date" class="form-control" id="requiredDeliveryDate" name="requiredDeliveryDate">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Actual Delivery Date</label>
+
+                    <div class="col-sm-4">
+                        <input type="date" class="form-control" id="actualDeliveryDate" name="actualDeliveryDate">
+                    </div>
+                </div>
+            </form>
+        {{/if}}
+    {{/if}}
+</template>
+
+<template name="detailEvent">
+    {{#if currentUser}}
+        <div class="container">
+            <div class="col-md-10">
+                <h1>Event Details</h1><br><br>
+                <input type="button" class="btn btn-lg btn-info" name="back" value="Back"
+                       onclick="history.go(-1);return true;"/>
+                <br>
+                <br>
+
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Company Name</label>
+
+                        <div class="col-sm-5 form-control-static">
+                            {{companyName}}
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Event Type</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{eventType}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Event Date</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{eventDate}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">T&L Part Number</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{tlPartNumber}}
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">T&L Purchase Order</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{purchaseOrder}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Lot Number</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{lotNumber}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">T&L CAR Number</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{carNumber}}
+                        </div>
+                    </div>
+
+                    {{#if showQuality}}
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Quantity Rejected</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{quantityReject}}
+                            </div>
+                        </div>
+                    {{/if}}
+
+                    {{#if showDelivery}}
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Required Delivery Date</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{requiredDeliveryDate}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Actual Delivery Date</label>
+
+                            <div class="col-sm-4 form-control-static">
+                                {{actualDeliveryDate}}
+                            </div>
+                        </div>
+                    {{/if}}
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Problem Description</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{rootCause}}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Status</label>
+
+                        <div class="col-sm-4 form-control-static">
+                            {{statusOption}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/if}}
+</template>
+
+<template name="editEvent">
+    {{#if currentUser}}
+
+        {{#if isInRole 'admin, supplier'}}
+            <h2> Event Details</h2><br><br>
+
+            <u>Event Type</u><br>
+            <select id="eventType" name="eventType" class="eventType">
+                <option value="Quality" selected="{{selectData 'Quality'}}">Quality</option>
+                <option value="Delivery" selected="{{selectData 'Delivery'}}">Delivery</option>
+            </select><br><br>
+
+            <u>Event Date</u><br>
+            <input type="date" value="{{eventDate}}" id="eventDate" name="companyItem"><br><br>
+
+            <u>T&L Part Number</u><br>
+            <input type="text" value="{{tlPartNumber}}" id="tlPartNumber" name="companyItem"><br><br>
+
+            <u>T&L Purchase Order</u><br>
+            <input type="text" value="{{purchaseOrder}}" id="purchaseOrder" name="companyItem"><br><br>
+
+            <u>Lot Number</u><br>
+            <input type="text" value="{{lotNumber}}" id="lotNumber" name="companyItem"><br><br>
+
+            <u>T&L CAR Number</u><br>
+            <input type="text" value="{{carNumber}}" id="carNumber" name="companyItem"><br><br>
+
+            {{#if showQuality}}
+                <p><u>Quantity Rejected</u><br>
+                    <input type="text" value="{{quantityReject}}" id="quantityReject" name="companyItem"><br><br>
+                </p>
+            {{/if}}
+
+            {{#if showDelivery}}
+                <p><u>Required Delivery Date</u><br>
+                    <input type="date" value="{{requiredDeliveryDate}}" id="requiredDeliveryDate"
+                           name="companyItem"><br><br>
+                </p>
+
+                <p><u>Actual Delivery Date</u><br>
+                    <input type="date" value="{{actualDeliveryDate}}" id="actualDeliveryDate"
+                           name="companyItem"><br><br>
+                </p>
+            {{/if}}
+
+            <u>Root Cause</u><br>
+            <input type="text" value="{{rootCause}}" id="rootCause" name="companyItem"><br><br>
+
+            <u>Status</u><br>
+            <select id="statusOption" name="companyItem" class="statusOption">
+                <option value="Open" selected="{{selectData 'Open'}}">Open</option>
+                <option value="Pending Action" selected="{{selectData 'Pending Action'}}">Pending Action</option>
+                <option value="Closed" selected="{{selectData 'Closed'}}">Closed</option>
+            </select><br><br>
+        {{/if}}
+    {{/if}}
+</template>
+
+<template name="register">
+    {{> loginButtons}}
+    <h2>Register</h2><br>
+
+    <form class="register">
+        <p>Username: <input type="text" name="username"></p><br>
+
+        <p>Password: <input type="password" name="password"></p><br>
+
+        <p><input type="submit" value="Register"></p>
+    </form>
+</template>
+
+<template name="shareEmailContent">
+    <p>{{message}}</p>
+    <h1>Testing Email HTML</h1>
+    <a href="{{url}}">{{title}}</a>
+</template>
