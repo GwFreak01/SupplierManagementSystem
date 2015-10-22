@@ -2,6 +2,7 @@ CompanyList = new Mongo.Collection("companies");
 
 EventList = new Mongo.Collection("events");
 
+
 Router.configure({
     layoutTemplate: 'main'
 });
