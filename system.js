@@ -3,7 +3,6 @@ CompanyList = new Mongo.Collection("companies");
 EventList = new Mongo.Collection("events");
 
 
-
 Router.configure({
     layoutTemplate: 'main'
 });
@@ -35,11 +34,11 @@ if (Meteor.isClient) {
         }
     }),
         Template.register.events({
-            'submit form': function (user) {
+            'submit form': function () {
                 event.preventDefault();
                 var username = $('[name = username]').val();
                 var password = $('[name= password]').val();
-                var id = Accounts.createUser({
+                Accounts.createUser({
                         username: username,
                         password: password,
                         roles: 'admin'
@@ -68,8 +67,8 @@ if (Meteor.isClient) {
                     emailArray,
                     'sms@tandlautomatics.com',
                     'sms@tandlautomatics.com',
-                    'Hello from Meteor!',
-                    'This is a test of Email.send.');
+                    'T&L Automatics Supplier Management System Invitation',
+                    'This is a test of Email.');
             }
         }),
         Template.companies.helpers({
@@ -90,7 +89,7 @@ if (Meteor.isClient) {
                     Session.set('selectedCompany', companyID);
                 }
             },
-            'click .btn-danger': function (event) {
+            'click .btn-danger': function () {
                 var selectedCompany = Session.get('selectedCompany');
                 var confirm = window.confirm("Delete this Company?");
                 if (confirm) {
@@ -209,7 +208,7 @@ if (Meteor.isClient) {
                     var cert3StatusVar = true;
                 }
                 if (Session.get('showPullDown4') == true) {
-                    var certType4Var = event.target.certType4.value
+                    var certType4Var = event.target.certType4.value;
                     var expirationDate4Var = event.target.expirationDate4.value;
                     var certNumber4Var = event.target.certNumber4.value;
                     var registrar4Var = event.target.registrar4.value;
@@ -420,10 +419,8 @@ if (Meteor.isClient) {
                 return CompanyList.find({_id: this._id}).fetch()[0].cert[4].text;
             },
             'different': function () {
-                if (CompanyList.find({_id: this._id}).fetch()[0].differentName != "") {
-                    return true;
-                }
-                return false;
+                return CompanyList.find({_id: this._id}).fetch()[0].differentName != "";
+
             },
             'event': function () {
                 return CompanyList.find({_id: this._id}).fetch()[0].event;
@@ -606,43 +603,22 @@ if (Meteor.isClient) {
             },
             'showOption2': function () {
                 if ((CompanyList.find({_id: this._id}).fetch()[0].cert[1].certStatus == true) || Session.get("showPullDown2")) {
-                    if (Session.get("showPullDown2") == false) {
-                        return false;
-                    }
-                    else {
-                        return true;
-                    }
-
+                    return Session.get("showPullDown2");
                 }
             },
             'showOption3': function () {
                 if ((CompanyList.find({_id: this._id}).fetch()[0].cert[2].certStatus == true) || Session.get("showPullDown3")) {
-                    if (Session.get("showPullDown3") == false) {
-                        return false;
-                    }
-                    else {
-                        return true;
-                    }
+                    return Session.get("showPullDown3");
                 }
             },
             'showOption4': function () {
                 if ((CompanyList.find({_id: this._id}).fetch()[0].cert[3].certStatus == true) || Session.get("showPullDown4")) {
-                    if (Session.get("showPullDown4") == false) {
-                        return false;
-                    }
-                    else {
-                        return true;
-                    }
+                    return Session.get("showPullDown4");
                 }
             },
             'showOption5': function () {
                 if ((CompanyList.find({_id: this._id}).fetch()[0].cert[4].certStatus == true) || Session.get("showPullDown5")) {
-                    if (Session.get("showPullDown5") == false) {
-                        return false;
-                    }
-                    else {
-                        return true;
-                    }
+                    return Session.get("showPullDown5");
                 }
             },
             'expirationDate1': function () {
@@ -916,8 +892,7 @@ if (Meteor.isServer) {
 
             _.each(users, function (user) {
                 var id;
-                var pass;
-                pass = "apple1";
+                var pass = "apple1";
                 id = Accounts.createUser({
                     username: user.username,
                     password: pass,
@@ -1307,6 +1282,7 @@ if (Meteor.isServer) {
 
             // Let other method calls from the same client start running,
             // without waiting for the email sending to complete.
+
             this.unblock();
             to.forEach(function (entry) {
                 Email.send({
@@ -1317,6 +1293,10 @@ if (Meteor.isServer) {
                     html: text
                 });
             });
+
+            //var html = Blaze.toHTML(Blaze.With(data, function () {
+            //    return Template.registerEmail;
+            //}));
 
         }
 
