@@ -51,7 +51,6 @@
             <center>Copyright 2015-2016</center>
         </footer>
     </div>
-
 </template>
 
 <template name="login">
@@ -133,7 +132,7 @@
                        onclick="window.location.href='/companies/newCompany'"><br><br>
                 {{> companyListDisplay}}
                 <br>
-                <input type="button" class="btn btn-warning" value="Send Email">
+                <input type="email" class="form-control-static" name="emailInvite" id="emailInvite"><input type="button" class="btn btn-warning" value="Send Invitation">
 
             </div>
         {{/if}}
@@ -1411,8 +1410,11 @@
     </form>
 </template>
 
-<template name="shareEmailContent">
-    <p>{{message}}</p>
-    <h1>Testing Email HTML</h1>
-    <a href="{{url}}">{{title}}</a>
+<template name="registerEmail">
+    To our Valued Suppliers,
+    <br>
+    We have developed a web-based tool that has been designed to help us collect supplier profile data and also
+    automate performance feedback to our suppliers on a quarterly basis. This system will require that you designate
+    a point person to submit the information requested and also be the recipient of the quality and delivery
+    performance feedback that we will send to your designated staff each quarter via email.
 </template>
