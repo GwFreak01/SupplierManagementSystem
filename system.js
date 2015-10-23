@@ -62,13 +62,13 @@ if (Meteor.isClient) {
         }),
         Template.companies.events({
             'click .btn-warning': function () {
-                emailArray = ['gwfreak01@gmail.com', 'gwfreak02@gmail.com'];
+                emailArray = ['gwfreak01@gmail.com'];
                 Meteor.call('sendEmail',
-                    emailArray,
+                    document.getElementById("emailInvite").value,
                     'sms@tandlautomatics.com',
                     'sms@tandlautomatics.com',
-                    'T&L Automatics Supplier Management System Invitation',
-                    'This is a test of Email.');
+                    'T&L Automatics Supplier Management System Invitation');
+                alert("Invitation Sent");
             }
         }),
         Template.companies.helpers({
@@ -876,7 +876,9 @@ if (Meteor.isClient) {
                     return document;
                 });
             }
-        })
+        }),
+        Template.registerEmail.events({}),
+        Template.registerEmail.helpers({})
 
 }
 
@@ -1277,27 +1279,51 @@ if (Meteor.isServer) {
             EventList.update({_id: documentID}, {$set: {statusOption: companyItem}}, {createdBy: currentUserID});
             console.log("Status changed to: " + companyItem);
         },
-        'sendEmail': function (to, from, replyTo, subject, text) {
+        'sendEmail': function (to, from, replyTo, subject) {
             //check([to, from, subject, text], [String]);
 
             // Let other method calls from the same client start running,
             // without waiting for the email sending to complete.
 
-            this.unblock();
-            to.forEach(function (entry) {
-                Email.send({
-                    to: entry,
-                    from: from,
-                    replyTo: replyTo,
-                    subject: subject,
-                    html: text
-                });
+            //this.unblock();
+            //to.forEach(function (entry) {
+            //    Email.send({
+            //        to: entry,
+            //        from: from,
+            //        replyTo: replyTo,
+            //        subject: subject,
+            //        html: text
+            //    });
+            //});
+
+            Email.send({
+                from: from,
+                to: to,
+                subject: subject,
+                text: "To Our Valued Suppliers,\n\n" +
+                "\tWe have developed a web-based tool that has been " +
+                "designed to help us collect supplier profile data and also " +
+                "automate performance feedback to our suppliers on a quarterly basis. " +
+                "This system will require that you designate a point person to submit " +
+                "the information requested and also be the recipient of the quality and " +
+                "delivery performance feedback that we will send to your designated staff " +
+                "each quarter via email.\n\n" +
+                "\tWe ask that you take approximately 5 minutes to fill out the profile " +
+                "survey and submit it to us within the next week.  Follow the instructions " +
+                "below to access the T&L Supplier site and submit the profile for your company. " +
+                "Thank you in advance for your support.\n\n" +
+                "\t1.   Go to https://thprcc.meteor.com\n" +
+                "\t2.   Enter the login information given below\n" +
+                "\t\ta.	Username: supplier\n" +
+                "\t\tb.	Password: apple1\n" +
+                "\t3.   Fill out the profile survey\n" +
+                "\t4.	Click the Submit Button\n\n" +
+                "Once you have registered, your company will be able to receive quarterly performance feedback.\n\n" +
+                "Sincerely,\n" +
+                "Bill Green\n" +
+                "Vice President"
+
             });
-
-            //var html = Blaze.toHTML(Blaze.With(data, function () {
-            //    return Template.registerEmail;
-            //}));
-
         }
 
     });
