@@ -1,7 +1,327 @@
+SimpleSchema.debug = true;
+
 CompanyList = new Mongo.Collection("companies");
 
 EventList = new Mongo.Collection("events");
 
+CompaniesTest = new Mongo.Collection("companies_Test");
+
+
+CompaniesSchema = new SimpleSchema({
+    companyName: {
+        type: String,
+        label: "Company Name",
+        unique: true,
+        index: true
+    },
+    companyAddress: {
+        type: Object,
+        label: "Company Address"
+    },
+    "companyAddress.street": {
+        type: String,
+        label: "Street 1"
+    },
+    "companyAddress.street2": {
+        type: String,
+        label: "Street 2"
+    },
+    "companyAddress.city": {
+        type: String,
+        label: "City"
+    },
+    "companyAddress.state": {
+        type: String,
+        allowedValues: ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"],
+        autoform: {
+            afFieldInput: {
+                firstOption: "(Select a State)"
+            }
+        }
+    },
+    "companyAddress.zipcode": {
+        type: String,
+        label: "ZIP"
+    },
+    salesPerson: {
+        type: Object,
+        label: "Sales Manager"
+    },
+    "salesPerson.name": {
+        type: String,
+        label: "Name"
+    },
+    "salesPerson.email": {
+        type: String,
+        label: "E-Mail"
+    },
+    "salesPerson.phone": {
+        type: String,
+        label: "Phone"
+    },
+    qualityPerson: {
+        type: Object,
+        label: "Quality Manager"
+    },
+    "qualityPerson.name": {
+        type: String,
+        label: "Name"
+    },
+    "qualityPerson.email": {
+        type: String,
+        label: "E-Mail"
+    },
+    "qualityPerson.phone": {
+        type: String,
+        label: "Phone"
+    },
+    logisticsPerson: {
+        type: Object,
+        label: "Logistics Manager"
+    },
+    "logisticsPerson.name": {
+        type: String,
+        label: "Name"
+    },
+    "logisticsPerson.email": {
+        type: String,
+        label: "E-Mail"
+    },
+    "logisticsPerson.phone": {
+        type: String,
+        label: "Phone"
+    },
+    differentPerson: {
+        type: Object,
+        label: "Person To Receive Performance Reports If Different Than The 3 People Listed Above",
+        optional: true
+    },
+    "differentPerson.name": {
+        type: String,
+        label: "Name"
+    },
+    "differentPerson.email": {
+        type: String,
+        label: "E-Mail"
+    },
+    "differentPerson.phone": {
+        type: String,
+        label: "Phone"
+    },
+    itemDescription: {
+        type: String,
+        label: "Item Description"
+    },
+    certification: {
+        type: [Object],
+        minCount: 1,
+        maxCount: 5
+    },
+    "certification.$.certType": {
+        type: String,
+        allowedValues: ["ISO9001", "ISO14001", "TS16949", "Other", "None"],
+        autoform: {
+            afFieldInput: {
+                firstOption: "(Select a Certification Type)"
+            }
+        },
+        label: "Certification Type"
+
+    },
+    "certification.$.other": {
+        type: String,
+        optional: true,
+        custom: function () {
+            if (Meteor.isClient) {
+                var docId = AutoForm.getFieldValue("certification.0.certType");
+
+                if ((docId === "Other") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                    return "required";
+                }
+            }
+        },
+        label: "(If Other) Certification Type"
+
+    },
+    "certification.$.expirationDate": {
+        type: Date,
+        label: "Certificate Expiration Date",
+        optional: true,
+        custom: function () {
+            if (Meteor.isClient) {
+                var docId = AutoForm.getFieldValue("certification.0.certType");
+
+                if (!(docId === "None") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                    return "required";
+                }
+            }
+        }
+    },
+    "certification.$.certNumber": {
+        type: String,
+        label: "Certificate Number",
+        unique: true,
+        index: true,
+        optional: true,
+        custom: function () {
+            if (Meteor.isClient) {
+                var docId = AutoForm.getFieldValue("certification.0.certType");
+
+                if (!(docId === "None") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                    return "required";
+                }
+            }
+        }
+    },
+    "certification.$.registrar": {
+        type: String,
+        label: "Registrar Name",
+        optional: true,
+        custom: function () {
+            if (Meteor.isClient) {
+                var docId = AutoForm.getFieldValue("certification.0.certType");
+
+                if (!(docId === "None") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                    return "required";
+                }
+            }
+        }
+    },
+    "certification.$.reason": {
+        type: String,
+        label: "(If None) Do You Plan To Pursue Certification? If So When?",
+        optional: true,
+        custom: function () {
+            if (Meteor.isClient) {
+                var docId = AutoForm.getFieldValue("certification.0.certType");
+
+                if ((docId === "None") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                    return "required";
+                }
+            }
+        }
+    }
+});
+
+
+QualityEventSchema = new SimpleSchema({
+    companyName: {
+        type: String,
+        label: "Company Name"
+    },
+    eventDate: {
+        type: Date,
+        label: "Event Date"
+    },
+    eventType: {
+        type: String,
+        label: "Event Type"
+    },
+    tlPartNumber: {
+        type: String,
+        label: "T&L Part Number"
+    },
+    purchaseOrderNumber: {
+        type: String,
+        label: "Purchase Order Number"
+    },
+    lotNumber: {
+        type: String,
+        label: "Lot Number"
+    },
+    carNumber: {
+        type: String,
+        label: "CAR Number"
+    },
+    quantityReject: {
+        type: Number,
+        label: "Quantity Rejected"
+    },
+    rootCause: {
+        type: String,
+        label: "Root Cause"
+    },
+    statusOption: {
+        type: String,
+        label: "Status"
+    }
+});
+
+DeliveryEventSchema = new SimpleSchema({
+    companyName: {
+        type: String,
+        label: "Company Name"
+    },
+    eventDate: {
+        type: Date,
+        label: "Event Date"
+    },
+    eventType: {
+        type: String,
+        label: "Event Type"
+    },
+    tlPartNumber: {
+        type: String,
+        label: "T&L Part Number"
+    },
+    purchaseOrderNumber: {
+        type: String,
+        label: "Purchase Order Number"
+    },
+    lotNumber: {
+        type: String,
+        label: "Lot Number"
+    },
+    carNumber: {
+        type: String,
+        label: "CAR Number"
+    },
+    requiredDate: {
+        type: Date,
+        label: "Required Delivery Date"
+    },
+    actualDate: {
+        type: Date,
+        label: "Actual Delivery Date"
+    },
+    rootCause: {
+        type: String,
+        label: "Root Cause"
+    },
+    statusOption: {
+        type: String,
+        label: "Status"
+    }
+});
+
+CompaniesTest.attachSchema(CompaniesSchema);
+
+//CompaniesTest.insert({
+//    companyName: "T&L Automatics",
+//    companyAddress: "770 Emerson",
+//    salesName: "Thanh Pham",
+//    salesEmail: "gwfreak01@gmail.com",
+//    salesPhone: "9406132066",
+//    qualityName: "Thanh Pham",
+//    qualityEmail: "gwfreak01@gmail.com",
+//    qualityPhone: "9406132066",
+//    logisticsName: "Thanh Pham",
+//    logisticsEmail: "gwfreak01@gmail.com",
+//    logisticsPhone: "9406132066",
+//    itemDescription: "Pipes and Bombs",
+//    certification: [{
+//        certType: "1",
+//        expirationDate: "3/4/2015",
+//        certNumber: "1234",
+//        registrar: "Thanh Pham"
+//
+//    }, {
+//        certType: "2",
+//        expirationDate: "3/5/2016",
+//        certNumber: "12341234",
+//        registrar: "Thanh Pham"
+//    }]
+//});
 
 Router.configure({
     layoutTemplate: 'main'
@@ -11,6 +331,7 @@ if (Meteor.isClient) {
     Meteor.subscribe('theCompanies');
     Meteor.subscribe('theEvents');
     Meteor.subscribe('userList');
+    Meteor.subscribe('companies_Test');
     Template.login.events({
         'submit form': function (event) {
             event.preventDefault();
@@ -62,12 +383,21 @@ if (Meteor.isClient) {
         }),
         Template.companies.events({
             'click .btn-warning': function () {
-                emailArray = ['gwfreak01@gmail.com'];
-                Meteor.call('sendEmail',
-                    document.getElementById("emailInvite").value,
-                    'sms@tandlautomatics.com',
-                    'sms@tandlautomatics.com',
-                    'T&L Automatics Supplier Management System Invitation');
+                var dataContext = {
+                    message: "You must see this, it's amazing!",
+                    url: "www.google.com",
+                    title: "Amazing stuff, click me !"
+                };
+
+                var html = Blaze.toHTMLWithData(Template.registerEmail, dataContext);
+                var options = {
+                    from: 'sms@tandlautomatics.com',
+                    to: document.getElementById("emailInvite").value,
+                    replyTo: 'sms@tandlautomatics.com',
+                    subject: 'Registration Request - T&L Supplier Management Application',
+                    html: html
+                };
+                Meteor.call("sendEmail", options);
                 alert("Invitation Sent");
             }
         }),
@@ -165,168 +495,198 @@ if (Meteor.isClient) {
             }
         }),
         Template.addCompanyForm.events({
-            'submit form': function () {
-                event.preventDefault();
-                var companyNameVar = event.target.companyName.value;
-                var companyAddressVar = event.target.companyAddress.value;
+            //'submit form': function () {
+            //    event.preventDefault();
+            //    var companyNameVar = event.target.companyName.value;
+            //    var companyAddressVar = event.target.companyAddress.value;
+            //
+            //    var salesNameVar = event.target.salesName.value;
+            //    var salesEmailVar = event.target.salesEmail.value;
+            //    var salesPhoneVar = event.target.salesPhone.value;
+            //
+            //    var qualityNameVar = event.target.qualityName.value;
+            //    var qualityEmailVar = event.target.qualityEmail.value;
+            //    var qualityPhoneVar = event.target.qualityPhone.value;
+            //
+            //    var logisticsNameVar = event.target.logisticsName.value;
+            //    var logisticsEmailVar = event.target.logisticsEmail.value;
+            //    var logisticsPhoneVar = event.target.logisticsPhone.value;
+            //
+            //    var differentNameVar = event.target.differentName.value;
+            //    var differentEmailVar = event.target.differentEmail.value;
+            //    var differentPhoneVar = event.target.differentPhone.value;
+            //
+            //    var describeInputVar = event.target.describeInput.value;
+            //    var currentUserID = Meteor.userId();
+            //
+            //    if (Session.get('showPullDown1') == true) {
+            //        var expirationDate1Var = event.target.expirationDate1.value;
+            //        var certNumber1Var = event.target.certNumber1.value;
+            //        var registrar1Var = event.target.registrar1.value;
+            //        var cert1StatusVar = true;
+            //    }
+            //    if (Session.get('showPullDown2') == true) {
+            //        var expirationDate2Var = event.target.expirationDate2.value;
+            //        var certNumber2Var = event.target.certNumber2.value;
+            //        var registrar2Var = event.target.registrar2.value;
+            //        var cert2StatusVar = true;
+            //    }
+            //    if (Session.get('showPullDown3') == true) {
+            //        var expirationDate3Var = event.target.expirationDate3.value;
+            //        var certNumber3Var = event.target.certNumber3.value;
+            //        var registrar3Var = event.target.registrar3.value;
+            //        var cert3StatusVar = true;
+            //    }
+            //    if (Session.get('showPullDown4') == true) {
+            //        var certType4Var = event.target.certType4.value;
+            //        var expirationDate4Var = event.target.expirationDate4.value;
+            //        var certNumber4Var = event.target.certNumber4.value;
+            //        var registrar4Var = event.target.registrar4.value;
+            //        var cert4StatusVar = true;
+            //    }
+            //    if (Session.get('showPullDown5') == true) {
+            //        var cert5TextVar = event.target.cert5Text.value;
+            //        var cert5StatusVar = true;
+            //    }
+            //    if ((companyNameVar != "") && (companyAddressVar != "") && (salesNameVar != "") && (salesEmailVar != "")
+            //        && (salesPhoneVar != "") && (qualityNameVar != "") && (qualityEmailVar != "") && (qualityPhoneVar != "")
+            //        && (logisticsNameVar != "") && (logisticsEmailVar != "") && (logisticsPhoneVar != "") && (describeInputVar != "")) {
+            //        if (CompanyList.find({companyName: companyNameVar}).count() == 0) {
+            //            if (Session.get('showPullDown1') == true) {
+            //                if ((expirationDate1Var != "") && (certNumber1Var != "") && (registrar1Var != "")) {
+            //                    Meteor.call('insertCompanyData', companyNameVar, companyAddressVar, salesNameVar, salesEmailVar,
+            //                        salesPhoneVar, qualityNameVar, qualityEmailVar, qualityPhoneVar, logisticsNameVar, logisticsEmailVar,
+            //                        logisticsPhoneVar, differentNameVar, differentEmailVar, differentPhoneVar, describeInputVar,
+            //                        expirationDate1Var, certNumber1Var, registrar1Var, cert1StatusVar, expirationDate2Var, certNumber2Var, registrar2Var, cert2StatusVar,
+            //                        expirationDate3Var, certNumber3Var, registrar3Var, cert3StatusVar, certType4Var, expirationDate4Var, certNumber4Var, registrar4Var, cert4StatusVar,
+            //                        cert5TextVar, cert5StatusVar);
+            //                    alert("You have successfully registered!");
+            //                    if (Roles.userIsInRole(this.userId, "supplier")) {
+            //                        Meteor.logout();
+            //                    }
+            //                    Router.go('/');
+            //                }
+            //                else {
+            //                    alert("Please complete the form");
+            //                }
+            //            }
+            //            else if (Session.get('showPullDown2') == true) {
+            //                if ((expirationDate2Var != "") && (certNumber2Var != "") && (registrar2Var != "")) {
+            //                    Meteor.call('insertCompanyData', companyNameVar, companyAddressVar, salesNameVar, salesEmailVar,
+            //                        salesPhoneVar, qualityNameVar, qualityEmailVar, qualityPhoneVar, logisticsNameVar, logisticsEmailVar,
+            //                        logisticsPhoneVar, differentNameVar, differentEmailVar, differentPhoneVar, describeInputVar,
+            //                        expirationDate1Var, certNumber1Var, registrar1Var, cert1StatusVar, expirationDate2Var, certNumber2Var, registrar2Var, cert2StatusVar,
+            //                        expirationDate3Var, certNumber3Var, registrar3Var, cert3StatusVar, certType4Var, expirationDate4Var, certNumber4Var, registrar4Var, cert4StatusVar,
+            //                        cert5TextVar, cert5StatusVar);
+            //                    alert("You have successfully registered!")
+            //                    Email.send({
+            //                        from: "sms@tandlautomatics.com",
+            //                        to: "gwfreak01@gmail.com",
+            //                        text: companyNameVar + " has just registered"
+            //                    });
+            //                    if (Roles.userIsInRole(this.userId, "supplier")) {
+            //                        Meteor.logout();
+            //                    }
+            //                    Router.go('/');
+            //                }
+            //                else {
+            //                    alert("Please complete the form");
+            //                }
+            //            }
+            //            else if (Session.get('showPullDown3') == true) {
+            //                if ((expirationDate3Var != "") && (certNumber3Var != "") && (registrar3Var != "")) {
+            //                    Meteor.call('insertCompanyData', companyNameVar, companyAddressVar, salesNameVar, salesEmailVar,
+            //                        salesPhoneVar, qualityNameVar, qualityEmailVar, qualityPhoneVar, logisticsNameVar, logisticsEmailVar,
+            //                        logisticsPhoneVar, differentNameVar, differentEmailVar, differentPhoneVar, describeInputVar,
+            //                        expirationDate1Var, certNumber1Var, registrar1Var, cert1StatusVar, expirationDate2Var, certNumber2Var, registrar2Var, cert2StatusVar,
+            //                        expirationDate3Var, certNumber3Var, registrar3Var, cert3StatusVar, certType4Var, expirationDate4Var, certNumber4Var, registrar4Var, cert4StatusVar,
+            //                        cert5TextVar, cert5StatusVar);
+            //                    alert("You have successfully registered!");
+            //                    if (Roles.userIsInRole(this.userId, "supplier")) {
+            //                        Meteor.logout();
+            //                    }
+            //                    Router.go('/');
+            //                }
+            //                else {
+            //                    alert("Please complete the form");
+            //                }
+            //            }
+            //            else if (Session.get('showPullDown4') == true) {
+            //                if ((expirationDate4Var != "") && (certNumber4Var != "") && (registrar4Var != "")) {
+            //                    Meteor.call('insertCompanyData', companyNameVar, companyAddressVar, salesNameVar, salesEmailVar,
+            //                        salesPhoneVar, qualityNameVar, qualityEmailVar, qualityPhoneVar, logisticsNameVar, logisticsEmailVar,
+            //                        logisticsPhoneVar, differentNameVar, differentEmailVar, differentPhoneVar, describeInputVar,
+            //                        expirationDate1Var, certNumber1Var, registrar1Var, cert1StatusVar, expirationDate2Var, certNumber2Var, registrar2Var, cert2StatusVar,
+            //                        expirationDate3Var, certNumber3Var, registrar3Var, cert3StatusVar, certType4Var, expirationDate4Var, certNumber4Var, registrar4Var, cert4StatusVar,
+            //                        cert5TextVar, cert5StatusVar);
+            //                    alert("You have successfully registered!");
+            //                    if (Roles.userIsInRole(this.userId, "supplier")) {
+            //                        Meteor.logout();
+            //                    }
+            //                    Router.go('/');
+            //                }
+            //                else {
+            //                    alert("Please complete the form");
+            //                }
+            //            }
+            //            else if (Session.get('showPullDown5') == true) {
+            //                if (cert5TextVar != "") {
+            //                    Meteor.call('insertCompanyData', companyNameVar, companyAddressVar, salesNameVar, salesEmailVar,
+            //                        salesPhoneVar, qualityNameVar, qualityEmailVar, qualityPhoneVar, logisticsNameVar, logisticsEmailVar,
+            //                        logisticsPhoneVar, differentNameVar, differentEmailVar, differentPhoneVar, describeInputVar,
+            //                        expirationDate1Var, certNumber1Var, registrar1Var, cert1StatusVar, expirationDate2Var, certNumber2Var, registrar2Var, cert2StatusVar,
+            //                        expirationDate3Var, certNumber3Var, registrar3Var, cert3StatusVar, certType4Var, expirationDate4Var, certNumber4Var, registrar4Var, cert4StatusVar,
+            //                        cert5TextVar, cert5StatusVar);
+            //                    var options = {
+            //                        from: "sms@tandlautomatics.com",
+            //                        to: "gwfreak01@gmail.com",
+            //                        subject: "New Company",
+            //                        text: companyNameVar + " has just registered"
+            //                    };
+            //                    Meteor.call("sendMail", options);
+            //                    alert("You have successfully registered!");
+            //                    if (Roles.userIsInRole(currentUserID, "supplier")) {
+            //                        Meteor.logout();
+            //                    }
+            //                    Router.go('/');
+            //                }
+            //                else {
+            //                    alert("Please complete the form");
+            //                }
+            //            }
+            //            else {
+            //                alert("Please complete the form");
+            //            }
+            //        }
+            //        else {
+            //            alert("Company already exists!");
+            //        }
+            //
+            //
+            //    }
+            //    else {
+            //        alert("Please complete the form");
+            //    }
+            //
+            //
+            //},
+            //'click .show-Option1': function () {
+            //    Session.set('showPullDown1', event.target.checked);
+            //},
+            //'click .show-Option2': function () {
+            //    Session.set('showPullDown2', event.target.checked);
+            //},
+            //'click .show-Option3': function () {
+            //    Session.set('showPullDown3', event.target.checked);
+            //},
+            //'click .show-Option4': function () {
+            //    Session.set('showPullDown4', event.target.checked);
+            //},
+            //'click .show-Option5': function () {
+            //    Session.set('showPullDown5', event.target.checked);
+            //},
+            'keyup': function () {
 
-                var salesNameVar = event.target.salesName.value;
-                var salesEmailVar = event.target.salesEmail.value;
-                var salesPhoneVar = event.target.salesPhone.value;
-
-                var qualityNameVar = event.target.qualityName.value;
-                var qualityEmailVar = event.target.qualityEmail.value;
-                var qualityPhoneVar = event.target.qualityPhone.value;
-
-                var logisticsNameVar = event.target.logisticsName.value;
-                var logisticsEmailVar = event.target.logisticsEmail.value;
-                var logisticsPhoneVar = event.target.logisticsPhone.value;
-
-                var differentNameVar = event.target.differentName.value;
-                var differentEmailVar = event.target.differentEmail.value;
-                var differentPhoneVar = event.target.differentPhone.value;
-
-                var describeInputVar = event.target.describeInput.value;
-                var currentUserID = Meteor.userId();
-
-                if (Session.get('showPullDown1') == true) {
-                    var expirationDate1Var = event.target.expirationDate1.value;
-                    var certNumber1Var = event.target.certNumber1.value;
-                    var registrar1Var = event.target.registrar1.value;
-                    var cert1StatusVar = true;
-                }
-                if (Session.get('showPullDown2') == true) {
-                    var expirationDate2Var = event.target.expirationDate2.value;
-                    var certNumber2Var = event.target.certNumber2.value;
-                    var registrar2Var = event.target.registrar2.value;
-                    var cert2StatusVar = true;
-                }
-                if (Session.get('showPullDown3') == true) {
-                    var expirationDate3Var = event.target.expirationDate3.value;
-                    var certNumber3Var = event.target.certNumber3.value;
-                    var registrar3Var = event.target.registrar3.value;
-                    var cert3StatusVar = true;
-                }
-                if (Session.get('showPullDown4') == true) {
-                    var certType4Var = event.target.certType4.value;
-                    var expirationDate4Var = event.target.expirationDate4.value;
-                    var certNumber4Var = event.target.certNumber4.value;
-                    var registrar4Var = event.target.registrar4.value;
-                    var cert4StatusVar = true;
-                }
-                if (Session.get('showPullDown5') == true) {
-                    var cert5TextVar = event.target.cert5Text.value;
-                    var cert5StatusVar = true;
-                }
-                if ((companyNameVar != "") && (companyAddressVar != "") && (salesNameVar != "") && (salesEmailVar != "")
-                    && (salesPhoneVar != "") && (qualityNameVar != "") && (qualityEmailVar != "") && (qualityPhoneVar != "")
-                    && (logisticsNameVar != "") && (logisticsEmailVar != "") && (logisticsPhoneVar != "") && (describeInputVar != "")) {
-                    if (CompanyList.find({companyName: companyNameVar}).count() == 0) {
-                        if (Session.get('showPullDown1') == true) {
-                            if ((expirationDate1Var != "") && (certNumber1Var != "") && (registrar1Var != "")) {
-                                Meteor.call('insertCompanyData', companyNameVar, companyAddressVar, salesNameVar, salesEmailVar,
-                                    salesPhoneVar, qualityNameVar, qualityEmailVar, qualityPhoneVar, logisticsNameVar, logisticsEmailVar,
-                                    logisticsPhoneVar, differentNameVar, differentEmailVar, differentPhoneVar, describeInputVar,
-                                    expirationDate1Var, certNumber1Var, registrar1Var, cert1StatusVar, expirationDate2Var, certNumber2Var, registrar2Var, cert2StatusVar,
-                                    expirationDate3Var, certNumber3Var, registrar3Var, cert3StatusVar, certType4Var, expirationDate4Var, certNumber4Var, registrar4Var, cert4StatusVar,
-                                    cert5TextVar, cert5StatusVar);
-                                alert("You have successfully registered!");
-                                Router.go('companies');
-                            }
-                            else {
-                                alert("Please complete the form");
-                            }
-                        }
-                        else if (Session.get('showPullDown2') == true) {
-                            if ((expirationDate2Var != "") && (certNumber2Var != "") && (registrar2Var != "")) {
-                                Meteor.call('insertCompanyData', companyNameVar, companyAddressVar, salesNameVar, salesEmailVar,
-                                    salesPhoneVar, qualityNameVar, qualityEmailVar, qualityPhoneVar, logisticsNameVar, logisticsEmailVar,
-                                    logisticsPhoneVar, differentNameVar, differentEmailVar, differentPhoneVar, describeInputVar,
-                                    expirationDate1Var, certNumber1Var, registrar1Var, cert1StatusVar, expirationDate2Var, certNumber2Var, registrar2Var, cert2StatusVar,
-                                    expirationDate3Var, certNumber3Var, registrar3Var, cert3StatusVar, certType4Var, expirationDate4Var, certNumber4Var, registrar4Var, cert4StatusVar,
-                                    cert5TextVar, cert5StatusVar);
-                                alert("You have successfully registered!");
-                                Router.go('companies');
-                            }
-                            else {
-                                alert("Please complete the form");
-                            }
-                        }
-                        else if (Session.get('showPullDown3') == true) {
-                            if ((expirationDate3Var != "") && (certNumber3Var != "") && (registrar3Var != "")) {
-                                Meteor.call('insertCompanyData', companyNameVar, companyAddressVar, salesNameVar, salesEmailVar,
-                                    salesPhoneVar, qualityNameVar, qualityEmailVar, qualityPhoneVar, logisticsNameVar, logisticsEmailVar,
-                                    logisticsPhoneVar, differentNameVar, differentEmailVar, differentPhoneVar, describeInputVar,
-                                    expirationDate1Var, certNumber1Var, registrar1Var, cert1StatusVar, expirationDate2Var, certNumber2Var, registrar2Var, cert2StatusVar,
-                                    expirationDate3Var, certNumber3Var, registrar3Var, cert3StatusVar, certType4Var, expirationDate4Var, certNumber4Var, registrar4Var, cert4StatusVar,
-                                    cert5TextVar, cert5StatusVar);
-                                alert("You have successfully registered!");
-                                Router.go('companies');
-                            }
-                            else {
-                                alert("Please complete the form");
-                            }
-                        }
-                        else if (Session.get('showPullDown4') == true) {
-                            if ((expirationDate4Var != "") && (certNumber4Var != "") && (registrar4Var != "")) {
-                                Meteor.call('insertCompanyData', companyNameVar, companyAddressVar, salesNameVar, salesEmailVar,
-                                    salesPhoneVar, qualityNameVar, qualityEmailVar, qualityPhoneVar, logisticsNameVar, logisticsEmailVar,
-                                    logisticsPhoneVar, differentNameVar, differentEmailVar, differentPhoneVar, describeInputVar,
-                                    expirationDate1Var, certNumber1Var, registrar1Var, cert1StatusVar, expirationDate2Var, certNumber2Var, registrar2Var, cert2StatusVar,
-                                    expirationDate3Var, certNumber3Var, registrar3Var, cert3StatusVar, certType4Var, expirationDate4Var, certNumber4Var, registrar4Var, cert4StatusVar,
-                                    cert5TextVar, cert5StatusVar);
-                                alert("You have successfully registered!");
-                                Router.go('companies');
-                            }
-                            else {
-                                alert("Please complete the form");
-                            }
-                        }
-                        else if (Session.get('showPullDown5') == true) {
-                            if (cert5TextVar != "") {
-                                Meteor.call('insertCompanyData', companyNameVar, companyAddressVar, salesNameVar, salesEmailVar,
-                                    salesPhoneVar, qualityNameVar, qualityEmailVar, qualityPhoneVar, logisticsNameVar, logisticsEmailVar,
-                                    logisticsPhoneVar, differentNameVar, differentEmailVar, differentPhoneVar, describeInputVar,
-                                    expirationDate1Var, certNumber1Var, registrar1Var, cert1StatusVar, expirationDate2Var, certNumber2Var, registrar2Var, cert2StatusVar,
-                                    expirationDate3Var, certNumber3Var, registrar3Var, cert3StatusVar, certType4Var, expirationDate4Var, certNumber4Var, registrar4Var, cert4StatusVar,
-                                    cert5TextVar, cert5StatusVar);
-                                alert("You have successfully registered!");
-                                Router.go('companies');
-                            }
-                            else {
-                                alert("Please complete the form");
-                            }
-                        }
-                        else {
-                            alert("Please complete the form");
-                        }
-                    }
-                    else {
-                        alert("Company already exists!");
-                    }
-
-
-                }
-                else {
-                    alert("Please complete the form");
-                }
-
-
-            },
-            'click .show-Option1': function () {
-                Session.set('showPullDown1', event.target.checked);
-            },
-            'click .show-Option2': function () {
-                Session.set('showPullDown2', event.target.checked);
-            },
-            'click .show-Option3': function () {
-                Session.set('showPullDown3', event.target.checked);
-            },
-            'click .show-Option4': function () {
-                Session.set('showPullDown4', event.target.checked);
-            },
-            'click .show-Option5': function () {
-                Session.set('showPullDown5', event.target.checked);
             }
         }),
         Template.addCompanyForm.helpers({
@@ -344,6 +704,12 @@ if (Meteor.isClient) {
             },
             'showOption5': function () {
                 return Session.get("showPullDown5");
+            },
+            'companyNameValid': function () {
+                if (document.getElementById("companyName").value == "") {
+                    return false;
+                }
+                return true;
             }
         }),
         Template.detailCompany.events({}),
@@ -878,7 +1244,29 @@ if (Meteor.isClient) {
             }
         }),
         Template.registerEmail.events({}),
-        Template.registerEmail.helpers({})
+        Template.registerEmail.helpers({}),
+        Template.insertCompanyForm.events({
+            'submit form': function () {
+                var insertFormHook = {
+                    onSuccess: function (insert, result) {
+                        alert("You have successfully registered!");
+                        if (Roles.userIsInRole(this.userId, "supplier")) {
+                            Meteor.logout();
+                        }
+                        Router.go('/');
+                    }
+                };
+                AutoForm.hooks({
+                    insertCompanyForm: insertFormHook
+                });
+                //AutoForm.addHooks()
+                //alert("You have successfully registered!");
+                //                    if (Roles.userIsInRole(this.userId, "supplier")) {
+                //                        Meteor.logout();
+                //                    }
+                //                    Router.go('/');
+            }
+        })
 
 }
 
@@ -936,6 +1324,17 @@ if (Meteor.isServer) {
         }
     });
 
+    Meteor.publish('companies_Test', function () {
+        if (Roles.userIsInRole(this.userId, ['admin', 'employee'])) {
+            //var currentUserID = this.userId;
+            return CompaniesTest.find({});
+        }
+        else {
+            this.stop();
+            return;
+        }
+    });
+
     Meteor.publish('userList', function () {
         if (Roles.userIsInRole(this.userId, ['admin'])) {
             var currentUserID = this.userId;
@@ -946,7 +1345,17 @@ if (Meteor.isServer) {
             return;
         }
     });
-
+    CompaniesTest.allow({
+        'insert': function (userId, doc) {
+            return true;
+        },
+        'update': function (userId, doc) {
+            return true;
+        },
+        'remove': function (userId, doc) {
+            return true;
+        }
+    })
     Meteor.methods({
         'insertCompanyData': function (companyNameVar, companyAddressVar, salesNameVar, salesEmailVar, salesPhoneVar,
                                        qualityNameVar, qualityEmailVar, qualityPhoneVar, logisticsNameVar, logisticsEmailVar,
@@ -1279,13 +1688,14 @@ if (Meteor.isServer) {
             EventList.update({_id: documentID}, {$set: {statusOption: companyItem}}, {createdBy: currentUserID});
             console.log("Status changed to: " + companyItem);
         },
-        'sendEmail': function (to, from, replyTo, subject) {
+        'sendEmail': function (options) {
+            //'sendEmail': function (to, from, replyTo, subject) {
             //check([to, from, subject, text], [String]);
 
             // Let other method calls from the same client start running,
             // without waiting for the email sending to complete.
 
-            //this.unblock();
+            this.unblock();
             //to.forEach(function (entry) {
             //    Email.send({
             //        to: entry,
@@ -1296,43 +1706,14 @@ if (Meteor.isServer) {
             //    });
             //});
 
-            Email.send({
-                from: from,
-                to: to,
-                subject: subject,
-                text: "To Our Valued Suppliers,\n\n" +
-                "\tWe have developed a web-based tool that has been " +
-                "designed to help us collect supplier profile data and also " +
-                "automate performance feedback to our suppliers on a quarterly basis. " +
-                "This system will require that you designate a point person to submit " +
-                "the information requested and also be the recipient of the quality and " +
-                "delivery performance feedback that we will send to your designated staff " +
-                "each quarter via email.\n\n" +
-                "\tWe ask that you take approximately 5 minutes to fill out the profile " +
-                "survey and submit it to us within the next week.  Follow the instructions " +
-                "below to access the T&L Supplier site and submit the profile for your company. " +
-                "Thank you in advance for your support.\n\n" +
-                "\t1.   Go to https://thprcc.meteor.com\n" +
-                "\t2.   Enter the login information given below\n" +
-                "\t\ta.	Username: supplier\n" +
-                "\t\tb.	Password: apple1\n" +
-                "\t3.   Fill out the profile survey\n" +
-                "\t4.	Click the Submit Button\n\n" +
-                "Once you have registered, your company will be able to receive quarterly performance feedback.\n\n" +
-                "Sincerely,\n" +
-                "Bill Green\n" +
-                "Vice President"
+            Email.send(options);
 
-            });
+        },
+        'sendMail': function (options) {
+            Email.send(options);
         }
 
     });
-
-    //Accounts.onCreateUser(function (options, user) {
-    //    if (user.roles == null) {
-    //        Roles.addUsersToRoles(user, 'supplier');
-    //    }
-    //});
 }
 
 
@@ -1422,3 +1803,5 @@ Router.route('/events/edit/:_id', {
 });
 
 Router.route('/registerCompany');
+
+Router.route('/insertCompanyForm');

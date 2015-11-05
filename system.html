@@ -44,6 +44,7 @@
 
     <div class="container">
         {{> yield}}
+
     </div>
 
     <div class="container">
@@ -132,7 +133,9 @@
                        onclick="window.location.href='/companies/newCompany'"><br><br>
                 {{> companyListDisplay}}
                 <br>
-                <input type="email" class="form-control-static" name="emailInvite" id="emailInvite"><input type="button" class="btn btn-warning" value="Send Invitation">
+                <input type="email" class="form-control-static" name="emailInvite" id="emailInvite"><input type="button"
+                                                                                                           class="btn btn-warning"
+                                                                                                           value="Send Invitation">
 
             </div>
         {{/if}}
@@ -179,256 +182,257 @@
 <template name="addCompanyForm">
     {{#if currentUser}}
         {{#if isInRole 'admin, supplier'}}
+            {{> insertCompanyForm}}
+            <!--<div class="col-md-12">-->
+            <!--<h1>Company Registration</h1>-->
+            <!--<br>-->
+            <!--<br>-->
 
-            <div class="col-md-12">
-                <h1>Company Registration</h1>
-                <br>
-                <br>
+            <!--<form class="form-horizontal">-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Company Name</label>-->
 
-                <form class="form-horizontal">
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Company Name</label>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="text" class="form-control" name="companyName" id="companyName">-->
+            <!--</div>-->
+            <!--</div>-->
 
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control" name="companyName" id="companyName">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Company Address</label>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Company Address</label>-->
 
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control" name="companyAddress" id="companyAddress">
-                        </div>
-                    </div>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="text" class="form-control" name="companyAddress" id="companyAddress">-->
+            <!--</div>-->
+            <!--</div>-->
 
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label"></label>
-                    </div>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label"></label>-->
+            <!--</div>-->
 
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Sales Manager</label>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Name</label>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Sales Manager</label>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Name</label>-->
 
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control" name="salesName" id="salesName">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">E-Mail</label>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="text" class="form-control" name="salesName" id="salesName" placeholder="First Last">-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">E-Mail</label>-->
 
-                        <div class="col-sm-4">
-                            <input type="email" class="form-control" name="salesEmail" id="salesEmail">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Phone</label>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="email" class="form-control" name="salesEmail" id="salesEmail">-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Phone</label>-->
 
-                        <div class="col-sm-4">
-                            <input type="tel" class="form-control" name="salesPhone" id="salesPhone">
-                        </div>
-                    </div>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="tel" class="form-control" name="salesPhone" id="salesPhone" placeholder="XXX-XXX-XXXX">-->
+            <!--</div>-->
+            <!--</div>-->
 
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label"></label>
-                    </div>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label"></label>-->
+            <!--</div>-->
 
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Quality Manager</label>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Name</label>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Quality Manager</label>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Name</label>-->
 
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control" name="qualityName" id="qualityName">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">E-Mail</label>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="text" class="form-control" name="qualityName" id="qualityName" placeholder="First Last">-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">E-Mail</label>-->
 
-                        <div class="col-sm-4">
-                            <input type="email" class="form-control" name="qualityEmail" id="qualityEmail">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Phone</label>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="email" class="form-control" name="qualityEmail" id="qualityEmail">-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Phone</label>-->
 
-                        <div class="col-sm-4">
-                            <input type="tel" class="form-control" name="qualityPhone" id="qualityPhone">
-                        </div>
-                    </div>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="tel" class="form-control" name="qualityPhone" id="qualityPhone" placeholder="XXX-XXX-XXXX">-->
+            <!--</div>-->
+            <!--</div>-->
 
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label"></label>
-                    </div>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label"></label>-->
+            <!--</div>-->
 
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Logistics Manager</label>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Name</label>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Logistics Manager</label>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Name</label>-->
 
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control" name="logisticsName" id="logisticsName">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">E-Mail</label>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="text" class="form-control" name="logisticsName" id="logisticsName" placeholder="First Last">-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">E-Mail</label>-->
 
-                        <div class="col-sm-4">
-                            <input type="email" class="form-control" name="logisticsEmail" id="logisticsEmail">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Phone</label>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="email" class="form-control" name="logisticsEmail" id="logisticsEmail">-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Phone</label>-->
 
-                        <div class="col-sm-4">
-                            <input type="tel" class="form-control" name="logisticsPhone" id="logisticsPhone">
-                        </div>
-                    </div>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="tel" class="form-control" name="logisticsPhone" id="logisticsPhone" placeholder="XXX-XXX-XXXX">-->
+            <!--</div>-->
+            <!--</div>-->
 
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label"></label>
-                    </div>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-4 control-label"></label>-->
+            <!--</div>-->
 
-                    <div class="form-group">
-                        <label class="col-sm-13 control-label">Person To Receive Performance Reports If Different
-                            Than The 3 People Listed Above</label>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Name</label>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-13 control-label">Person To Receive Performance Reports If Different-->
+            <!--Than The 3 People Listed Above</label>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Name</label>-->
 
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control" name="differentName" id="differentName">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">E-Mail</label>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="text" class="form-control" name="differentName" id="differentName" placeholder="First Last">-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">E-Mail</label>-->
 
-                        <div class="col-sm-4">
-                            <input type="email" class="form-control" name="differentEmail" id="differentEmail">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Phone</label>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="email" class="form-control" name="differentEmail" id="differentEmail">-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Phone</label>-->
 
-                        <div class="col-sm-4">
-                            <input type="tel" class="form-control" name="differentPhone" id="differentPhone">
-                        </div>
-                    </div>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="tel" class="form-control" name="differentPhone" id="differentPhone" placeholder="XXX-XXX-XXXX">-->
+            <!--</div>-->
+            <!--</div>-->
 
-                    <div class="form-group">
-                        <label class="col-sm-10 control-label"></label>
-                    </div>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-10 control-label"></label>-->
+            <!--</div>-->
 
-                    <div class="form-group">
-                        <label class="col-sm-13 control-label">Describe Product Manufactured/Provided</label>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label"></label>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-13 control-label">Describe Product Manufactured/Provided</label>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label"></label>-->
 
-                        <div class="col-sm-4">
-                                <textarea class="form-control" rows="3" name="describeInput"
-                                          id="describeInput"></textarea>
-                        </div>
-                    </div>
+            <!--<div class="col-sm-4">-->
+            <!--<textarea class="form-control" rows="3" name="describeInput"-->
+            <!--id="describeInput"></textarea>-->
+            <!--</div>-->
+            <!--</div>-->
 
-                    <div class="form-group">
-                        <label class="col-sm-10 control-label"></label>
-                    </div>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-10 control-label"></label>-->
+            <!--</div>-->
 
-                    <div class="form-group">
-                        <label class="col-sm-13 control-label">Current Quality Certifications (check all that
-                            apply)</label>
-                    </div>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-13 control-label">Current Quality Certifications (check all that-->
+            <!--apply)</label>-->
+            <!--</div>-->
 
-                    <div class="form-group">
-                        <label class="col-sm-1 control-label"></label>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-1 control-label"></label>-->
 
-                        <div class="col-sm-10">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="cert1" id="cert1" class="show-Option1">ISO9001
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    {{#if showOption1}}
-                        {{> certificationForm1}}
-                    {{/if}}
-                    <div class="form-group">
-                        <label class="col-sm-1 control-label"></label>
+            <!--<div class="col-sm-10">-->
+            <!--<div class="checkbox">-->
+            <!--<label>-->
+            <!--<input type="checkbox" name="cert1" id="cert1" class="show-Option1">ISO9001-->
+            <!--</label>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+                <!--{{#if showOption1}}-->
+            <!--{{> certificationForm1}}-->
+                <!--{{/if}}-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-1 control-label"></label>-->
 
-                        <div class="col-sm-4">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="cert2" id="cert2" class="show-Option2">ISO14001
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    {{#if showOption2}}
-                        {{> certificationForm2}}
-                    {{/if}}
-                    <div class="form-group">
-                        <label class="col-sm-1 control-label"></label>
+            <!--<div class="col-sm-4">-->
+            <!--<div class="checkbox">-->
+            <!--<label>-->
+            <!--<input type="checkbox" name="cert2" id="cert2" class="show-Option2">ISO14001-->
+            <!--</label>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+                <!--{{#if showOption2}}-->
+            <!--{{> certificationForm2}}-->
+                <!--{{/if}}-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-1 control-label"></label>-->
 
-                        <div class="col-sm-4">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="cert3" id="cert3" class="show-Option3">TS16949
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    {{#if showOption3}}
-                        {{> certificationForm3}}
-                    {{/if}}
-                    <div class="form-group">
-                        <label class="col-sm-1 control-label"></label>
+            <!--<div class="col-sm-4">-->
+            <!--<div class="checkbox">-->
+            <!--<label>-->
+            <!--<input type="checkbox" name="cert3" id="cert3" class="show-Option3">TS16949-->
+            <!--</label>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+                <!--{{#if showOption3}}-->
+            <!--{{> certificationForm3}}-->
+                <!--{{/if}}-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-1 control-label"></label>-->
 
-                        <div class="col-sm-4">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="cert4" id="cert4" class="show-Option4">Other
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    {{#if showOption4}}
-                        {{> certificationForm4}}
-                    {{/if}}
-                    <div class="form-group">
-                        <label class="col-sm-1 control-label"></label>
+            <!--<div class="col-sm-4">-->
+            <!--<div class="checkbox">-->
+            <!--<label>-->
+            <!--<input type="checkbox" name="cert4" id="cert4" class="show-Option4">Other-->
+            <!--</label>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+                <!--{{#if showOption4}}-->
+            <!--{{> certificationForm4}}-->
+                <!--{{/if}}-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-1 control-label"></label>-->
 
-                        <div class="col-sm-4">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="cert5" id="cert5" class="show-Option5">None
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    {{#if showOption5}}
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-                            <label class="col-sm-5 control-label">Do You Plan To Pursue Certification? If So
-                                When?</label>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label"></label>
+            <!--<div class="col-sm-4">-->
+            <!--<div class="checkbox">-->
+            <!--<label>-->
+            <!--<input type="checkbox" name="cert5" id="cert5" class="show-Option5">None-->
+            <!--</label>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+                <!--{{#if showOption5}}-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-1 control-label"></label>-->
+            <!--<label class="col-sm-5 control-label">Do You Plan To Pursue Certification? If So-->
+            <!--When?</label>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-3 control-label"></label>-->
 
-                            <div class="col-sm-4">
-                                <textarea class="form-control" rows="3" name="cert5Text" id="cert5Text"></textarea>
-                            </div>
-                        </div>
-                    {{/if}}
-                    <input type="submit" class="btn btn-lg btn-primary" name="submit" id="submit" value="Submit">
-                    <input type="button" class="btn btn-lg btn-danger" name="cancel" value="Cancel"
-                           onclick="history.go(-1);return true;"/>
-                </form>
-            </div>
+            <!--<div class="col-sm-4">-->
+            <!--<textarea class="form-control" rows="3" name="cert5Text" id="cert5Text"></textarea>-->
+            <!--</div>-->
+            <!--</div>-->
+                <!--{{/if}}-->
+            <!--<input type="submit" class="btn btn-lg btn-primary" name="submit" id="submit" value="Submit">-->
+            <!--<input type="button" class="btn btn-lg btn-danger" name="cancel" value="Cancel"-->
+            <!--onclick="history.go(-1);return true;"/>-->
+            <!--</form>-->
+            <!--</div>-->
 
         {{/if}}
     {{/if}}
@@ -1411,10 +1415,43 @@
 </template>
 
 <template name="registerEmail">
-    To our Valued Suppliers,
-    <br>
-    We have developed a web-based tool that has been designed to help us collect supplier profile data and also
-    automate performance feedback to our suppliers on a quarterly basis. This system will require that you designate
-    a point person to submit the information requested and also be the recipient of the quality and delivery
-    performance feedback that we will send to your designated staff each quarter via email.
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;To our Valued Suppliers,
+    <br><br>
+
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;We have developed a web-based tool that has been designed to help us collect supplier
+    profile data and also automate performance feedback to our suppliers on a quarterly basis. This system will require
+    that you designate a point person to submit the information requested and also be the recipient of the quality and
+    delivery performance feedback that we will send to your designated staff each quarter via email.<br><br>
+
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;We ask that you take approximately 5 minutes to fill out the profile survey and
+    submit it to us within the next week. Follow the instructions below to access the T&L Supplier site and submit
+    the profile for your company. Thank you in advance for your support.<br><br>
+
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. Go to https://thprcc.meteor.com<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. Enter the login information given below<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a. Username: supplier<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b. Password: apple1<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. Fill out the profile survey<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4. Click the Submit Button<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Once you have registered, your company will be able to receive quarterly performance
+    feedback and you may press the logout Button.<br><br>
+    Sincerely,<br>
+    <b>William J. Green</b><br>
+    Vice President - Sales and Marketing<br>
+    <img src="http://i.imgur.com/OqT0qCx.png" alt="Logo" height="95" width="144"><br>
+    770 Emerson Street<br>
+    Rochester, NY 14613<br>
+    Office 585 647-3717<br>
+    Fax 585 647-1126<br>
+    www.tandlautomatics.com<br>
+
+    <!--<p>{{message}}</p>-->
+    <!--<a href="{{url}}">{{title}}</a>-->
+</template>
+
+<template name="insertCompanyForm">
+    {{> quickForm schema="CompaniesSchema" id="insertCompanyForm" type="insert" collection="CompaniesTest"}}
+    <input type="button" class="btn btn-md btn-danger" name="cancel" value="Cancel"
+           onclick="history.go(-1);return true;"/>
+
 </template>
