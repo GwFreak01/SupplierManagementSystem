@@ -56,7 +56,7 @@
 
 <template name="login">
     <center>
-        <img src="http://i.imgur.com/OqT0qCx.png" alt="Logo" width="400" height="194" align="middle">
+        <img src="/TL_Logo.png" alt="Logo" width="400" height="194" align="middle">
         <br>
         <br>
         <br>
@@ -93,13 +93,11 @@
 <template name="home">
     {{#if currentUser}}
         <center>
-            <img src="http://i.imgur.com/OqT0qCx.png" alt="Logo" width="400" height="194" align="middle"><br>
+            <img src="/TL_Logo.png" alt="Logo" width="400" height="194" align="middle"><br>
         </center>
     {{else}}
         {{> login}}
     {{/if}}
-
-
 </template>
 
 <template name="navigation">
@@ -163,9 +161,9 @@
                     {{#each company}}
                         <tr class="company">
                             <td>{{companyName}}</td>
-                            <td>{{salesName}}</td>
-                            <td>{{salesPhone}}</td>
-                            <td>{{salesEmail}}</td>
+                            <td>{{salesPerson.name}}</td>
+                            <td>{{salesPerson.phone}}</td>
+                            <td>{{salesPerson.email}}</td>
                             <td>
                                 <input type="button" class="btn btn-warning" value="Edit"
                                        onclick="window.location.href='/companies/edit/{{_id}}'">
@@ -565,7 +563,8 @@
                         <label class="col-sm-2 control-label">Company Address</label>
 
                         <div class="col-sm-5 form-control-static">
-                            {{companyAddress}}
+                            {{companyAddress.street}} {{companyAddress.street2}}<br>
+                            {{companyAddress.city}}, {{companyAddress.state}} {{companyAddress.zipcode}}
                         </div>
                     </div>
 
@@ -580,21 +579,21 @@
                         <label class="col-sm-2 control-label">Name</label>
 
                         <div class="col-sm-4 form-control-static">
-                            {{salesName}}
+                            {{salesPerson.name}}
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">E-Mail</label>
 
                         <div class="col-sm-4 form-control-static">
-                            {{salesEmail}}
+                            {{salesPerson.email}}
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Phone</label>
 
                         <div class="col-sm-4 form-control-static">
-                            {{salesPhone}}
+                            {{salesPerson.phone}}
                         </div>
                     </div>
 
@@ -609,21 +608,21 @@
                         <label class="col-sm-2 control-label">Name</label>
 
                         <div class="col-sm-4 form-control-static">
-                            {{qualityName}}
+                            {{qualityPerson.name}}
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">E-Mail</label>
 
                         <div class="col-sm-4 form-control-static">
-                            {{qualityEmail}}
+                            {{qualityPerson.email}}
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Phone</label>
 
                         <div class="col-sm-4 form-control-static">
-                            {{qualityPhone}}
+                            {{qualityPerson.phone}}
                         </div>
                     </div>
 
@@ -638,21 +637,21 @@
                         <label class="col-sm-2 control-label">Name</label>
 
                         <div class="col-sm-4 form-control-static">
-                            {{logisticsName}}
+                            {{logisticsPerson.name}}
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">E-Mail</label>
 
                         <div class="col-sm-4 form-control-static">
-                            {{logisticsEmail}}
+                            {{logisticsPerson.email}}
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Phone</label>
 
                         <div class="col-sm-4 form-control-static">
-                            {{logisticsPhone}}
+                            {{logisticsPerson.phone}}
                         </div>
                     </div>
 
@@ -669,21 +668,21 @@
                             <label class="col-sm-2 control-label">Name</label>
 
                             <div class="col-sm-4 form-control-static">
-                                {{differentName}}
+                                {{differentPerson.name}}
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">E-Mail</label>
 
                             <div class="col-sm-4 form-control-static">
-                                {{differentEmail}}
+                                {{differentPerson.email}}
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">Phone</label>
 
                             <div class="col-sm-4 form-control-static">
-                                {{differentPhone}}
+                                {{differentPerson.phone}}
                             </div>
                         </div>
 
@@ -699,7 +698,7 @@
                         <label class="col-sm-2 control-label"></label>
 
                         <div class="col-sm-4">
-                            {{describeInput}}
+                            {{itemDescription}}
                         </div>
                     </div>
 
@@ -1078,113 +1077,115 @@
 <template name="addEventForm">
     {{#if currentUser}}
         {{#if isInRole 'admin,employee'}}
-            <div class="container">
-                <div class="col-md-12">
-                    <h1>New Event</h1>
-                    <br>
-                    <br>
+            {{> insertEventForm}}
+            <!--<div class="container">-->
+            <!--<div class="col-md-12">-->
+            <!--<h1>New Event</h1>-->
+            <!--<br>-->
+            <!--<br>-->
 
-                    <form class="form-horizontal">
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Company Name</label>
+            <!--<form class="form-horizontal">-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Company Name</label>-->
 
-                            <div class="col-sm-4">
-                                <select id="companySelect" name="companySelect" class="form-control">
-                                    {{#each company}}
-                                        <option value="{{companyName}}">{{companyName}}</option>
-                                    {{/each}}
-                                </select>
-                            </div>
-                        </div>
+            <!--<div class="col-sm-4">-->
+            <!--<select id="companySelect" name="companySelect" class="form-control">-->
+                <!--{{#each company}}-->
+            <!--<option value="{{companyName}}">{{companyName}}</option>-->
+                <!--{{/each}}-->
+            <!--</select>-->
+            <!--</div>-->
+            <!--</div>-->
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Date Initiated</label>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Date Initiated</label>-->
 
-                            <div class="col-sm-4">
-                                <input type="date" class="form-control" name="eventDate" id="eventItem">
-                            </div>
-                        </div>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="date" class="form-control" name="eventDate" id="eventItem">-->
+            <!--</div>-->
+            <!--</div>-->
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Type</label>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Type</label>-->
 
-                            <div class="col-sm-4">
-                                <select id="eventType" name="eventType" class="eventType form-control">
-                                    <option value="Quality">Quality</option>
-                                    <option value="Delivery">Delivery</option>
-                                </select>
+            <!--<div class="col-sm-4">-->
+            <!--<select id="eventType" name="eventType" class="eventType form-control">-->
+            <!--<option value="Quality">Quality</option>-->
+            <!--<option value="Delivery">Delivery</option>-->
+            <!--</select>-->
 
-                            </div>
-                        </div>
+            <!--</div>-->
+            <!--</div>-->
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">T&L Part Number</label>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">T&L Part Number</label>-->
 
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control" id="tlPartNumber" name="tlPartNumber">
-                            </div>
-                        </div>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="text" class="form-control" id="tlPartNumber" name="tlPartNumber">-->
+            <!--</div>-->
+            <!--</div>-->
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Purchase Order</label>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Purchase Order</label>-->
 
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control" id="purchaseOrder" name="purchaseOrder">
-                            </div>
-                        </div>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="text" class="form-control" id="purchaseOrder" name="purchaseOrder">-->
+            <!--</div>-->
+            <!--</div>-->
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Lot Number</label>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Lot Number</label>-->
 
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control" id="lotNumber" name="lotNumber">
-                            </div>
-                        </div>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="text" class="form-control" id="lotNumber" name="lotNumber">-->
+            <!--</div>-->
+            <!--</div>-->
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">CAR Number</label>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">CAR Number</label>-->
 
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control" id="carNumber" name="carNumber">
-                            </div>
-                        </div>
+            <!--<div class="col-sm-4">-->
+            <!--<input type="number" class="form-control" id="carNumber" name="carNumber">-->
+            <!--</div>-->
+            <!--</div>-->
 
-                        {{#if showDelivery}}
-                            {{> addDeliveryEventForm}}
-                        {{else}}
-                            {{> addQualityEventForm}}
-                        {{/if}}
+                <!--{{#if showDelivery}}-->
+            <!--{{> addDeliveryEventForm}}-->
+                <!--{{else}}-->
+            <!--{{> addQualityEventForm}}-->
+                <!--{{/if}}-->
 
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label">Problem Description</label>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label"></label>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-3 control-label">Problem Description</label>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label"></label>-->
 
-                            <div class="col-sm-4">
-                                <textarea class="form-control" rows="3" name="rootCause"
-                                          id="rootCause"></textarea>
-                            </div>
-                        </div>
+            <!--<div class="col-sm-4">-->
+            <!--<textarea class="form-control" rows="3" name="rootCause"-->
+            <!--id="rootCause"></textarea>-->
+            <!--</div>-->
+            <!--</div>-->
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Status</label>
+            <!--<div class="form-group">-->
+            <!--<label class="col-sm-2 control-label">Status</label>-->
 
-                            <div class="col-sm-4">
-                                <select id="statusOption" name="statusOption" class="form-control">
-                                    <option value="Open">Open</option>
-                                    <option value="Pending Action">Pending Action</option>
-                                    <option value="Closed">Closed</option>
-                                </select>
-                            </div>
-                        </div>
-                        <input type="submit" class="btn btn-lg btn-primary" name="submit" id="submit" value="Submit">
-                        <input type="button" class="btn btn-lg btn-danger" name="cancel" value="Cancel"
-                               onclick="history.go(-1);return true;"/>
+            <!--<div class="col-sm-4">-->
+            <!--<select id="statusOption" name="statusOption" class="form-control">-->
+            <!--<option value="Open">Open</option>-->
+            <!--<option value="Pending Action">Pending Action</option>-->
+            <!--<option value="Closed">Closed</option>-->
+            <!--</select>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<input type="submit" class="btn btn-lg btn-primary" name="submit" id="submit" value="Submit">-->
+            <!--<input type="button" class="btn btn-lg btn-danger" name="cancel" value="Cancel"-->
+            <!--onclick="history.go(-1);return true;"/>-->
 
-                    </form>
-                </div>
-            </div>
+            <!--</form>-->
+            <!--</div>-->
+            <!--</div>-->
+
         {{/if}}
     {{/if}}
 </template>
@@ -1450,7 +1451,66 @@
 </template>
 
 <template name="insertCompanyForm">
-    {{> quickForm schema="CompaniesSchema" id="insertCompanyForm" type="insert" collection="CompaniesTest"}}
+    {{#autoForm schema="CompaniesSchema" id="insertCompanyForm" type="insert" collection="CompaniesTest" resetOnSuccess=false}}
+        <fieldset>
+            {{> afQuickField name='companyName'}}
+            {{> afQuickField name='companyAddress.street'}}
+            {{> afQuickField name='companyAddress.street2'}}
+            {{> afQuickField name='companyAddress.city'}}
+            {{> afQuickField name='companyAddress.state'}}
+            {{> afQuickField name='companyAddress.zipcode'}}
+            {{> afQuickField name='salesPerson'}}
+            {{> afQuickField name='qualityPerson'}}
+            {{> afQuickField name='logisticsPerson'}}
+            {{> afQuickField name='differentPerson'}}
+            {{> afQuickField name='itemDescription'}}
+            {{#if normalOption}}
+                {{> afArrayField name='certification' omitFields="certification.$.other, certification.$.reason"}}
+            {{/if}}
+            {{#if otherOption}}
+                {{> afArrayField name='certification' omitFields="certification.$.reason"}}
+            {{/if}}
+            {{#if noneOption}}
+                {{> afArrayField name='certification' fields="certification.$.certType, certification.$.reason"}}
+
+            {{/if}}
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Add Person</button>
+                <button type="reset" class="btn btn-default">Reset Form</button>
+            </div>
+
+        </fieldset>
+    {{/autoForm}}
+    <!--{{> quickForm schema="CompaniesSchema" id="insertCompanyForm" type="insert" collection="CompaniesTest" resetOnSuccess=false}}-->
+    <input type="button" class="btn btn-md btn-danger" name="cancel" value="Cancel"
+           onclick="history.go(-1);return true;"/>
+
+</template>
+
+<template name="insertEventForm">
+    {{#autoForm schema="EventSchema" id="insertEventForm" type="insert" collection="EventsTest" resetOnSuccess=false}}
+        <fieldset>
+            {{> afQuickField name='companyName'}}
+            {{> afQuickField name='eventDate'}}
+            {{> afQuickField name='eventType'}}
+            {{> afQuickField name='tlPartNumber'}}
+            {{> afQuickField name='purchaseOrderNumber'}}
+            {{> afQuickField name='lotNumber'}}
+            {{> afQuickField name='carNumber'}}
+            {{#if showDelivery}}
+                {{> afQuickField name='requiredDate'}}
+                {{> afQuickField name='actualDate'}}
+            {{else}}
+                {{> afQuickField name='quantityReject'}}
+            {{/if}}
+            {{> afQuickField name='rootCause'}}
+            {{> afQuickField name='statusOption'}}
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Add Person</button>
+                <button type="reset" class="btn btn-default">Reset Form</button>
+            </div>
+        </fieldset>
+    {{/autoForm}}
     <input type="button" class="btn btn-md btn-danger" name="cancel" value="Cancel"
            onclick="history.go(-1);return true;"/>
 

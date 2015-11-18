@@ -6,11 +6,13 @@ EventList = new Mongo.Collection("events");
 
 CompaniesTest = new Mongo.Collection("companies_Test");
 
+EventsTest = new Mongo.Collection("events_test");
 
 CompaniesSchema = new SimpleSchema({
     companyName: {
         type: String,
         label: "Company Name",
+        //defaultValue: "cool corp",
         unique: true,
         index: true
     },
@@ -24,7 +26,8 @@ CompaniesSchema = new SimpleSchema({
     },
     "companyAddress.street2": {
         type: String,
-        label: "Street 2"
+        label: "Street 2",
+        optional: true
     },
     "companyAddress.city": {
         type: String,
@@ -32,10 +35,61 @@ CompaniesSchema = new SimpleSchema({
     },
     "companyAddress.state": {
         type: String,
-        allowedValues: ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"],
         autoform: {
-            afFieldInput: {
-                firstOption: "(Select a State)"
+            firstOption: "(Select a State)",
+            options: function () {
+                return [
+                    {label: "AL", value: "AL"},
+                    {label: "AK", value: "AK"},
+                    {label: "AZ", value: "AZ"},
+                    {label: "AR", value: "AR"},
+                    {label: "CA", value: "CA"},
+                    {label: "CO", value: "CO"},
+                    {label: "CT", value: "CT"},
+                    {label: "DE", value: "DE"},
+                    {label: "FL", value: "FL"},
+                    {label: "GA", value: "GA"},
+                    {label: "HI", value: "HI"},
+                    {label: "ID", value: "ID"},
+                    {label: "IL", value: "IL"},
+                    {label: "IN", value: "IN"},
+                    {label: "IA", value: "IA"},
+                    {label: "KS", value: "KS"},
+                    {label: "KY", value: "KY"},
+                    {label: "LA", value: "LA"},
+                    {label: "ME", value: "ME"},
+                    {label: "MD", value: "MD"},
+                    {label: "MA", value: "MA"},
+                    {label: "MI", value: "MI"},
+                    {label: "MN", value: "MN"},
+                    {label: "MS", value: "MS"},
+                    {label: "MO", value: "MO"},
+                    {label: "MT", value: "MT"},
+                    {label: "NE", value: "NE"},
+                    {label: "NV", value: "NV"},
+                    {label: "NH", value: "NH"},
+                    {label: "NJ", value: "NJ"},
+                    {label: "NM", value: "NM"},
+                    {label: "NY", value: "NY"},
+                    {label: "NC", value: "NC"},
+                    {label: "ND", value: "ND"},
+                    {label: "OH", value: "OH"},
+                    {label: "OK", value: "OK"},
+                    {label: "OR", value: "OR"},
+                    {label: "PA", value: "PA"},
+                    {label: "RI", value: "RI"},
+                    {label: "SC", value: "SC"},
+                    {label: "SD", value: "SD"},
+                    {label: "TN", value: "TN"},
+                    {label: "TX", value: "TX"},
+                    {label: "UT", value: "UT"},
+                    {label: "VT", value: "VT"},
+                    {label: "VA", value: "VA"},
+                    {label: "WA", value: "WA"},
+                    {label: "WV", value: "WV"},
+                    {label: "WI", value: "WI"},
+                    {label: "WY", value: "WY"}
+                ];
             }
         }
     },
@@ -49,15 +103,30 @@ CompaniesSchema = new SimpleSchema({
     },
     "salesPerson.name": {
         type: String,
-        label: "Name"
+        label: "Name",
+        autoform: {
+            afFieldInput: {
+                placeholder: "First, Last"
+            }
+        }
     },
     "salesPerson.email": {
         type: String,
-        label: "E-Mail"
+        label: "E-Mail",
+        regEx: SimpleSchema.RegEx.Email
     },
     "salesPerson.phone": {
         type: String,
-        label: "Phone"
+        label: "Phone",
+        autoform: {
+            afFieldInput: {
+                placeholder: "(XXX) XXX-XXXX"
+            }
+        }
+    },
+    "salesPerson.status": {
+        type: Boolean,
+        label: "Send Email Updates"
     },
     qualityPerson: {
         type: Object,
@@ -65,7 +134,12 @@ CompaniesSchema = new SimpleSchema({
     },
     "qualityPerson.name": {
         type: String,
-        label: "Name"
+        label: "Name",
+        autoform: {
+            afFieldInput: {
+                placeholder: "First, Last"
+            }
+        }
     },
     "qualityPerson.email": {
         type: String,
@@ -73,7 +147,16 @@ CompaniesSchema = new SimpleSchema({
     },
     "qualityPerson.phone": {
         type: String,
-        label: "Phone"
+        label: "Phone",
+        autoform: {
+            afFieldInput: {
+                placeholder: "(XXX) XXX-XXXX"
+            }
+        }
+    },
+    "qualityPerson.status": {
+        type: Boolean,
+        label: "Send Email Updates"
     },
     logisticsPerson: {
         type: Object,
@@ -81,7 +164,12 @@ CompaniesSchema = new SimpleSchema({
     },
     "logisticsPerson.name": {
         type: String,
-        label: "Name"
+        label: "Name",
+        autoform: {
+            afFieldInput: {
+                placeholder: "First, Last"
+            }
+        }
     },
     "logisticsPerson.email": {
         type: String,
@@ -89,7 +177,16 @@ CompaniesSchema = new SimpleSchema({
     },
     "logisticsPerson.phone": {
         type: String,
-        label: "Phone"
+        label: "Phone",
+        autoform: {
+            afFieldInput: {
+                placeholder: "(XXX) XXX-XXXX"
+            }
+        }
+    },
+    "logisticsPerson.status": {
+        type: Boolean,
+        label: "Send Email Updates"
     },
     differentPerson: {
         type: Object,
@@ -98,15 +195,33 @@ CompaniesSchema = new SimpleSchema({
     },
     "differentPerson.name": {
         type: String,
-        label: "Name"
+        label: "Name",
+        optional: true,
+        autoform: {
+            afFieldInput: {
+                placeholder: "First, Last"
+            }
+        }
     },
     "differentPerson.email": {
         type: String,
-        label: "E-Mail"
+        label: "E-Mail",
+        optional: true
     },
     "differentPerson.phone": {
         type: String,
-        label: "Phone"
+        label: "Phone",
+        optional: true,
+        autoform: {
+            afFieldInput: {
+                placeholder: "(XXX) XXX-XXXX"
+            }
+        }
+    },
+    "differentPerson.status": {
+        type: Boolean,
+        label: "Send Email Updates",
+        optional: true
     },
     itemDescription: {
         type: String,
@@ -130,6 +245,7 @@ CompaniesSchema = new SimpleSchema({
     },
     "certification.$.other": {
         type: String,
+        label: "(If Other) Certification Type",
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
@@ -139,9 +255,7 @@ CompaniesSchema = new SimpleSchema({
                     return "required";
                 }
             }
-        },
-        label: "(If Other) Certification Type"
-
+        }
     },
     "certification.$.expirationDate": {
         type: Date,
@@ -203,11 +317,18 @@ CompaniesSchema = new SimpleSchema({
     }
 });
 
-
-QualityEventSchema = new SimpleSchema({
+EventSchema = new SimpleSchema({
     companyName: {
         type: String,
-        label: "Company Name"
+        label: "Company Name",
+        autoform: {
+            firstOption: "(Select a Company)",
+            options: function () {
+                return CompaniesTest.find().map(function (c) {
+                    return {label: c.companyName, value: c.companyName};
+                })
+            }
+        }
     },
     eventDate: {
         type: Date,
@@ -215,7 +336,17 @@ QualityEventSchema = new SimpleSchema({
     },
     eventType: {
         type: String,
-        label: "Event Type"
+        label: "Event Type",
+        autoform: {
+            firstOption: "(Select an Event Type)",
+            options: function () {
+                return [
+                    {label: "Quality", value: "Quality"},
+                    {label: "Delivery", value: "Delivery"}
+                ];
+            }
+        }
+
     },
     tlPartNumber: {
         type: String,
@@ -235,54 +366,45 @@ QualityEventSchema = new SimpleSchema({
     },
     quantityReject: {
         type: Number,
-        label: "Quantity Rejected"
-    },
-    rootCause: {
-        type: String,
-        label: "Root Cause"
-    },
-    statusOption: {
-        type: String,
-        label: "Status"
-    }
-});
+        label: "Quantity Rejected",
+        optional: true,
+        custom: function () {
+            if (Meteor.isClient) {
+                var docId = AutoForm.getFieldValue("eventType");
 
-DeliveryEventSchema = new SimpleSchema({
-    companyName: {
-        type: String,
-        label: "Company Name"
-    },
-    eventDate: {
-        type: Date,
-        label: "Event Date"
-    },
-    eventType: {
-        type: String,
-        label: "Event Type"
-    },
-    tlPartNumber: {
-        type: String,
-        label: "T&L Part Number"
-    },
-    purchaseOrderNumber: {
-        type: String,
-        label: "Purchase Order Number"
-    },
-    lotNumber: {
-        type: String,
-        label: "Lot Number"
-    },
-    carNumber: {
-        type: String,
-        label: "CAR Number"
+                if ((docId === "Quality") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                    return "required";
+                }
+            }
+        }
     },
     requiredDate: {
         type: Date,
-        label: "Required Delivery Date"
+        label: "Required Delivery Date",
+        optional: true,
+        custom: function () {
+            if (Meteor.isClient) {
+                var docId = AutoForm.getFieldValue("eventType");
+
+                if ((docId === "Delivery") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                    return "required";
+                }
+            }
+        }
     },
     actualDate: {
         type: Date,
-        label: "Actual Delivery Date"
+        label: "Actual Delivery Date",
+        optional: true,
+        custom: function () {
+            if (Meteor.isClient) {
+                var docId = AutoForm.getFieldValue("eventType");
+
+                if ((docId === "Delivery") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                    return "required";
+                }
+            }
+        }
     },
     rootCause: {
         type: String,
@@ -290,11 +412,25 @@ DeliveryEventSchema = new SimpleSchema({
     },
     statusOption: {
         type: String,
-        label: "Status"
+        label: "Status",
+        allowedValues: ["Open", "Pending", "Closed"],
+        autoform: {
+            firstOption: "(Select a Status)",
+            options: function () {
+                return [
+                    {label: "Open", value: "Open"},
+                    {label: "Pending", value: "Pending"},
+                    {label: "Closed", value: "Closed"}
+                ];
+            }
+        }
     }
 });
 
+
+
 CompaniesTest.attachSchema(CompaniesSchema);
+EventsTest.attachSchema(EventSchema);
 
 //CompaniesTest.insert({
 //    companyName: "T&L Automatics",
@@ -332,6 +468,50 @@ if (Meteor.isClient) {
     Meteor.subscribe('theEvents');
     Meteor.subscribe('userList');
     Meteor.subscribe('companies_Test');
+    AutoForm.hooks({
+        insertCompanyForm: {
+            onSuccess: function (insert, result) {
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-full-width",
+                    "preventDuplicates": true,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                if (Roles.userIsInRole(Meteor.userId(), 'supplier')) {
+
+                    var options = {
+                        from: "sms@tandlautomatics.com",
+                        to: "gwfreak01@gmail.com",
+                        subject: "New Company",
+                        text: AutoForm.getFieldValue("companyName", "insertCompanyForm") + " has just registered"
+                    };
+                    Meteor.call("sendMail", options);
+                    toastr.success("Thank you for registering!", "Registration Success");
+                    Meteor.logout();
+                    Router.go('/');
+                }
+                else {
+                    Meteor.call("sendMail", options);
+                    toastr.success("Thank you for registering!", "Registration Success");
+                    Router.go('/companies');
+                }
+
+            }
+
+        }
+    })
     Template.login.events({
         'submit form': function (event) {
             event.preventDefault();
@@ -479,8 +659,11 @@ if (Meteor.isClient) {
             }
         }),
         Template.companyListDisplay.helpers({
+            //'company': function () {
+            //    return CompanyList.find({}, {sort: {companyName: 1}});
+            //},
             'company': function () {
-                return CompanyList.find({}, {sort: {companyName: 1}});
+                return CompaniesTest.find({}, {sort: {companyName: 1}});
             },
             'selectedClass': function () {
                 var companyID = this._id;
@@ -1245,29 +1428,143 @@ if (Meteor.isClient) {
         }),
         Template.registerEmail.events({}),
         Template.registerEmail.helpers({}),
-        Template.insertCompanyForm.events({
-            'submit form': function () {
-                var insertFormHook = {
-                    onSuccess: function (insert, result) {
-                        alert("You have successfully registered!");
-                        if (Roles.userIsInRole(this.userId, "supplier")) {
-                            Meteor.logout();
-                        }
-                        Router.go('/');
-                    }
-                };
-                AutoForm.hooks({
-                    insertCompanyForm: insertFormHook
-                });
-                //AutoForm.addHooks()
-                //alert("You have successfully registered!");
-                //                    if (Roles.userIsInRole(this.userId, "supplier")) {
-                //                        Meteor.logout();
-                //                    }
-                //                    Router.go('/');
+        Template.insertCompanyForm.helpers({
+            normalOption: function () {
+                var docId = AutoForm.getFieldValue("certification.0.certType");
+                if ((docId != "Other") && (docId != "None")) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            otherOption: function () {
+                var docId = AutoForm.getFieldValue("certification.0.certType");
+                if (docId == "Other") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            noneOption: function () {
+                var docId = AutoForm.getFieldValue("certification.0.certType");
+                if (docId == "None") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }),
+        Template.insertEventForm.helpers({
+            showDelivery: function () {
+                var docId = AutoForm.getFieldValue("eventType");
+                if (docId == "Delivery") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
         })
-
+    //,
+    //Template.insertCompanyForm.events({
+    //    'submit form': function () {
+    //        event.preventDefault();
+    //        var insertFormHook = {
+    //            after: {
+    //                // Replace `formType` with the form `type` attribute to which this hook applies
+    //                insert: function (error, result) {
+    //                    console.log(result);
+    //                    toastr.options = {
+    //                        "closeButton": false,
+    //                        "debug": false,
+    //                        "newestOnTop": false,
+    //                        "progressBar": false,
+    //                        "positionClass": "toast-top-full-width",
+    //                        "preventDuplicates": true,
+    //                        "onclick": null,
+    //                        "showDuration": "300",
+    //                        "hideDuration": "1000",
+    //                        "timeOut": "5000",
+    //                        "extendedTimeOut": "1000",
+    //
+    //                        "showEasing": "swing",
+    //                        "hideEasing": "linear",
+    //                        "showMethod": "fadeIn",
+    //                        "hideMethod": "fadeOut"
+    //                    };
+    //                    if (error) {
+    //                        console.log("Insert Error:", error);
+    //                    }
+    //                    else {
+    //                        if (Roles.userIsInRole(this.userId, "supplier")) {
+    //                            toastr.success("Thank you for registering!", "Registration Success");
+    //                            Meteor.logout();
+    //                            Router.go('/');
+    //                            return result;
+    //                            console.log("Insert Result:", result);
+    //                        }
+    //                        else {
+    //                            toastr.success("Thank you for registering!", "Registration Success");
+    //                            Router.go('/');
+    //                            return result;
+    //                            console.log("Insert Result:", result);
+    //                        }
+    //                    }
+    //                }
+    //            },
+    //            //onSuccess: function (insert, result) {
+    //            //    toastr.options = {
+    //            //        "closeButton": false,
+    //            //        "debug": false,
+    //            //        "newestOnTop": false,
+    //            //        "progressBar": false,
+    //            //        "positionClass": "toast-top-full-width",
+    //            //        "preventDuplicates": true,
+    //            //        "onclick": null,
+    //            //        "showDuration": "300",
+    //            //        "hideDuration": "1000",
+    //            //        "timeOut": "5000",
+    //            //        "extendedTimeOut": "1000",
+    //            //
+    //            //        "showEasing": "swing",
+    //            //        "hideEasing": "linear",
+    //            //        "showMethod": "fadeIn",
+    //            //        "hideMethod": "fadeOut"
+    //            //    };
+    //            //    if (Roles.userIsInRole(this.userId, "supplier")) {
+    //            //        toastr.success("Thank you for registering!", "Registration Success");
+    //            //        Meteor.logout();
+    //            //        Router.go('/');
+    //            //    }
+    //            //    else {
+    //            //        toastr.success("Thank you for registering!", "Registration Success");
+    //            //        Router.go('/');
+    //            //    }
+    //            //
+    //            //}
+    //        };
+    //        AutoForm.hooks({
+    //            insertCompanyForm: insertFormHook,
+    //            insertCompanyForm: {
+    //                onSuccess: function (operation, result, template) {
+    //
+    //                },
+    //                onError: function () {
+    //
+    //                }
+    //            }
+    //        });
+    //        //AutoForm.addHooks()
+    //        //alert("You have successfully registered!");
+    //        //                    if (Roles.userIsInRole(this.userId, "supplier")) {
+    //        //                        Meteor.logout();
+    //        //                    }
+    //        //                    Router.go('/');
+    //    }
+    //})
 }
 
 if (Meteor.isServer) {
@@ -1281,11 +1578,9 @@ if (Meteor.isServer) {
             ];
 
             _.each(users, function (user) {
-                var id;
-                var pass = "apple1";
-                id = Accounts.createUser({
+                var id = Accounts.createUser({
                     username: user.username,
-                    password: pass,
+                    password: "apple1",
                     profile: {name: user.name}
                 });
                 if (user.roles.length > 0) {
@@ -1326,7 +1621,7 @@ if (Meteor.isServer) {
 
     Meteor.publish('companies_Test', function () {
         if (Roles.userIsInRole(this.userId, ['admin', 'employee'])) {
-            //var currentUserID = this.userId;
+            var currentUserID = this.userId;
             return CompaniesTest.find({});
         }
         else {
@@ -1345,6 +1640,11 @@ if (Meteor.isServer) {
             return;
         }
     });
+
+    Meteor.publish(null, function () {
+        return Meteor.roles.find({})
+    });
+
     CompaniesTest.allow({
         'insert': function (userId, doc) {
             return true;
@@ -1417,7 +1717,7 @@ if (Meteor.isServer) {
         'removeCompanyData': function (selectedCompany) {
             var currentUserID = Meteor.userId();
             if (Roles.userIsInRole(currentUserID, 'admin')) {
-                CompanyList.remove({_id: selectedCompany});
+                CompaniesTest.remove({_id: selectedCompany});
             }
         },
         'updateCompanyName': function (documentID, companyItem) {
@@ -1735,23 +2035,27 @@ Router.route('/newCompanyRegistration', {
 Router.route('/companies', {
     waitOn: function () {
         // waitOn makes sure that this publication is ready before rendering your template
-        return Meteor.subscribe("theCompanies");
+        return Meteor.subscribe("companies_Test");
     }
 });
 
 Router.route('/companies/newCompany', {
-    template: 'addCompanyForm'
+    template: 'addCompanyForm',
+    data: function () {
+        // waitOn makes sure that this publication is ready before rendering your template
+        return Meteor.subscribe("companies_Test", this._id);
+    }
 });
 
 Router.route('/companies/details/:_id', {
     template: 'detailCompany',
     waitOn: function () {
         // waitOn makes sure that this publication is ready before rendering your template
-        return Meteor.subscribe("theCompanies");
+        return Meteor.subscribe("companies_Test");
     },
     data: function () {
         var currentList = this.params._id;
-        return CompanyList.findOne({_id: currentList});
+        return CompaniesTest.findOne({_id: currentList});
     }
 });
 
@@ -1759,7 +2063,7 @@ Router.route('/companies/edit/:_id', {
     template: 'editCompany',
     waitOn: function () {
         // waitOn makes sure that this publication is ready before rendering your template
-        return Meteor.subscribe("theCompanies");
+        return Meteor.subscribe("companies_Test");
     },
     data: function () {
         var currentList = this.params._id;
