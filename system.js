@@ -95,7 +95,8 @@ CompaniesSchema = new SimpleSchema({
     },
     "companyAddress.zipcode": {
         type: String,
-        label: "ZIP"
+        label: "ZIP",
+        regEx: SimpleSchema.RegEx.ZipCode
     },
     salesPerson: {
         type: Object,
@@ -120,13 +121,13 @@ CompaniesSchema = new SimpleSchema({
         label: "Phone",
         autoform: {
             afFieldInput: {
-                placeholder: "(XXX) XXX-XXXX"
+                placeholder: "XXX-XXX-XXXX"
             }
         }
     },
     "salesPerson.status": {
         type: Boolean,
-        label: "Send Email Updates"
+        label: "Check here for this person to receive the Quarterly Performance Reports"
     },
     qualityPerson: {
         type: Object,
@@ -143,20 +144,21 @@ CompaniesSchema = new SimpleSchema({
     },
     "qualityPerson.email": {
         type: String,
-        label: "E-Mail"
+        label: "E-Mail",
+        regEx: SimpleSchema.RegEx.Email
     },
     "qualityPerson.phone": {
         type: String,
         label: "Phone",
         autoform: {
             afFieldInput: {
-                placeholder: "(XXX) XXX-XXXX"
+                placeholder: "XXX-XXX-XXXX"
             }
         }
     },
     "qualityPerson.status": {
         type: Boolean,
-        label: "Send Email Updates"
+        label: "Check here for this person to receive the Quarterly Performance Reports"
     },
     logisticsPerson: {
         type: Object,
@@ -173,20 +175,21 @@ CompaniesSchema = new SimpleSchema({
     },
     "logisticsPerson.email": {
         type: String,
-        label: "E-Mail"
+        label: "E-Mail",
+        regEx: SimpleSchema.RegEx.Email
     },
     "logisticsPerson.phone": {
         type: String,
         label: "Phone",
         autoform: {
             afFieldInput: {
-                placeholder: "(XXX) XXX-XXXX"
+                placeholder: "XXX-XXX-XXXX"
             }
         }
     },
     "logisticsPerson.status": {
         type: Boolean,
-        label: "Send Email Updates"
+        label: "Check here for this person to receive the Quarterly Performance Reports"
     },
     differentPerson: {
         type: Object,
@@ -206,7 +209,8 @@ CompaniesSchema = new SimpleSchema({
     "differentPerson.email": {
         type: String,
         label: "E-Mail",
-        optional: true
+        optional: true,
+        regEx: SimpleSchema.RegEx.Email
     },
     "differentPerson.phone": {
         type: String,
@@ -214,18 +218,18 @@ CompaniesSchema = new SimpleSchema({
         optional: true,
         autoform: {
             afFieldInput: {
-                placeholder: "(XXX) XXX-XXXX"
+                placeholder: "XXX-XXX-XXXX"
             }
         }
     },
     "differentPerson.status": {
         type: Boolean,
-        label: "Send Email Updates",
+        label: "Check here for this person to receive the Quarterly Performance Reports",
         optional: true
     },
     itemDescription: {
         type: String,
-        label: "Item Description"
+        label: "Describe Product Manufactured/Provided"
     },
     certification: {
         type: [Object],
@@ -234,18 +238,26 @@ CompaniesSchema = new SimpleSchema({
     },
     "certification.$.certType": {
         type: String,
-        allowedValues: ["ISO9001", "ISO14001", "TS16949", "Other", "None"],
         autoform: {
             afFieldInput: {
-                firstOption: "(Select a Certification Type)"
+                firstOption: "(Select a Certification Type)",
+                options: function () {
+                    return [
+                        {label: "ISO9001", value: "ISO9001"},
+                        {label: "ISO14001", value: "ISO14001"},
+                        {label: "TS16949", value: "TS16949"},
+                        {label: "Other", value: "Other"},
+                        {label: "None", value: "None"}
+                    ];
+                }
             }
         },
-        label: "Certification Type"
+        label: "Type"
 
     },
     "certification.$.other": {
         type: String,
-        label: "(If Other) Certification Type",
+        label: "(If Other) Type",
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
@@ -259,7 +271,7 @@ CompaniesSchema = new SimpleSchema({
     },
     "certification.$.expirationDate": {
         type: Date,
-        label: "Certificate Expiration Date",
+        label: "Expiration Date",
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
@@ -413,7 +425,6 @@ EventSchema = new SimpleSchema({
     statusOption: {
         type: String,
         label: "Status",
-        allowedValues: ["Open", "Pending", "Closed"],
         autoform: {
             firstOption: "(Select a Status)",
             options: function () {
@@ -569,7 +580,7 @@ if (Meteor.isClient) {
                     title: "Amazing stuff, click me !"
                 };
 
-                var html = Blaze.toHTMLWithData(Template.registerEmail, dataContext);
+                var html = Blaze.toHTML(Template.registerEmail);
                 var options = {
                     from: 'sms@tandlautomatics.com',
                     to: document.getElementById("emailInvite").value,
@@ -589,7 +600,8 @@ if (Meteor.isClient) {
             }
         }),
         Template.companyListDisplay.events({
-            'click .company': function () {
+            'click .company': function (e) {
+                e.stopPropagation();
                 var companyID = this._id;
                 if (companyID == null) {
                     Router.go("/companies");
@@ -599,7 +611,10 @@ if (Meteor.isClient) {
                     Session.set('selectedCompany', companyID);
                 }
             },
-            'click .btn-danger': function () {
+            'click .btn-danger': function (e) {
+                var companyID = this._id;
+                Session.set('selectedCompany', companyID);
+                e.stopPropagation();
                 var selectedCompany = Session.get('selectedCompany');
                 var confirm = window.confirm("Delete this Company?");
                 if (confirm) {
@@ -1569,6 +1584,7 @@ if (Meteor.isClient) {
 
 if (Meteor.isServer) {
     Meteor.startup(function () {
+        process.env.MAIL_URL = 'smtp://postmaster%40sandbox9a11769c25e04579a3d65d9e8f4e20cd.mailgun.org:b54cb40a370534e4f1ff467f7e836cf3@smtp.mailgun.org:587';
         if (!Meteor.users.findOne()) {
             var users = [
                 {name: "Admin User", username: "admin", roles: ['admin']},
@@ -2010,6 +2026,7 @@ if (Meteor.isServer) {
 
         },
         'sendMail': function (options) {
+            this.unblock();
             Email.send(options);
         }
 

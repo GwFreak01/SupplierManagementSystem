@@ -1062,9 +1062,9 @@
                             <td>{{eventType}}</td>
                             <td>{{statusOption}}</td>
                             <td>
-                                <input type="button" class="btn btn-warning" value="Edit"
+                                <input type="button" id="editButton" class="btn btn-warning" value="Edit"
                                        onclick="window.location.href='/events/edit/{{_id}}'">
-                                <input type="button" class="btn btn-danger" value="Remove"></td>
+                                <input type="button" id="removeButton" class="btn btn-danger" value="Remove"></td>
                         </tr>
                     {{/each}}
                     </tbody>
@@ -1428,7 +1428,7 @@
     submit it to us within the next week. Follow the instructions below to access the T&L Supplier site and submit
     the profile for your company. Thank you in advance for your support.<br><br>
 
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. Go to https://thprcc.meteor.com<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. Go to http://107.170.167.85/<br>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. Enter the login information given below<br>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a. Username: supplier<br>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b. Password: apple1<br>
@@ -1439,7 +1439,7 @@
     Sincerely,<br>
     <b>William J. Green</b><br>
     Vice President - Sales and Marketing<br>
-    <img src="http://i.imgur.com/OqT0qCx.png" alt="Logo" height="95" width="144"><br>
+    <img src="/public/TL_Logo.png" alt="Logo" height="95" width="144"><br>
     770 Emerson Street<br>
     Rochester, NY 14613<br>
     Office 585 647-3717<br>
@@ -1454,37 +1454,23 @@
     {{#autoForm schema="CompaniesSchema" id="insertCompanyForm" type="insert" collection="CompaniesTest" resetOnSuccess=false}}
         <fieldset>
             {{> afQuickField name='companyName'}}
-            {{> afQuickField name='companyAddress.street'}}
-            {{> afQuickField name='companyAddress.street2'}}
-            {{> afQuickField name='companyAddress.city'}}
-            {{> afQuickField name='companyAddress.state'}}
-            {{> afQuickField name='companyAddress.zipcode'}}
+            {{> afQuickField name='companyAddress'}}
             {{> afQuickField name='salesPerson'}}
             {{> afQuickField name='qualityPerson'}}
             {{> afQuickField name='logisticsPerson'}}
             {{> afQuickField name='differentPerson'}}
             {{> afQuickField name='itemDescription'}}
-            {{#if normalOption}}
-                {{> afArrayField name='certification' omitFields="certification.$.other, certification.$.reason"}}
-            {{/if}}
-            {{#if otherOption}}
-                {{> afArrayField name='certification' omitFields="certification.$.reason"}}
-            {{/if}}
-            {{#if noneOption}}
-                {{> afArrayField name='certification' fields="certification.$.certType, certification.$.reason"}}
 
-            {{/if}}
+
+            {{> afQuickField name='certification'}}
+
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">Add Person</button>
-                <button type="reset" class="btn btn-default">Reset Form</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Cancel</button>
             </div>
 
         </fieldset>
     {{/autoForm}}
-    <!--{{> quickForm schema="CompaniesSchema" id="insertCompanyForm" type="insert" collection="CompaniesTest" resetOnSuccess=false}}-->
-    <input type="button" class="btn btn-md btn-danger" name="cancel" value="Cancel"
-           onclick="history.go(-1);return true;"/>
-
 </template>
 
 <template name="insertEventForm">
@@ -1506,8 +1492,8 @@
             {{> afQuickField name='rootCause'}}
             {{> afQuickField name='statusOption'}}
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">Add Person</button>
-                <button type="reset" class="btn btn-default">Reset Form</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="button" class="btn btn-danger">Cancel</button>
             </div>
         </fieldset>
     {{/autoForm}}
