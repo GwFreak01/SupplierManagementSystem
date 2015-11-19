@@ -27,4 +27,8 @@ spacebars
 check
 accounts-base
 alanning:roles
-force-ssl
+aldeed:autoform
+aldeed:collection2
+aldeed:simple-schema
+aldeed:delete-button
+chrismbeckett:toastr
