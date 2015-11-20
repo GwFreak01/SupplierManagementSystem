@@ -6,7 +6,7 @@ EventList = new Mongo.Collection("events");
 
 CompaniesTest = new Mongo.Collection("companies_Test");
 
-EventsTest = new Mongo.Collection("events_test");
+EventsTest = new Mongo.Collection("events_Test");
 
 CompaniesSchema = new SimpleSchema({
     companyName: {
@@ -439,7 +439,6 @@ EventSchema = new SimpleSchema({
 });
 
 
-
 CompaniesTest.attachSchema(CompaniesSchema);
 EventsTest.attachSchema(EventSchema);
 
@@ -479,6 +478,7 @@ if (Meteor.isClient) {
     Meteor.subscribe('theEvents');
     Meteor.subscribe('userList');
     Meteor.subscribe('companies_Test');
+    Meteor.subscribe('events_Test');
     AutoForm.hooks({
         insertCompanyForm: {
             onSuccess: function (insert, result) {
@@ -514,7 +514,6 @@ if (Meteor.isClient) {
                     Router.go('/');
                 }
                 else {
-                    Meteor.call("sendMail", options);
                     toastr.success("Thank you for registering!", "Registration Success");
                     Router.go('/companies');
                 }
@@ -522,7 +521,37 @@ if (Meteor.isClient) {
             }
 
         }
-    })
+    });
+    AutoForm.hooks({
+        insertEventForm: {
+            onSuccess: function (insert, result) {
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-full-width",
+                    "preventDuplicates": true,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                Router.go('/events');
+
+                toastr.success("Successfully Added New Event", "Event Submit Success");
+
+
+            }
+
+        }
+    });
     Template.login.events({
         'submit form': function (event) {
             event.preventDefault();
@@ -610,6 +639,12 @@ if (Meteor.isClient) {
                     Router.go("/companies/details/" + this._id);
                     Session.set('selectedCompany', companyID);
                 }
+            },
+            'click .btn-warning': function (e) {
+                var companyID = this._id;
+                Session.set('selectedCompany', companyID);
+                e.stopPropagation();
+                Router.go("/companies/edit/" + companyID);
             },
             'click .btn-danger': function (e) {
                 var companyID = this._id;
@@ -912,6 +947,13 @@ if (Meteor.isClient) {
         }),
         Template.detailCompany.events({}),
         Template.detailCompany.helpers({
+            '[name=insertCompanyForm]': function () {
+                return CompaniesTest.findOne({_id: this._id});
+            },
+            'getcompanyAddress': function () {
+                var company = CompaniesTest.findOne({_id: this._id});
+                return (company.street + " " + company.street2 + ", " + company.city + ", " + company.state + " " + company.zipcode);
+            },
             'showOption1': function () {
                 if (CompanyList.find({_id: this._id}).fetch()[0].cert[0].certStatus == true) {
                     return true;
@@ -992,166 +1034,167 @@ if (Meteor.isClient) {
 
         }),
         Template.editCompany.events({
-            'keyup [name=companyItem], change [name=companyItem]': function (event) {
-                var documentID = this._id;
-                var companyItem = event.target.value;
-                var companyType = document;
-                console.log(event.target.id);
-                if ((event.which == 13) || (event.which == 27)) {
-                    $(event.target).blur();
-                }
-                if (event.target.id == "companyName") {
-                    Meteor.call('updateCompanyName', documentID, companyItem);
-                }
-                if (event.target.id == "companyAddress") {
-                    Meteor.call('updateCompanyAddress', documentID, companyItem);
-                }
-                if (event.target.id == "salesName") {
-                    Meteor.call('updateSalesName', documentID, companyItem);
-                }
-                if (event.target.id == "salesEmail") {
-                    Meteor.call('updateSalesEmail', documentID, companyItem);
-                }
-                if (event.target.id == "salesPhone") {
-                    Meteor.call('updateSalesPhone', documentID, companyItem);
-                }
-                if (event.target.id == "qualityName") {
-                    Meteor.call('updateQualityName', documentID, companyItem);
-                }
-                if (event.target.id == "qualityEmail") {
-                    Meteor.call('updateQualityEmail', documentID, companyItem);
-                }
-                if (event.target.id == "qualityPhone") {
-                    Meteor.call('updateQualityPhone', documentID, companyItem);
-                }
-                if (event.target.id == "logisticsName") {
-                    Meteor.call('updateSalesName', documentID, companyItem);
-                }
-                if (event.target.id == "logisticsEmail") {
-                    Meteor.call('updateSalesEmail', documentID, companyItem);
-                }
-                if (event.target.id == "logisticsPhone") {
-                    Meteor.call('updateSalesPhone', documentID, companyItem);
-                }
-                if (event.target.id == "differentName") {
-                    Meteor.call('updateQualityName', documentID, companyItem);
-                }
-                if (event.target.id == "differentEmail") {
-                    Meteor.call('updateQualityEmail', documentID, companyItem);
-                }
-                if (event.target.id == "differentPhone") {
-                    Meteor.call('updateQualityPhone', documentID, companyItem);
-                }
-                if (event.target.id == "describeInput") {
-                    Meteor.call('updateDescribeInput', documentID, companyItem);
-                }
-                if (event.target.id == "expirationDate1") {
-                    Meteor.call('updateExpirationDate1', documentID, companyItem);
-                }
-                if (event.target.id == "certNumber1") {
-                    Meteor.call('updateCertNumber1', documentID, companyItem);
-                }
-                if (event.target.id == "registrar1") {
-                    Meteor.call('updateRegistrar1', documentID, companyItem);
-                }
-                if (event.target.id == "expirationDate2") {
-                    Meteor.call('updateExpirationDate2', documentID, companyItem);
-                }
-                if (event.target.id == "certNumber2") {
-                    Meteor.call('updateCertNumber2', documentID, companyItem);
-                }
-                if (event.target.id == "registrar2") {
-                    Meteor.call('updateRegistrar2', documentID, companyItem);
-                }
-                if (event.target.id == "expirationDate3") {
-                    Meteor.call('updateExpirationDate3', documentID, companyItem);
-                }
-                if (event.target.id == "certNumber3") {
-                    Meteor.call('updateCertNumber3', documentID, companyItem);
-                }
-                if (event.target.id == "registrar3") {
-                    Meteor.call('updateRegistrar3', documentID, companyItem);
-                }
-                if (event.target.id == "certType4") {
-                    Meteor.call('updateCertType4', documentID, companyItem);
-                }
-                if (event.target.id == "expirationDate4") {
-                    Meteor.call('updateExpirationDate4', documentID, companyItem);
-                }
-                if (event.target.id == "certNumber4") {
-                    Meteor.call('updateCertNumber4', documentID, companyItem);
-                }
-                if (event.target.id == "registrar4") {
-                    Meteor.call('updateRegistrar4', documentID, companyItem);
-                }
-                if (event.target.id == "cert5Text") {
-                    Meteor.call('updateCert5Text', documentID, companyItem);
-                }
-            },
-            'click .show-Option1': function () {
-                var documentID = this._id;
-                Session.set('showPullDown1', event.target.checked);
-                if (Session.get("showPullDown1") == false) {
-                    Meteor.call('updateExpirationDate1', documentID, null);
-                    Meteor.call('updateCertNumber1', documentID, null);
-                    Meteor.call('updateRegistrar1', documentID, null);
-                    Meteor.call('updateCertStatus1', documentID, false);
-                }
-                else {
-                    Meteor.call('updateCertStatus1', documentID, true);
-                }
-            },
-            'click .show-Option2': function () {
-                var documentID = this._id;
-                Session.set('showPullDown2', event.target.checked);
-                if (Session.get("showPullDown2") == false) {
-                    Meteor.call('updateExpirationDate2', documentID, null);
-                    Meteor.call('updateCertNumber2', documentID, null);
-                    Meteor.call('updateRegistrar2', documentID, null);
-                    Meteor.call('updateCertStatus2', documentID, false);
-                }
-                else {
-                    Meteor.call('updateCertStatus2', documentID, true);
-                }
-            },
-            'click .show-Option3': function () {
-                var documentID = this._id;
-                Session.set('showPullDown3', event.target.checked);
-                if (Session.get("showPullDown3") == false) {
-                    Meteor.call('updateExpirationDate3', documentID, null);
-                    Meteor.call('updateCertNumber3', documentID, null);
-                    Meteor.call('updateRegistrar3', documentID, null);
-                    Meteor.call('updateCertStatus3', documentID, false);
-                }
-                else {
-                    Meteor.call('updateCertStatus3', documentID, true);
-                }
-            },
-            'click .show-Option4': function () {
-                var documentID = this._id;
-                Session.set('showPullDown4', event.target.checked);
-                if (Session.get("showPullDown4") == false) {
-                    Meteor.call('updateCertType4', documentID, null);
-                    Meteor.call('updateExpirationDate4', documentID, null);
-                    Meteor.call('updateCertNumber4', documentID, null);
-                    Meteor.call('updateRegistrar4', documentID, null);
-                    Meteor.call('updateCertStatus4', documentID, false);
-                }
-                else {
-                    Meteor.call('updateCertStatus4', documentID, true);
-                }
-            },
-            'click .show-Option5': function () {
-                var documentID = this._id;
-                Session.set('showPullDown5', event.target.checked);
-                if (Session.get("showPullDown5") == false) {
-                    Meteor.call('updateCert5Text', documentID, null);
-                    Meteor.call('updateCertStatus5', documentID, false);
-                }
-                else {
-                    Meteor.call('updateCertStatus5', documentID, true);
-                }
-            }
+            //'keyup [name=companyItem], change [name=companyItem]': function (event) {
+            //    var documentID = this._id;
+            //    var companyItem = event.target.value;
+            //    var companyType = document;
+            //    console.log(event.target.id);
+            //    if ((event.which == 13) || (event.which == 27)) {
+            //        $(event.target).blur();
+            //    }
+            //    if (event.target.id == "companyName") {
+            //        Meteor.call('updateCompanyName', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "companyAddress") {
+            //        Meteor.call('updateCompanyAddress', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "salesName") {
+            //        Meteor.call('updateSalesName', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "salesEmail") {
+            //        Meteor.call('updateSalesEmail', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "salesPhone") {
+            //        Meteor.call('updateSalesPhone', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "qualityName") {
+            //        Meteor.call('updateQualityName', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "qualityEmail") {
+            //        Meteor.call('updateQualityEmail', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "qualityPhone") {
+            //        Meteor.call('updateQualityPhone', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "logisticsName") {
+            //        Meteor.call('updateSalesName', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "logisticsEmail") {
+            //        Meteor.call('updateSalesEmail', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "logisticsPhone") {
+            //        Meteor.call('updateSalesPhone', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "differentName") {
+            //        Meteor.call('updateQualityName', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "differentEmail") {
+            //        Meteor.call('updateQualityEmail', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "differentPhone") {
+            //        Meteor.call('updateQualityPhone', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "describeInput") {
+            //        Meteor.call('updateDescribeInput', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "expirationDate1") {
+            //        Meteor.call('updateExpirationDate1', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "certNumber1") {
+            //        Meteor.call('updateCertNumber1', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "registrar1") {
+            //        Meteor.call('updateRegistrar1', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "expirationDate2") {
+            //        Meteor.call('updateExpirationDate2', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "certNumber2") {
+            //        Meteor.call('updateCertNumber2', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "registrar2") {
+            //        Meteor.call('updateRegistrar2', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "expirationDate3") {
+            //        Meteor.call('updateExpirationDate3', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "certNumber3") {
+            //        Meteor.call('updateCertNumber3', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "registrar3") {
+            //        Meteor.call('updateRegistrar3', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "certType4") {
+            //        Meteor.call('updateCertType4', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "expirationDate4") {
+            //        Meteor.call('updateExpirationDate4', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "certNumber4") {
+            //        Meteor.call('updateCertNumber4', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "registrar4") {
+            //        Meteor.call('updateRegistrar4', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "cert5Text") {
+            //        Meteor.call('updateCert5Text', documentID, companyItem);
+            //    }
+            //}
+            //,
+            //'click .show-Option1': function () {
+            //    var documentID = this._id;
+            //    Session.set('showPullDown1', event.target.checked);
+            //    if (Session.get("showPullDown1") == false) {
+            //        Meteor.call('updateExpirationDate1', documentID, null);
+            //        Meteor.call('updateCertNumber1', documentID, null);
+            //        Meteor.call('updateRegistrar1', documentID, null);
+            //        Meteor.call('updateCertStatus1', documentID, false);
+            //    }
+            //    else {
+            //        Meteor.call('updateCertStatus1', documentID, true);
+            //    }
+            //},
+            //'click .show-Option2': function () {
+            //    var documentID = this._id;
+            //    Session.set('showPullDown2', event.target.checked);
+            //    if (Session.get("showPullDown2") == false) {
+            //        Meteor.call('updateExpirationDate2', documentID, null);
+            //        Meteor.call('updateCertNumber2', documentID, null);
+            //        Meteor.call('updateRegistrar2', documentID, null);
+            //        Meteor.call('updateCertStatus2', documentID, false);
+            //    }
+            //    else {
+            //        Meteor.call('updateCertStatus2', documentID, true);
+            //    }
+            //},
+            //'click .show-Option3': function () {
+            //    var documentID = this._id;
+            //    Session.set('showPullDown3', event.target.checked);
+            //    if (Session.get("showPullDown3") == false) {
+            //        Meteor.call('updateExpirationDate3', documentID, null);
+            //        Meteor.call('updateCertNumber3', documentID, null);
+            //        Meteor.call('updateRegistrar3', documentID, null);
+            //        Meteor.call('updateCertStatus3', documentID, false);
+            //    }
+            //    else {
+            //        Meteor.call('updateCertStatus3', documentID, true);
+            //    }
+            //},
+            //'click .show-Option4': function () {
+            //    var documentID = this._id;
+            //    Session.set('showPullDown4', event.target.checked);
+            //    if (Session.get("showPullDown4") == false) {
+            //        Meteor.call('updateCertType4', documentID, null);
+            //        Meteor.call('updateExpirationDate4', documentID, null);
+            //        Meteor.call('updateCertNumber4', documentID, null);
+            //        Meteor.call('updateRegistrar4', documentID, null);
+            //        Meteor.call('updateCertStatus4', documentID, false);
+            //    }
+            //    else {
+            //        Meteor.call('updateCertStatus4', documentID, true);
+            //    }
+            //},
+            //'click .show-Option5': function () {
+            //    var documentID = this._id;
+            //    Session.set('showPullDown5', event.target.checked);
+            //    if (Session.get("showPullDown5") == false) {
+            //        Meteor.call('updateCert5Text', documentID, null);
+            //        Meteor.call('updateCertStatus5', documentID, false);
+            //    }
+            //    else {
+            //        Meteor.call('updateCertStatus5', documentID, true);
+            //    }
+            //}
         }),
         Template.editCompany.helpers({
             'showOption1': function () {
@@ -1233,12 +1276,16 @@ if (Meteor.isClient) {
 
         }),
         Template.eventListDisplay.events({
-            'click .event': function () {
+            'click .event': function (e) {
+                e.stopPropagation();
                 var eventID = this._id;
                 Router.go("/events/details/" + this._id);
                 Session.set('selectedEvent', eventID);
             },
-            'click .btn-danger': function (event) {
+            'click .btn-danger': function (e) {
+                var eventID = this._id;
+                Session.set('selectedEvent', eventID);
+                e.stopPropagation();
                 var selectedEvent = Session.get('selectedEvent');
                 var confirm = window.confirm("Delete this Event?");
                 if (confirm) {
@@ -1248,10 +1295,11 @@ if (Meteor.isClient) {
         }),
         Template.eventListDisplay.helpers({
             'event': function () {
-                return EventList.find({}, {sort: {eventDate: 1}}).map(function (document, index) {
+                return EventsTest.find({}, {sort: {eventDate: 1}}).map(function (document, index) {
                     document.index = index + 1;
                     return document;
                 });
+
             },
             'selectedClass': function () {
                 var eventID = this._id;
@@ -1274,50 +1322,51 @@ if (Meteor.isClient) {
                 else {
                     Session.set('showDelivery', false);
                 }
-            },
-            'submit form': function () {
-                event.preventDefault();
-
-                var currentUserID = Meteor.userId();
-                var companyNameVar = document.getElementById("companySelect").value;
-                var eventDateVar = event.target.eventDate.value;
-                var eventTypeVar = document.getElementById("eventType").value;
-                var tlPartNumberVar = event.target.tlPartNumber.value;
-                var purchaseOrderVar = event.target.purchaseOrder.value;
-                var lotNumberVar = event.target.lotNumber.value;
-                var carNumberVar = event.target.carNumber.value;
-                var rootCauseVar = event.target.rootCause.value;
-                var statusOptionVar = document.getElementById("statusOption").value;
-
-                if (eventTypeVar == "Delivery") {
-                    var requiredDeliveryDateVar = document.getElementById("requiredDeliveryDate").value;
-                    var actualDeliveryDateVar = document.getElementById("actualDeliveryDate").value;
-                    if ((eventDateVar != "") && (tlPartNumberVar != "") && (purchaseOrderVar != "") && (lotNumberVar != "") && (carNumberVar != "")) {
-                        if ((requiredDeliveryDateVar != "") && (actualDeliveryDateVar != "")) {
-                            Meteor.call('insertEventData', companyNameVar, eventDateVar, eventTypeVar, tlPartNumberVar, purchaseOrderVar, lotNumberVar, carNumberVar, null, requiredDeliveryDateVar, actualDeliveryDateVar, rootCauseVar, statusOptionVar);
-                            alert("Successfully Added Event");
-                            Router.go('events');
-                        }
-                    }
-                    else {
-                        alert("Please complete the form")
-                    }
-                }
-
-                else if (eventTypeVar == "Quality") {
-                    var quantityRejectVar = document.getElementById("quantityReject").value;
-                    if ((eventDateVar != "") && (tlPartNumberVar != "") && (purchaseOrderVar != "") && (lotNumberVar != "") && (carNumberVar != "")) {
-                        if (quantityRejectVar != "") {
-                            Meteor.call('insertEventData', companyNameVar, eventDateVar, eventTypeVar, tlPartNumberVar, purchaseOrderVar, lotNumberVar, carNumberVar, quantityRejectVar, null, null, rootCauseVar, statusOptionVar);
-                            alert("Successfully Added Event");
-                            Router.go('events');
-                        }
-                    }
-                    else {
-                        alert("Please complete the form")
-                    }
-                }
             }
+            //,
+            //'submit form': function () {
+            //    event.preventDefault();
+            //
+            //    var currentUserID = Meteor.userId();
+            //    var companyNameVar = document.getElementById("companySelect").value;
+            //    var eventDateVar = event.target.eventDate.value;
+            //    var eventTypeVar = document.getElementById("eventType").value;
+            //    var tlPartNumberVar = event.target.tlPartNumber.value;
+            //    var purchaseOrderVar = event.target.purchaseOrder.value;
+            //    var lotNumberVar = event.target.lotNumber.value;
+            //    var carNumberVar = event.target.carNumber.value;
+            //    var rootCauseVar = event.target.rootCause.value;
+            //    var statusOptionVar = document.getElementById("statusOption").value;
+            //
+            //    if (eventTypeVar == "Delivery") {
+            //        var requiredDeliveryDateVar = document.getElementById("requiredDeliveryDate").value;
+            //        var actualDeliveryDateVar = document.getElementById("actualDeliveryDate").value;
+            //        if ((eventDateVar != "") && (tlPartNumberVar != "") && (purchaseOrderVar != "") && (lotNumberVar != "") && (carNumberVar != "")) {
+            //            if ((requiredDeliveryDateVar != "") && (actualDeliveryDateVar != "")) {
+            //                Meteor.call('insertEventData', companyNameVar, eventDateVar, eventTypeVar, tlPartNumberVar, purchaseOrderVar, lotNumberVar, carNumberVar, null, requiredDeliveryDateVar, actualDeliveryDateVar, rootCauseVar, statusOptionVar);
+            //                alert("Successfully Added Event");
+            //                Router.go('events');
+            //            }
+            //        }
+            //        else {
+            //            alert("Please complete the form")
+            //        }
+            //    }
+            //
+            //    else if (eventTypeVar == "Quality") {
+            //        var quantityRejectVar = document.getElementById("quantityReject").value;
+            //        if ((eventDateVar != "") && (tlPartNumberVar != "") && (purchaseOrderVar != "") && (lotNumberVar != "") && (carNumberVar != "")) {
+            //            if (quantityRejectVar != "") {
+            //                Meteor.call('insertEventData', companyNameVar, eventDateVar, eventTypeVar, tlPartNumberVar, purchaseOrderVar, lotNumberVar, carNumberVar, quantityRejectVar, null, null, rootCauseVar, statusOptionVar);
+            //                alert("Successfully Added Event");
+            //                Router.go('events');
+            //            }
+            //        }
+            //        else {
+            //            alert("Please complete the form")
+            //        }
+            //    }
+            //}
         }),
         Template.addEventForm.helpers({
             'showDelivery': function () {
@@ -1646,6 +1695,17 @@ if (Meteor.isServer) {
         }
     });
 
+    Meteor.publish('events_Test', function () {
+        if (Roles.userIsInRole(this.userId, ['admin', 'employee'])) {
+            var currentUserID = this.userId;
+            return EventsTest.find({});
+        }
+        else {
+            this.stop();
+            return;
+        }
+    });
+
     Meteor.publish('userList', function () {
         if (Roles.userIsInRole(this.userId, ['admin'])) {
             var currentUserID = this.userId;
@@ -1671,7 +1731,18 @@ if (Meteor.isServer) {
         'remove': function (userId, doc) {
             return true;
         }
-    })
+    });
+    EventsTest.allow({
+        'insert': function (userId, doc) {
+            return true;
+        },
+        'update': function (userId, doc) {
+            return true;
+        },
+        'remove': function (userId, doc) {
+            return true;
+        }
+    });
     Meteor.methods({
         'insertCompanyData': function (companyNameVar, companyAddressVar, salesNameVar, salesEmailVar, salesPhoneVar,
                                        qualityNameVar, qualityEmailVar, qualityPhoneVar, logisticsNameVar, logisticsEmailVar,
@@ -1946,7 +2017,7 @@ if (Meteor.isServer) {
         'removeEventData': function (selectedEvent) {
             var currentUserID = Meteor.userId();
             if (Roles.userIsInRole(currentUserID, 'admin')) {
-                EventList.remove({_id: selectedEvent});
+                EventsTest.remove({_id: selectedEvent});
             }
         },
         'updateEventType': function (documentID, companyItem) {
@@ -2084,7 +2155,7 @@ Router.route('/companies/edit/:_id', {
     },
     data: function () {
         var currentList = this.params._id;
-        return CompanyList.findOne({_id: currentList});
+        return CompaniesTest.findOne({_id: currentList});
     }
 });
 
@@ -2103,11 +2174,11 @@ Router.route('/events/details/:_id', {
     template: 'detailEvent',
     waitOn: function () {
         // waitOn makes sure that this publication is ready before rendering your template
-        return Meteor.subscribe("theEvents");
+        return Meteor.subscribe("events_Test");
     },
     data: function () {
         var currentList = this.params._id;
-        return EventList.findOne({_id: currentList});
+        return EventsTest.findOne({_id: currentList});
     }
 });
 
@@ -2115,11 +2186,11 @@ Router.route('/events/edit/:_id', {
     template: 'editEvent',
     waitOn: function () {
         // waitOn makes sure that this publication is ready before rendering your template
-        return Meteor.subscribe("theEvents");
+        return Meteor.subscribe("events_Test");
     },
     data: function () {
         var currentList = this.params._id;
-        return EventList.findOne({_id: currentList});
+        return EventsTest.findOne({_id: currentList});
     }
 });
 
