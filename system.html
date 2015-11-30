@@ -165,8 +165,7 @@
                             <td>{{salesPerson.phone}}</td>
                             <td>{{salesPerson.email}}</td>
                             <td>
-                                <input type="button" class="btn btn-warning" value="Edit"
-                                       onclick="window.location.href='/companies/edit/{{_id}}'">
+                                <input type="button" class="btn btn-warning" value="Edit">
                                 <input type="button" class="btn btn-danger" value="Remove"></td>
                         </tr>
                     {{/each}}
@@ -436,554 +435,429 @@
     {{/if}}
 </template>
 
-<template name="certificationForm1">
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Expiration Date</label>
+<template name="insertCompanyForm">
+    {{#autoForm schema="CompaniesSchema" id="insertCompanyForm" type="insert" collection="CompaniesTest" resetOnSuccess=false}}
 
-        <div class="col-sm-4">
-            <input type="date" class="form-control" name="expirationDate1" id="expirationDate1">
+        {{> afQuickField name='companyName'}}
+        {{> afQuickField name='companyAddress'}}
+        {{> afQuickField name='salesPerson'}}
+        {{> afQuickField name='qualityPerson'}}
+        {{> afQuickField name='logisticsPerson'}}
+        {{> afQuickField name='differentPerson'}}
+
+        {{> afQuickField name='itemDescription'}}
+        {{> afQuickField name='certification'}}
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Cancel</button>
         </div>
-    </div>
 
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Certification Number</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="certNumber1" id="certNumber1">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Registrar</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="registrar1" id="registrar1">
-        </div>
-    </div>
-</template>
-
-<template name="certificationForm2">
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Expiration Date</label>
-
-        <div class="col-sm-4">
-            <input type="date" class="form-control" name="expirationDate2" id="expirationDate2">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Certification Number</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="certNumber2" id="certNumber2">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Registrar</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="registrar2" id="registrar2">
-        </div>
-    </div>
-</template>
-
-<template name="certificationForm3">
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Expiration Date</label>
-
-        <div class="col-sm-4">
-            <input type="date" class="form-control" name="expirationDate3" id="expirationDate3">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Certification Number</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="certNumber3" id="certNumber3">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Registrar</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="registrar3" id="registrar3">
-        </div>
-    </div>
-</template>
-
-<template name="certificationForm4">
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Certification Type</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="certType4" id="certType4">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Expiration Date</label>
-
-        <div class="col-sm-4">
-            <input type="date" class="form-control" name="expirationDate3" id="expirationDate3">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Certification Number</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="certNumber3" id="certNumber3">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Registrar</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="registrar3" id="registrar3">
-        </div>
-    </div>
+    {{/autoForm}}
 </template>
 
 <template name="detailCompany">
     {{#if currentUser}}
-        <div class="container">
-            <div class="col-md-10">
-                <h1>{{companyName}} Detail</h1><br><br>
-                <input type="button" class="btn btn-lg btn-info" name="back" value="Back"
-                       onclick="history.go(-1);return true;"/>
-                <br>
-                <br>
-
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Company Address</label>
-
-                        <div class="col-sm-5 form-control-static">
-                            {{companyAddress.street}} {{companyAddress.street2}}<br>
-                            {{companyAddress.city}}, {{companyAddress.state}} {{companyAddress.zipcode}}
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label"></label>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Sales Manager</label>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Name</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{salesPerson.name}}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">E-Mail</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{salesPerson.email}}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Phone</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{salesPerson.phone}}
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label"></label>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Quality Manager</label>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Name</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{qualityPerson.name}}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">E-Mail</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{qualityPerson.email}}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Phone</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{qualityPerson.phone}}
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label"></label>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Logistics Manager</label>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Name</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{logisticsPerson.name}}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">E-Mail</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{logisticsPerson.email}}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Phone</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{logisticsPerson.phone}}
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label"></label>
-                    </div>
-                    {{#if different}}
-                        <div class="form-group">
-                            <label class="col-sm-8 control-label">Person To Receive Performance Reports If Different
-                                Than
-                                The 3 People Listed Above</label>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Name</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{differentPerson.name}}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">E-Mail</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{differentPerson.email}}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Phone</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{differentPerson.phone}}
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label"></label>
-                        </div>
-                    {{/if}}
-
-                    <div class="form-group">
-                        <label class="col-sm-13 control-label">Products Provided/Manufactured</label>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label"></label>
-
-                        <div class="col-sm-4">
-                            {{itemDescription}}
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-sm-10 control-label"></label>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Certifications</label>
-                    </div>
-                    {{#if showOption1}}
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-
-                            <label class="col-sm-2 control-label">Type</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                ISO9001
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-
-                            <label class="col-sm-2 control-label">Expiration Date</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{expirationDate1}}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-                            <label class="col-sm-2 control-label">Certification #</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{certNumber1}}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-
-                            <label class="col-sm-2 control-label">Registrar</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{registrar1}}
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label"></label>
-                        </div>
-                    {{/if}}
-                    {{#if showOption2}}
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-
-                            <label class="col-sm-2 control-label">Type</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                ISO14001
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-
-                            <label class="col-sm-2 control-label">Expiration Date</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{expirationDate2}}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-                            <label class="col-sm-2 control-label">Certification #</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{certNumber2}}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-
-                            <label class="col-sm-2 control-label">Registrar</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{registrar2}}
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label"></label>
-                        </div>
-                    {{/if}}
-                    {{#if showOption3}}
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-
-                            <label class="col-sm-2 control-label">Type</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                TS16949
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-
-                            <label class="col-sm-2 control-label">Expiration Date</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{expirationDate3}}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-                            <label class="col-sm-2 control-label">Certification #</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{certNumber3}}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-
-                            <label class="col-sm-2 control-label">Registrar</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{registrar3}}
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label"></label>
-                        </div>
-                    {{/if}}
-                    {{#if showOption4}}
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-
-                            <label class="col-sm-2 control-label">Type</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{certType4}}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-
-                            <label class="col-sm-2 control-label">Expiration Date</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{expirationDate4}}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-                            <label class="col-sm-2 control-label">Certification #</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{certNumber4}}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-
-                            <label class="col-sm-2 control-label">Registrar</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{registrar4}}
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label"></label>
-                        </div>
-                    {{/if}}
-                    {{#if showOption5}}
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-
-                            <label class="col-sm-2 control-label">Type</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                None
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-
-                            <label class="col-sm-2 control-label">Reason</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{cert5Text}}
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label"></label>
-                        </div>
-                    {{/if}}
-                    <div class="form-group">
-                        <label class="col-sm-10 control-label"></label>
-                    </div>
-
-                    <div class="form-group">
-                        <span class="col-md-4 control-label"></span>
-                        {{> companyEventListDisplay}}
-                    </div>
+        {{#autoForm schema="CompaniesSchema" id="insertCompanyForm" type="readonly" collection="CompaniesTest" doc=this resetOnSuccess=false}}
+            <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
+            <fieldset>
+                {{> afQuickField name='companyName'}}
+                {{> afQuickField name='companyAddress'}}
+                {{> afQuickField name='salesPerson'}}
+                {{> afQuickField name='qualityPerson'}}
+                {{> afQuickField name='logisticsPerson'}}
+                {{> afQuickField name='differentPerson'}}
+                {{> afQuickField name='itemDescription'}}
+                {{> afQuickField name='certification'}}
+                {{> companyEventListDisplay}}
+                <div class="form-group">
+                    <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
                 </div>
-            </div>
-        </div>
+            </fieldset>
+        {{/autoForm}}
+        <!--<div class="container">-->
+        <!---->
+        <!--<div class="col-md-10">-->
+        <!--<h1>{{companyName}} Detail</h1><br><br>-->
+        <!--<input type="button" class="btn btn-lg btn-info" name="back" value="Back"-->
+        <!--onclick="history.go(-1);return true;"/>-->
+        <!--<br>-->
+        <!--<br>-->
+
+        <!--<div class="form-horizontal">-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Company Address</label>-->
+
+        <!--<div class="col-sm-5 form-control-static">-->
+        <!--{{companyAddress.street}} {{companyAddress.street2}}<br>-->
+        <!--{{companyAddress.city}}, {{companyAddress.state}} {{companyAddress.zipcode}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label"></label>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Sales Manager</label>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Name</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{salesPerson.name}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">E-Mail</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{salesPerson.email}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Phone</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{salesPerson.phone}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label"></label>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Quality Manager</label>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Name</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{qualityPerson.name}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">E-Mail</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{qualityPerson.email}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Phone</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{qualityPerson.phone}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label"></label>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Logistics Manager</label>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Name</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{logisticsPerson.name}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">E-Mail</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{logisticsPerson.email}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Phone</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{logisticsPerson.phone}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label"></label>-->
+        <!--</div>-->
+            <!--{{#if different}}-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-8 control-label">Person To Receive Performance Reports If Different-->
+        <!--Than-->
+        <!--The 3 People Listed Above</label>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Name</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{differentPerson.name}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">E-Mail</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{differentPerson.email}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Phone</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{differentPerson.phone}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label"></label>-->
+        <!--</div>-->
+            <!--{{/if}}-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-13 control-label">Products Provided/Manufactured</label>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label"></label>-->
+
+        <!--<div class="col-sm-4">-->
+        <!--{{itemDescription}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-10 control-label"></label>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Certifications</label>-->
+        <!--</div>-->
+            <!--{{#if showOption1}}-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+
+        <!--<label class="col-sm-2 control-label">Type</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--ISO9001-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+
+        <!--<label class="col-sm-2 control-label">Expiration Date</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{expirationDate1}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+        <!--<label class="col-sm-2 control-label">Certification #</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{certNumber1}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+
+        <!--<label class="col-sm-2 control-label">Registrar</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{registrar1}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label"></label>-->
+        <!--</div>-->
+            <!--{{/if}}-->
+            <!--{{#if showOption2}}-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+
+        <!--<label class="col-sm-2 control-label">Type</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--ISO14001-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+
+        <!--<label class="col-sm-2 control-label">Expiration Date</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{expirationDate2}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+        <!--<label class="col-sm-2 control-label">Certification #</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{certNumber2}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+
+        <!--<label class="col-sm-2 control-label">Registrar</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{registrar2}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label"></label>-->
+        <!--</div>-->
+            <!--{{/if}}-->
+            <!--{{#if showOption3}}-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+
+        <!--<label class="col-sm-2 control-label">Type</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--TS16949-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+
+        <!--<label class="col-sm-2 control-label">Expiration Date</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{expirationDate3}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+        <!--<label class="col-sm-2 control-label">Certification #</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{certNumber3}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+
+        <!--<label class="col-sm-2 control-label">Registrar</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{registrar3}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label"></label>-->
+        <!--</div>-->
+            <!--{{/if}}-->
+            <!--{{#if showOption4}}-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+
+        <!--<label class="col-sm-2 control-label">Type</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{certType4}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+
+        <!--<label class="col-sm-2 control-label">Expiration Date</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{expirationDate4}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+        <!--<label class="col-sm-2 control-label">Certification #</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{certNumber4}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+
+        <!--<label class="col-sm-2 control-label">Registrar</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{registrar4}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label"></label>-->
+        <!--</div>-->
+            <!--{{/if}}-->
+            <!--{{#if showOption5}}-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+
+        <!--<label class="col-sm-2 control-label">Type</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--None-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-1 control-label"></label>-->
+
+        <!--<label class="col-sm-2 control-label">Reason</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{cert5Text}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label"></label>-->
+        <!--</div>-->
+            <!--{{/if}}-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-10 control-label"></label>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<span class="col-md-4 control-label"></span>-->
+        <!--{{> companyEventListDisplay}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
     {{/if}}
 </template>
 
 <template name="editCompany">
     {{#if currentUser}}
-
         {{#if isInRole 'admin, supplier'}}
-            <h2> Company Details</h2><br><br>
-            <u>Company Name</u><br>
-            <input type="text" value="{{companyName}}" id="companyName" name="companyItem"><br><br>
+            {{#autoForm schema="CompaniesSchema" id="updateCompanyForm" type="update" collection="CompaniesTest" doc=this resetOnSuccess=false}}
+                <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
+                <fieldset>
+                    {{> afQuickField name='companyName'}}
+                    {{> afQuickField name='companyAddress'}}
+                    {{> afQuickField name='salesPerson'}}
+                    {{> afQuickField name='qualityPerson'}}
+                    {{> afQuickField name='logisticsPerson'}}
+                    {{> afQuickField name='differentPerson'}}
+                    {{> afQuickField name='itemDescription'}}
+                    {{> afQuickField name='certification'}}
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
+                    </div>
 
-            <u>Company Address</u><br>
-            <input type="text" value="{{companyAddress}}" id="companyAddress" name="companyItem"><br><br>
-
-            <u>Sales Manager</u><br>
-            Name: <input type="text" value="{{salesName}}" id="salesName" name="companyItem"><br>
-            E-Mail: <input type="text" value="{{salesEmail}}" id="salesEmail" name="companyItem"><br>
-            Phone: <input type="text" value="{{salesPhone}}" id="salesPhone" name="companyItem"><br><br>
-
-            <u>Quality Manager</u><br>
-            Name: <input type="text" value="{{qualityName}}" id="qualityName" name="companyItem"><br>
-            E-Mail: <input type="text" value="{{qualityEmail}}" id="qualityEmail" name="companyItem"><br>
-            Phone: <input type="text" value="{{qualityPhone}}" id="qualityPhone" name="companyItem"><br><br>
-
-            <u>Logistics Manager</u><br>
-            Name: <input type="text" value="{{logisticsName}}" id="logisticsName" name="companyItem"><br>
-            E-Mail: <input type="text" value="{{logisticsEmail}}" id="logisticsEmail" name="companyItem"><br>
-            Phone: <input type="text" value="{{logisticsPhone}}" id="logisticsPhone" name="companyItem"><br><br>
-
-            <u>Other Contact</u><br>
-            Name: <input type="text" value="{{differentName}}" id="differentName" name="companyItem"><br>
-            E-Mail: <input type="text" value="{{differentEmail}}" id="differentEmail" name="companyItem"><br>
-            Phone: <input type="text" value="{{differentPhone}}" id="differentPhone" name="companyItem"><br><br>
-
-            <u>Provide</u><br>
-        <textarea maxlength="120" cols="60" rows="5" value="{{describeInput}}" id="describeInput" name="companyItem"
-                ></textarea><br><br>
-
-            <u>Certifications</u><br>
-            <input type="checkbox" checked="{{showOption1}}" name="companyItem" id="cert1"
-                   class="show-Option1">ISO9001<br>
-            {{#if showOption1}}
-                Expiration Date: <input type="date" value="{{expirationDate1}}" name="companyItem" id="expirationDate1"><br>
-                Certification #: <input type="text" value="{{certNumber1}}" name="companyItem" id="certNumber1"><br>
-                Registrar: <input type="text" value="{{registrar1}}" name="companyItem" id="registrar1"><br><br>
-            {{/if}}
-            <input type="checkbox" checked="{{showOption2}}" name="companyItem" id="cert2" class="show-Option2">ISO14001<br>
-            {{#if showOption2}}
-                Expiration Date: <input value="{{expirationDate2}}" type="date" name="companyItem" id="expirationDate2"><br>
-                Certification #: <input type="text" value="{{certNumber2}}" name="companyItem" id="certNumber2"><br>
-                Registrar: <input type="text" value="{{registrar2}}" name="companyItem" id="registrar2"><br><br>
-            {{/if}}
-            <input type="checkbox" checked="{{showOption3}}" name="companyItem" id="cert3"
-                   class="show-Option3">TS16949<br>
-            {{#if showOption3}}
-                Expiration Date: <input value="{{expirationDate3}}" type="date" name="companyItem" id="expirationDate3"><br>
-                Certification #: <input type="text" value="{{certNumber3}}" name="companyItem" id="certNumber3"><br>
-                Registrar: <input type="text" value="{{registrar3}}" name="companyItem" id="registrar3"><br><br>
-            {{/if}}
-            <input type="checkbox" checked="{{showOption4}}" name="companyItem" id="cert4"
-                   class="show-Option4">Other<br>
-            {{#if showOption4}}
-                Certification Type: <input type="text" value="{{certType4}}" name="companyItem" id="certType4"><br>
-                Expiration Date: <input value="{{expirationDate4}}" type="date" name="companyItem" id="expirationDate4"><br>
-                Certification #: <input type="text" value="{{certNumber4}}" name="companyItem" id="certNumber4"><br>
-                Registrar: <input type="text" value="{{registrar4}}" name="companyItem" id="registrar4"><br><br>
-            {{/if}}
-            <input type="checkbox" checked="{{showOption5}}" name="companyItem" id="cert5" class="show-Option5">None<br>
-            {{#if showOption5}}
-                Do You Plan To Pursue Certification? If So When?<br>
-                <textarea maxlength="120" cols="40" rows="3" value="{{cert5Text}}" name="companyItem"
-                          id="cert5Text"></textarea><br>
-            {{/if}}
+                </fieldset>
+            {{/autoForm}}
         {{/if}}
-
-
     {{/if}}
 </template>
 
@@ -1013,23 +887,61 @@
                         <th>Company Name</th>
                         <th>Type</th>
                         <th>Status</th>
-                        <th></th>
+                        {{#if isInRole 'admin'}}
+                            <th></th>
+                        {{/if}}
                     </tr>
                     </thead>
                     <tbody>
                     {{#each event}}
-                        <tr class="event">
-                            <td>{{index}}</td>
-                            <td>{{eventDate}}</td>
-                            <td>{{carNumber}}</td>
-                            <td>{{companyName}}</td>
-                            <td>{{eventType}}</td>
-                            <td>{{statusOption}}</td>
-                            <td>
-                                <input type="button" class="btn btn-warning" value="Edit"
-                                       onclick="window.location.href='/events/edit/{{_id}}'">
-                                <input type="button" class="btn btn-danger" value="Remove"></td>
-                        </tr>
+                        {{#if eventBad}}
+                            <tr class="event danger">
+                                <td>{{index}}</td>
+                                <td>{{eventDate}}</td>
+                                <td>{{carNumber}}</td>
+                                <td>{{companyName}}</td>
+                                <td>{{eventType}}</td>
+                                <td>{{statusOptionConverter}}</td>
+                                {{#if isInRole 'admin'}}
+                                    <td>
+                                        <input type="button" class="btn btn-warning" value="Edit"
+                                               onclick="window.location.href='/events/edit/{{_id}}'">
+                                        <input type="button" class="btn btn-danger" value="Remove"></td>
+                                {{/if}}
+                            </tr>
+                        {{/if}}
+                        {{#if eventMid}}
+                            <tr class="event warning">
+                                <td>{{index}}</td>
+                                <td>{{eventDate}}</td>
+                                <td>{{carNumber}}</td>
+                                <td>{{companyName}}</td>
+                                <td>{{eventType}}</td>
+                                <td>{{statusOptionConverter}}</td>
+                                {{#if isInRole 'admin'}}
+                                    <td>
+                                        <input type="button" class="btn btn-warning" value="Edit"
+                                               onclick="window.location.href='/events/edit/{{_id}}'">
+                                        <input type="button" class="btn btn-danger" value="Remove"></td>
+                                {{/if}}
+                            </tr>
+                        {{/if}}
+                        {{#if eventGood}}
+                            <tr class="event success">
+                                <td>{{index}}</td>
+                                <td>{{eventDate}}</td>
+                                <td>{{carNumber}}</td>
+                                <td>{{companyName}}</td>
+                                <td>{{eventType}}</td>
+                                <td>{{statusOptionConverter}}</td>
+                                {{#if isInRole 'admin'}}
+                                    <td>
+                                        <input type="button" class="btn btn-warning" value="Edit"
+                                               onclick="window.location.href='/events/edit/{{_id}}'">
+                                        <input type="button" class="btn btn-danger" value="Remove"></td>
+                                {{/if}}
+                            </tr>
+                        {{/if}}
                     {{/each}}
                     </tbody>
                 </table>
@@ -1050,22 +962,39 @@
                         <th>CAR #</th>
                         <th>Type</th>
                         <th>Status</th>
-                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     {{#each event}}
-                        <tr class="event">
-                            <td>{{index}}</td>
-                            <td>{{eventDate}}</td>
-                            <td>{{carNumber}}</td>
-                            <td>{{eventType}}</td>
-                            <td>{{statusOption}}</td>
-                            <td>
-                                <input type="button" id="editButton" class="btn btn-warning" value="Edit"
-                                       onclick="window.location.href='/events/edit/{{_id}}'">
-                                <input type="button" id="removeButton" class="btn btn-danger" value="Remove"></td>
-                        </tr>
+                        {{#if eventBad}}
+                            <tr class="event danger">
+                                <td>{{index}}</td>
+                                <td>{{eventDate}}</td>
+                                <td>{{carNumber}}</td>
+                                <td>{{eventType}}</td>
+                                <td>{{statusOptionConverter}}</td>
+
+                            </tr>
+                        {{/if}}
+                        {{#if eventMid}}
+                            <tr class="event warning">
+                                <td>{{index}}</td>
+                                <td>{{eventDate}}</td>
+                                <td>{{carNumber}}</td>
+                                <td>{{eventType}}</td>
+                                <td>{{statusOptionConverter}}</td>
+                            </tr>
+                        {{/if}}
+                        {{#if eventGood}}
+                            <tr class="event success">
+                                <td>{{index}}</td>
+                                <td>{{eventDate}}</td>
+                                <td>{{carNumber}}</td>
+                                <td>{{eventType}}</td>
+                                <td>{{statusOptionConverter}}</td>
+
+                            </tr>
+                        {{/if}}
                     {{/each}}
                     </tbody>
                 </table>
@@ -1232,115 +1161,140 @@
 
 <template name="detailEvent">
     {{#if currentUser}}
-        <div class="container">
-            <div class="col-md-10">
-                <h1>Event Details</h1><br><br>
-                <input type="button" class="btn btn-lg btn-info" name="back" value="Back"
-                       onclick="history.go(-1);return true;"/>
-                <br>
-                <br>
+        {{#autoForm schema="EventSchema" id="insertEventForm" type="readonly" collection="EventsTest" doc=this resetOnSuccess=false}}
+            <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
+            <fieldset>
+                {{> afQuickField name='companyName'}}
+                {{> afQuickField name='eventDate'}}
+                {{> afQuickField name='eventType'}}
+                {{> afQuickField name='tlPartNumber'}}
+                {{> afQuickField name='purchaseOrderNumber'}}
+                {{> afQuickField name='lotNumber'}}
+                {{> afQuickField name='carNumber'}}
+                {{#if showDelivery}}
+                    {{> afQuickField name='requiredDate'}}
+                    {{> afQuickField name='actualDate'}}
+                {{else}}
+                    {{> afQuickField name='quantityReject'}}
+                {{/if}}
+                {{> afQuickField name='rootCause'}}
+                {{> afQuickField name='statusOption'}}
 
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Company Name</label>
-
-                        <div class="col-sm-5 form-control-static">
-                            {{companyName}}
-                        </div>
-                    </div>
-
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Event Type</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{eventType}}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Event Date</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{eventDate}}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">T&L Part Number</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{tlPartNumber}}
-                        </div>
-                    </div>
-
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">T&L Purchase Order</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{purchaseOrder}}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Lot Number</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{lotNumber}}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">T&L CAR Number</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{carNumber}}
-                        </div>
-                    </div>
-
-                    {{#if showQuality}}
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Quantity Rejected</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{quantityReject}}
-                            </div>
-                        </div>
-                    {{/if}}
-
-                    {{#if showDelivery}}
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Required Delivery Date</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{requiredDeliveryDate}}
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Actual Delivery Date</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{actualDeliveryDate}}
-                            </div>
-                        </div>
-                    {{/if}}
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Problem Description</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{rootCause}}
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Status</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{statusOption}}
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
                 </div>
-            </div>
-        </div>
+
+            </fieldset>
+        {{/autoForm}}
+        <!--<div class="container">-->
+        <!--<div class="col-md-10">-->
+        <!--<h1>Event Details</h1><br><br>-->
+        <!--<input type="button" class="btn btn-lg btn-info" name="back" value="Back"-->
+        <!--onclick="history.go(-1);return true;"/>-->
+        <!--<br>-->
+        <!--<br>-->
+
+        <!--<div class="form-horizontal">-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Company Name</label>-->
+
+        <!--<div class="col-sm-5 form-control-static">-->
+        <!--{{companyName}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Event Type</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{eventType}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Event Date</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{eventDate}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">T&L Part Number</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{tlPartNumber}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">T&L Purchase Order</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{purchaseOrder}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Lot Number</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{lotNumber}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">T&L CAR Number</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{carNumber}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+            <!--{{#if showQuality}}-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Quantity Rejected</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{quantityReject}}-->
+        <!--</div>-->
+        <!--</div>-->
+            <!--{{/if}}-->
+
+            <!--{{#if showDelivery}}-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Required Delivery Date</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{requiredDeliveryDate}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Actual Delivery Date</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{actualDeliveryDate}}-->
+        <!--</div>-->
+        <!--</div>-->
+            <!--{{/if}}-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Problem Description</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{rootCause}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Status</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{statusOption}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
     {{/if}}
 </template>
 
@@ -1348,56 +1302,82 @@
     {{#if currentUser}}
 
         {{#if isInRole 'admin, supplier'}}
-            <h2> Event Details</h2><br><br>
+            {{#autoForm schema="EventSchema" id="updateEventForm" type="update" collection="EventsTest" doc=this resetOnSuccess=false}}
+                <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
+                <fieldset>
+                    {{> afQuickField name='companyName'}}
+                    {{> afQuickField name='eventDate'}}
+                    {{> afQuickField name='eventType'}}
+                    {{> afQuickField name='tlPartNumber'}}
+                    {{> afQuickField name='purchaseOrderNumber'}}
+                    {{> afQuickField name='lotNumber'}}
+                    {{> afQuickField name='carNumber'}}
+                    {{#if showDelivery}}
+                        {{> afQuickField name='requiredDate'}}
+                        {{> afQuickField name='actualDate'}}
+                    {{else}}
+                        {{> afQuickField name='quantityReject'}}
+                    {{/if}}
+                    {{> afQuickField name='rootCause'}}
+                    {{> afQuickField name='statusOption'}}
 
-            <u>Event Type</u><br>
-            <select id="eventType" name="eventType" class="eventType">
-                <option value="Quality" selected="{{selectData 'Quality'}}">Quality</option>
-                <option value="Delivery" selected="{{selectData 'Delivery'}}">Delivery</option>
-            </select><br><br>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
+                    </div>
 
-            <u>Event Date</u><br>
-            <input type="date" value="{{eventDate}}" id="eventDate" name="companyItem"><br><br>
+                </fieldset>
+            {{/autoForm}}
+            <!--<h2> Event Details</h2><br><br>-->
 
-            <u>T&L Part Number</u><br>
-            <input type="text" value="{{tlPartNumber}}" id="tlPartNumber" name="companyItem"><br><br>
+            <!--<u>Event Type</u><br>-->
+            <!--<select id="eventType" name="eventType" class="eventType">-->
+            <!--<option value="Quality" selected="{{selectData 'Quality'}}">Quality</option>-->
+            <!--<option value="Delivery" selected="{{selectData 'Delivery'}}">Delivery</option>-->
+            <!--</select><br><br>-->
 
-            <u>T&L Purchase Order</u><br>
-            <input type="text" value="{{purchaseOrder}}" id="purchaseOrder" name="companyItem"><br><br>
+            <!--<u>Event Date</u><br>-->
+            <!--<input type="date" value="{{eventDate}}" id="eventDate" name="companyItem"><br><br>-->
 
-            <u>Lot Number</u><br>
-            <input type="text" value="{{lotNumber}}" id="lotNumber" name="companyItem"><br><br>
+            <!--<u>T&L Part Number</u><br>-->
+            <!--<input type="text" value="{{tlPartNumber}}" id="tlPartNumber" name="companyItem"><br><br>-->
 
-            <u>T&L CAR Number</u><br>
-            <input type="text" value="{{carNumber}}" id="carNumber" name="companyItem"><br><br>
+            <!--<u>T&L Purchase Order</u><br>-->
+            <!--<input type="text" value="{{purchaseOrder}}" id="purchaseOrder" name="companyItem"><br><br>-->
 
-            {{#if showQuality}}
-                <p><u>Quantity Rejected</u><br>
-                    <input type="text" value="{{quantityReject}}" id="quantityReject" name="companyItem"><br><br>
-                </p>
-            {{/if}}
+            <!--<u>Lot Number</u><br>-->
+            <!--<input type="text" value="{{lotNumber}}" id="lotNumber" name="companyItem"><br><br>-->
 
-            {{#if showDelivery}}
-                <p><u>Required Delivery Date</u><br>
-                    <input type="date" value="{{requiredDeliveryDate}}" id="requiredDeliveryDate"
-                           name="companyItem"><br><br>
-                </p>
+            <!--<u>T&L CAR Number</u><br>-->
+            <!--<input type="text" value="{{carNumber}}" id="carNumber" name="companyItem"><br><br>-->
 
-                <p><u>Actual Delivery Date</u><br>
-                    <input type="date" value="{{actualDeliveryDate}}" id="actualDeliveryDate"
-                           name="companyItem"><br><br>
-                </p>
-            {{/if}}
+                <!--{{#if showQuality}}-->
+            <!--<p><u>Quantity Rejected</u><br>-->
+            <!--<input type="text" value="{{quantityReject}}" id="quantityReject" name="companyItem"><br><br>-->
+            <!--</p>-->
+                <!--{{/if}}-->
 
-            <u>Root Cause</u><br>
-            <input type="text" value="{{rootCause}}" id="rootCause" name="companyItem"><br><br>
+                <!--{{#if showDelivery}}-->
+            <!--<p><u>Required Delivery Date</u><br>-->
+            <!--<input type="date" value="{{requiredDeliveryDate}}" id="requiredDeliveryDate"-->
+            <!--name="companyItem"><br><br>-->
+            <!--</p>-->
 
-            <u>Status</u><br>
-            <select id="statusOption" name="companyItem" class="statusOption">
-                <option value="Open" selected="{{selectData 'Open'}}">Open</option>
-                <option value="Pending Action" selected="{{selectData 'Pending Action'}}">Pending Action</option>
-                <option value="Closed" selected="{{selectData 'Closed'}}">Closed</option>
-            </select><br><br>
+            <!--<p><u>Actual Delivery Date</u><br>-->
+            <!--<input type="date" value="{{actualDeliveryDate}}" id="actualDeliveryDate"-->
+            <!--name="companyItem"><br><br>-->
+            <!--</p>-->
+                <!--{{/if}}-->
+
+            <!--<u>Root Cause</u><br>-->
+            <!--<input type="text" value="{{rootCause}}" id="rootCause" name="companyItem"><br><br>-->
+
+            <!--<u>Status</u><br>-->
+            <!--<select id="statusOption" name="companyItem" class="statusOption">-->
+            <!--<option value="Open" selected="{{selectData 'Open'}}">Open</option>-->
+            <!--<option value="Pending Action" selected="{{selectData 'Pending Action'}}">Pending Action</option>-->
+            <!--<option value="Closed" selected="{{selectData 'Closed'}}">Closed</option>-->
+            <!--</select><br><br>-->
         {{/if}}
     {{/if}}
 </template>
@@ -1428,7 +1408,7 @@
     submit it to us within the next week. Follow the instructions below to access the T&L Supplier site and submit
     the profile for your company. Thank you in advance for your support.<br><br>
 
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. Go to http://107.170.167.85/<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. Go to <a href="http://107.170.167.85/">Supplier Registration</a><br>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. Enter the login information given below<br>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a. Username: supplier<br>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b. Password: apple1<br>
@@ -1439,7 +1419,7 @@
     Sincerely,<br>
     <b>William J. Green</b><br>
     Vice President - Sales and Marketing<br>
-    <img src="/public/TL_Logo.png" alt="Logo" height="95" width="144"><br>
+    <img src="http://i.imgur.com/p4NrWee.png" alt="Logo" height="95" width="144"><br>
     770 Emerson Street<br>
     Rochester, NY 14613<br>
     Office 585 647-3717<br>
@@ -1450,28 +1430,6 @@
     <!--<a href="{{url}}">{{title}}</a>-->
 </template>
 
-<template name="insertCompanyForm">
-    {{#autoForm schema="CompaniesSchema" id="insertCompanyForm" type="insert" collection="CompaniesTest" resetOnSuccess=false}}
-        <fieldset>
-            {{> afQuickField name='companyName'}}
-            {{> afQuickField name='companyAddress'}}
-            {{> afQuickField name='salesPerson'}}
-            {{> afQuickField name='qualityPerson'}}
-            {{> afQuickField name='logisticsPerson'}}
-            {{> afQuickField name='differentPerson'}}
-            {{> afQuickField name='itemDescription'}}
-
-
-            {{> afQuickField name='certification'}}
-
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">Submit</button>
-                <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Cancel</button>
-            </div>
-
-        </fieldset>
-    {{/autoForm}}
-</template>
 
 <template name="insertEventForm">
     {{#autoForm schema="EventSchema" id="insertEventForm" type="insert" collection="EventsTest" resetOnSuccess=false}}
@@ -1493,11 +1451,8 @@
             {{> afQuickField name='statusOption'}}
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Submit</button>
-                <button type="button" class="btn btn-danger">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Cancel</button>
             </div>
         </fieldset>
     {{/autoForm}}
-    <input type="button" class="btn btn-md btn-danger" name="cancel" value="Cancel"
-           onclick="history.go(-1);return true;"/>
-
 </template>

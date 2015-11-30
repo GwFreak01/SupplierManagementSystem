@@ -6,13 +6,12 @@ EventList = new Mongo.Collection("events");
 
 CompaniesTest = new Mongo.Collection("companies_Test");
 
-EventsTest = new Mongo.Collection("events_test");
+EventsTest = new Mongo.Collection("events_Test");
 
 CompaniesSchema = new SimpleSchema({
     companyName: {
         type: String,
         label: "Company Name",
-        //defaultValue: "cool corp",
         unique: true,
         index: true
     },
@@ -127,7 +126,8 @@ CompaniesSchema = new SimpleSchema({
     },
     "salesPerson.status": {
         type: Boolean,
-        label: "Check here for this person to receive the Quarterly Performance Reports"
+        label: "Check here for this person to receive the Quarterly Performance Reports",
+        defaultValue: false
     },
     qualityPerson: {
         type: Object,
@@ -158,7 +158,8 @@ CompaniesSchema = new SimpleSchema({
     },
     "qualityPerson.status": {
         type: Boolean,
-        label: "Check here for this person to receive the Quarterly Performance Reports"
+        label: "Check here for this person to receive the Quarterly Performance Reports",
+        defaultValue: false
     },
     logisticsPerson: {
         type: Object,
@@ -189,7 +190,8 @@ CompaniesSchema = new SimpleSchema({
     },
     "logisticsPerson.status": {
         type: Boolean,
-        label: "Check here for this person to receive the Quarterly Performance Reports"
+        label: "Check here for this person to receive the Quarterly Performance Reports",
+        defaultValue: false
     },
     differentPerson: {
         type: Object,
@@ -225,7 +227,17 @@ CompaniesSchema = new SimpleSchema({
     "differentPerson.status": {
         type: Boolean,
         label: "Check here for this person to receive the Quarterly Performance Reports",
-        optional: true
+        optional: true,
+        defaultValue: false,
+        autoform: {
+            type: function () {
+                var docId = (AutoForm.getFieldValue("salesPerson.status") || AutoForm.getFieldValue("qualityPerson.status") || AutoForm.getFieldValue("logisticsPerson.status"));
+                if (docId) {
+                    return "hidden";
+                }
+
+            }
+        }
     },
     itemDescription: {
         type: String,
@@ -238,6 +250,7 @@ CompaniesSchema = new SimpleSchema({
     },
     "certification.$.certType": {
         type: String,
+        label: "Type",
         autoform: {
             afFieldInput: {
                 firstOption: "(Select a Certification Type)",
@@ -251,21 +264,63 @@ CompaniesSchema = new SimpleSchema({
                     ];
                 }
             }
-        },
-        label: "Type"
-
+        }
     },
     "certification.$.other": {
         type: String,
-        label: "(If Other) Type",
+        label: "Certification Type",
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
+                //AutoForm.resetForm();
+                var shouldBeRequired = this.field('certification.0.certType').value;
+                //console.log(this.field('certification.0.certType').value);
+                //console.log(shouldBeRequired);
                 var docId = AutoForm.getFieldValue("certification.0.certType");
+                if (shouldBeRequired == "Other") {
+                    // inserts
 
-                if ((docId === "Other") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
-                    return "required";
+                    if (!this.operator) {
+                        if (!this.isSet || this.value === null || this.value === "") return "required";
+                    }
+
+                    // updates
+                    else if (this.isSet) {
+                        if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                        if (this.operator === "$unset") return "required";
+                        if (this.operator === "$rename") return "required";
+                    }
                 }
+                ////insert
+                //if ((docId == "Other") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                //    document.getElementsByName("certification.0.reason").value() == null;
+                //    return "required";
+                //}
+                ////update
+                //else if (this.isSet) {
+                //    if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                //    if (this.operator === "$unset") return "required";
+                //    if (this.operator === "$rename") return "required";
+                //}
+            }
+        },
+        autoform: {
+            type: function () {
+                if (AutoForm.getFieldValue("certification.0.certType") != "Other") {
+                    return "hidden";
+                }
+            }
+        },
+        autoValue: function () {
+            var type = this.siblingField("certification.0.certType");
+            var content = this.siblingField("certification.0.other");
+            //console.log(type);
+            if (type.value == "Other") {
+                console.log(content.value);
+                return content.value;
+            }
+            else {
+                //this.unset();
             }
         }
     },
@@ -276,10 +331,40 @@ CompaniesSchema = new SimpleSchema({
         custom: function () {
             if (Meteor.isClient) {
                 var docId = AutoForm.getFieldValue("certification.0.certType");
-
+                //insert
                 if (!(docId === "None") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
                     return "required";
                 }
+                //update
+                else if (this.isSet) {
+                    if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                    if (this.operator === "$unset") return "required";
+                    if (this.operator === "$rename") return "required";
+                }
+            }
+        },
+        autoform: {
+            type: function () {
+                if (AutoForm.getFieldValue("certification.0.certType") == "None") {
+                    //console.log(this.isSet);
+                    return "hidden";
+                }
+                else {
+                    //console.log(this.isSet);
+                    return "bootstrap-datepicker";
+                }
+            }
+        },
+        autoValue: function () {
+            var type = this.field("certification.0.certType");
+            var content = this.field("certification.0.expirationDate");
+            if (type.value != "None") {
+                //var d = new Date (content);
+                //console.log(content);
+                return content.value;
+            }
+            else {
+                this.unset();
             }
         }
     },
@@ -292,10 +377,33 @@ CompaniesSchema = new SimpleSchema({
         custom: function () {
             if (Meteor.isClient) {
                 var docId = AutoForm.getFieldValue("certification.0.certType");
-
+                //insert
                 if (!(docId === "None") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
                     return "required";
                 }
+                //update
+                else if (this.isSet) {
+                    if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                    if (this.operator === "$unset") return "required";
+                    if (this.operator === "$rename") return "required";
+                }
+            }
+        },
+        autoform: {
+            type: function () {
+                if (AutoForm.getFieldValue("certification.0.certType") == "None") {
+                    return "hidden";
+                }
+            }
+        },
+        autoValue: function () {
+            var type = this.field("certification.0.certType");
+            var content = this.field("certification.0.certNumber");
+            if (type.value != "None") {
+                return content.value;
+            }
+            else {
+                this.unset();
             }
         }
     },
@@ -306,24 +414,77 @@ CompaniesSchema = new SimpleSchema({
         custom: function () {
             if (Meteor.isClient) {
                 var docId = AutoForm.getFieldValue("certification.0.certType");
-
+                //insert
                 if (!(docId === "None") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
                     return "required";
                 }
+                //update
+                else if (this.isSet) {
+                    if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                    if (this.operator === "$unset") return "required";
+                    if (this.operator === "$rename") return "required";
+                }
+            }
+        },
+        autoform: {
+            type: function () {
+                if (AutoForm.getFieldValue("certification.0.certType") == "None") {
+                    return "hidden";
+                }
+            }
+        },
+        autoValue: function () {
+            var type = this.field("certification.0.certType");
+            var content = this.field("certification.0.registrar");
+            if (type.value != "None") {
+                return content.value;
+            }
+            else {
+                this.unset();
             }
         }
     },
     "certification.$.reason": {
         type: String,
-        label: "(If None) Do You Plan To Pursue Certification? If So When?",
+        label: "Do You Plan To Pursue Certification? If So When?",
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
-                var docId = AutoForm.getFieldValue("certification.0.certType");
+                //AutoForm.resetForm(this.formId);
+                var shouldBeRequired = this.field('certification.0.certType').value;
+                //console.log(this.field('certification.0.certType').value);
 
-                if ((docId === "None") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
-                    return "required";
+                if (shouldBeRequired == "None") {
+                    // inserts
+
+                    if (!this.operator) {
+                        if (!this.isSet || this.value === null || this.value === "") return "required";
+                    }
+
+                    // updates
+                    else if (this.isSet) {
+                        if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                        if (this.operator === "$unset") return "required";
+                        if (this.operator === "$rename") return "required";
+                    }
                 }
+            }
+        },
+        autoform: {
+            type: function () {
+                if (AutoForm.getFieldValue("certification.0.certType") != "None") {
+                    return "hidden";
+                }
+            }
+        },
+        autoValue: function () {
+            var type = this.field("certification.0.certType");
+            var content = this.field("certification.0.reason");
+            if (type.value == "None") {
+                return content.value;
+            }
+            else {
+                this.unset();
             }
         }
     }
@@ -343,8 +504,11 @@ EventSchema = new SimpleSchema({
         }
     },
     eventDate: {
-        type: Date,
-        label: "Event Date"
+        type: String,
+        label: "Event Date",
+        autoform: {
+            type: "date"
+        }
     },
     eventType: {
         type: String,
@@ -402,6 +566,28 @@ EventSchema = new SimpleSchema({
                     return "required";
                 }
             }
+        },
+        custom: function () {
+            if (Meteor.isClient) {
+                //AutoForm.resetForm();
+                var shouldBeRequired = this.field('eventType').value;
+                //console.log(this.field('certification.0.certType').value);
+                //console.log(shouldBeRequired);
+                if (shouldBeRequired == "Delivery") {
+                    // inserts
+
+                    if (!this.operator) {
+                        if (!this.isSet || this.value === null || this.value === "") return "required";
+                    }
+
+                    // updates
+                    else if (this.isSet) {
+                        if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                        if (this.operator === "$unset") return "required";
+                        if (this.operator === "$rename") return "required";
+                    }
+                }
+            }
         }
     },
     actualDate: {
@@ -410,10 +596,22 @@ EventSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
-                var docId = AutoForm.getFieldValue("eventType");
+                var shouldBeRequired = this.field('eventType').value;
+                //console.log(this.field('certification.0.certType').value);
+                //console.log(shouldBeRequired);
+                if (shouldBeRequired == "Delivery") {
+                    // inserts
+                    //AutoForm.resetForm();
+                    if (!this.operator) {
+                        if (!this.isSet || this.value === null || this.value === "") return "required";
+                    }
 
-                if ((docId === "Delivery") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
-                    return "required";
+                    // updates
+                    else if (this.isSet) {
+                        if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                        if (this.operator === "$unset") return "required";
+                        if (this.operator === "$rename") return "required";
+                    }
                 }
             }
         }
@@ -429,15 +627,14 @@ EventSchema = new SimpleSchema({
             firstOption: "(Select a Status)",
             options: function () {
                 return [
-                    {label: "Open", value: "Open"},
-                    {label: "Pending", value: "Pending"},
-                    {label: "Closed", value: "Closed"}
+                    {label: "Open", value: 1},
+                    {label: "Pending", value: 0},
+                    {label: "Closed", value: -1}
                 ];
             }
         }
     }
 });
-
 
 
 CompaniesTest.attachSchema(CompaniesSchema);
@@ -479,6 +676,7 @@ if (Meteor.isClient) {
     Meteor.subscribe('theEvents');
     Meteor.subscribe('userList');
     Meteor.subscribe('companies_Test');
+    Meteor.subscribe('events_Test');
     AutoForm.hooks({
         insertCompanyForm: {
             onSuccess: function (insert, result) {
@@ -500,29 +698,171 @@ if (Meteor.isClient) {
                     "showMethod": "fadeIn",
                     "hideMethod": "fadeOut"
                 };
+                //AutoForm.resetForm(this.formId);
                 if (Roles.userIsInRole(Meteor.userId(), 'supplier')) {
-
+                    //console.log(result)
+                    //var companyName = CompaniesTest.find({id: result}).fetch()[0].companyName;
                     var options = {
                         from: "sms@tandlautomatics.com",
                         to: "gwfreak01@gmail.com",
                         subject: "New Company",
                         text: AutoForm.getFieldValue("companyName", "insertCompanyForm") + " has just registered"
                     };
-                    Meteor.call("sendMail", options);
+                    Meteor.call("sendEmail", options);
                     toastr.success("Thank you for registering!", "Registration Success");
                     Meteor.logout();
                     Router.go('/');
                 }
                 else {
-                    Meteor.call("sendMail", options);
                     toastr.success("Thank you for registering!", "Registration Success");
                     Router.go('/companies');
                 }
+            },
+            onError: function(insert, error) {
+                console.log(error);
+                return error;
+            }
+        }
+    });
+    AutoForm.hooks({
+        updateCompanyForm: {
+            onSuccess: function (insert, result) {
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-full-width",
+                    "preventDuplicates": true,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                //AutoForm.resetForm(this.result);
+                toastr.success("Company Details Updated", "Update Success");
+                Router.go('/companies');
+
+            }
+            //formToModifier: function(modifier) {
+            //    // alter modifier
+            //    // return modifier;
+            //    AutoForm.resetForm("updateCompanyForm");
+            //    if (AutoForm.getFieldValue("certification.0.certType") == "Other") {
+            //        document.getElementsByName("certification.0.reason").value = null;
+            //        return modifier;
+            //    }
+            //    else if (AutoForm.getFieldValue("certification.0.certType") == "None") {
+            //        document.getElementsByName("certification.0.other").value = null;
+            //        document.getElementsByName("certification.0.expirationDate").value = null;
+            //        document.getElementsByName("certification.0.certNumber").value = null;
+            //        document.getElementsByName("certification.0.registrar").value = null;
+            //        return modifier;
+            //    }
+            //    else {
+            //        document.getElementsByName("certification.0.other").value = null;
+            //        document.getElementsByName("certification.0.reason").value = null;
+            //        return modifier;
+            //    }
+            //}
+            //before: {
+            // Replace `formType` with the form `type` attribute to which this hook applies
+            //update: function (doc) {
+            //console.log(isSet);
+            //AutoForm.resetForm("updateCompanyForm");
+            //console.log(AutoForm.getFieldValue("certification.0.certType"));
+            //if (AutoForm.getFieldValue("certification.0.certType") == "Other") {
+            //    document.getElementsByName("certification.0.reason").value = null;
+            //    console.log(AutoForm.validateField("updateCompanyForm","certification.0.reason"));
+            //    return doc;
+            //}
+            //else if (AutoForm.getFieldValue("certification.0.certType") == "None") {
+            //    document.getElementsByName("certification.0.other").value = null;
+            //    document.getElementsByName("certification.0.expirationDate").value = null;
+            //    document.getElementsByName("certification.0.certNumber").value = null;
+            //    document.getElementsByName("certification.0.registrar").value = null;
+            //    console.log(AutoForm.getValidationContext("updateCompanyForm"));
+            //    return doc;
+            //}
+            //else {
+            //    document.getElementsByName("certification.0.other").value = null;
+            //    document.getElementsByName("certification.0.reason").value = null;
+            //    console.log(AutoForm.getValidationContext("updateCompanyForm"));
+            //    return doc;
+            //}
+            // Then return it or pass it to this.result()
+            //return doc; (synchronous)
+            //return false; (synchronous, cancel)
+            //this.result(doc); (asynchronous)
+            //this.result(false); (asynchronous, cancel)
+            //}
+            //}
+        }
+    });
+    AutoForm.hooks({
+        insertEventForm: {
+            onSuccess: function (insert, result) {
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-full-width",
+                    "preventDuplicates": true,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                Router.go('/events');
+
+                toastr.success("Successfully Added New Event", "Event Submit Success");
+
 
             }
 
         }
-    })
+    });
+    AutoForm.hooks({
+        updateEventForm: {
+            onSuccess: function (insert, result) {
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-full-width",
+                    "preventDuplicates": true,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                //AutoForm.resetForm(this.result);
+                toastr.success("Event Details Updated", "Update Success");
+                Router.go('/events');
+
+            }
+        }
+    });
     Template.login.events({
         'submit form': function (event) {
             event.preventDefault();
@@ -574,10 +914,22 @@ if (Meteor.isClient) {
         }),
         Template.companies.events({
             'click .btn-warning': function () {
-                var dataContext = {
-                    message: "You must see this, it's amazing!",
-                    url: "www.google.com",
-                    title: "Amazing stuff, click me !"
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
                 };
 
                 var html = Blaze.toHTML(Template.registerEmail);
@@ -589,7 +941,7 @@ if (Meteor.isClient) {
                     html: html
                 };
                 Meteor.call("sendEmail", options);
-                alert("Invitation Sent");
+                toastr.info("Invitation Sent");
             }
         }),
         Template.companies.helpers({
@@ -610,6 +962,12 @@ if (Meteor.isClient) {
                     Router.go("/companies/details/" + this._id);
                     Session.set('selectedCompany', companyID);
                 }
+            },
+            'click .btn-warning': function (e) {
+                var companyID = this._id;
+                Session.set('selectedCompany', companyID);
+                e.stopPropagation();
+                Router.go("/companies/edit/" + companyID);
             },
             'click .btn-danger': function (e) {
                 var companyID = this._id;
@@ -841,7 +1199,7 @@ if (Meteor.isClient) {
             //                        subject: "New Company",
             //                        text: companyNameVar + " has just registered"
             //                    };
-            //                    Meteor.call("sendMail", options);
+            //                    Meteor.call("sendEmail", options);
             //                    alert("You have successfully registered!");
             //                    if (Roles.userIsInRole(currentUserID, "supplier")) {
             //                        Meteor.logout();
@@ -912,6 +1270,13 @@ if (Meteor.isClient) {
         }),
         Template.detailCompany.events({}),
         Template.detailCompany.helpers({
+            '[name=insertCompanyForm]': function () {
+                return CompaniesTest.findOne({_id: this._id});
+            },
+            'getcompanyAddress': function () {
+                var company = CompaniesTest.findOne({_id: this._id});
+                return (company.street + " " + company.street2 + ", " + company.city + ", " + company.state + " " + company.zipcode);
+            },
             'showOption1': function () {
                 if (CompanyList.find({_id: this._id}).fetch()[0].cert[0].certStatus == true) {
                     return true;
@@ -992,253 +1357,262 @@ if (Meteor.isClient) {
 
         }),
         Template.editCompany.events({
-            'keyup [name=companyItem], change [name=companyItem]': function (event) {
-                var documentID = this._id;
-                var companyItem = event.target.value;
-                var companyType = document;
-                console.log(event.target.id);
-                if ((event.which == 13) || (event.which == 27)) {
-                    $(event.target).blur();
-                }
-                if (event.target.id == "companyName") {
-                    Meteor.call('updateCompanyName', documentID, companyItem);
-                }
-                if (event.target.id == "companyAddress") {
-                    Meteor.call('updateCompanyAddress', documentID, companyItem);
-                }
-                if (event.target.id == "salesName") {
-                    Meteor.call('updateSalesName', documentID, companyItem);
-                }
-                if (event.target.id == "salesEmail") {
-                    Meteor.call('updateSalesEmail', documentID, companyItem);
-                }
-                if (event.target.id == "salesPhone") {
-                    Meteor.call('updateSalesPhone', documentID, companyItem);
-                }
-                if (event.target.id == "qualityName") {
-                    Meteor.call('updateQualityName', documentID, companyItem);
-                }
-                if (event.target.id == "qualityEmail") {
-                    Meteor.call('updateQualityEmail', documentID, companyItem);
-                }
-                if (event.target.id == "qualityPhone") {
-                    Meteor.call('updateQualityPhone', documentID, companyItem);
-                }
-                if (event.target.id == "logisticsName") {
-                    Meteor.call('updateSalesName', documentID, companyItem);
-                }
-                if (event.target.id == "logisticsEmail") {
-                    Meteor.call('updateSalesEmail', documentID, companyItem);
-                }
-                if (event.target.id == "logisticsPhone") {
-                    Meteor.call('updateSalesPhone', documentID, companyItem);
-                }
-                if (event.target.id == "differentName") {
-                    Meteor.call('updateQualityName', documentID, companyItem);
-                }
-                if (event.target.id == "differentEmail") {
-                    Meteor.call('updateQualityEmail', documentID, companyItem);
-                }
-                if (event.target.id == "differentPhone") {
-                    Meteor.call('updateQualityPhone', documentID, companyItem);
-                }
-                if (event.target.id == "describeInput") {
-                    Meteor.call('updateDescribeInput', documentID, companyItem);
-                }
-                if (event.target.id == "expirationDate1") {
-                    Meteor.call('updateExpirationDate1', documentID, companyItem);
-                }
-                if (event.target.id == "certNumber1") {
-                    Meteor.call('updateCertNumber1', documentID, companyItem);
-                }
-                if (event.target.id == "registrar1") {
-                    Meteor.call('updateRegistrar1', documentID, companyItem);
-                }
-                if (event.target.id == "expirationDate2") {
-                    Meteor.call('updateExpirationDate2', documentID, companyItem);
-                }
-                if (event.target.id == "certNumber2") {
-                    Meteor.call('updateCertNumber2', documentID, companyItem);
-                }
-                if (event.target.id == "registrar2") {
-                    Meteor.call('updateRegistrar2', documentID, companyItem);
-                }
-                if (event.target.id == "expirationDate3") {
-                    Meteor.call('updateExpirationDate3', documentID, companyItem);
-                }
-                if (event.target.id == "certNumber3") {
-                    Meteor.call('updateCertNumber3', documentID, companyItem);
-                }
-                if (event.target.id == "registrar3") {
-                    Meteor.call('updateRegistrar3', documentID, companyItem);
-                }
-                if (event.target.id == "certType4") {
-                    Meteor.call('updateCertType4', documentID, companyItem);
-                }
-                if (event.target.id == "expirationDate4") {
-                    Meteor.call('updateExpirationDate4', documentID, companyItem);
-                }
-                if (event.target.id == "certNumber4") {
-                    Meteor.call('updateCertNumber4', documentID, companyItem);
-                }
-                if (event.target.id == "registrar4") {
-                    Meteor.call('updateRegistrar4', documentID, companyItem);
-                }
-                if (event.target.id == "cert5Text") {
-                    Meteor.call('updateCert5Text', documentID, companyItem);
-                }
+            'blur form': function () {
+                //AutoForm.resetForm(this.formId);
+                //console.log("This is a dog");
             },
-            'click .show-Option1': function () {
-                var documentID = this._id;
-                Session.set('showPullDown1', event.target.checked);
-                if (Session.get("showPullDown1") == false) {
-                    Meteor.call('updateExpirationDate1', documentID, null);
-                    Meteor.call('updateCertNumber1', documentID, null);
-                    Meteor.call('updateRegistrar1', documentID, null);
-                    Meteor.call('updateCertStatus1', documentID, false);
-                }
-                else {
-                    Meteor.call('updateCertStatus1', documentID, true);
-                }
-            },
-            'click .show-Option2': function () {
-                var documentID = this._id;
-                Session.set('showPullDown2', event.target.checked);
-                if (Session.get("showPullDown2") == false) {
-                    Meteor.call('updateExpirationDate2', documentID, null);
-                    Meteor.call('updateCertNumber2', documentID, null);
-                    Meteor.call('updateRegistrar2', documentID, null);
-                    Meteor.call('updateCertStatus2', documentID, false);
-                }
-                else {
-                    Meteor.call('updateCertStatus2', documentID, true);
-                }
-            },
-            'click .show-Option3': function () {
-                var documentID = this._id;
-                Session.set('showPullDown3', event.target.checked);
-                if (Session.get("showPullDown3") == false) {
-                    Meteor.call('updateExpirationDate3', documentID, null);
-                    Meteor.call('updateCertNumber3', documentID, null);
-                    Meteor.call('updateRegistrar3', documentID, null);
-                    Meteor.call('updateCertStatus3', documentID, false);
-                }
-                else {
-                    Meteor.call('updateCertStatus3', documentID, true);
-                }
-            },
-            'click .show-Option4': function () {
-                var documentID = this._id;
-                Session.set('showPullDown4', event.target.checked);
-                if (Session.get("showPullDown4") == false) {
-                    Meteor.call('updateCertType4', documentID, null);
-                    Meteor.call('updateExpirationDate4', documentID, null);
-                    Meteor.call('updateCertNumber4', documentID, null);
-                    Meteor.call('updateRegistrar4', documentID, null);
-                    Meteor.call('updateCertStatus4', documentID, false);
-                }
-                else {
-                    Meteor.call('updateCertStatus4', documentID, true);
-                }
-            },
-            'click .show-Option5': function () {
-                var documentID = this._id;
-                Session.set('showPullDown5', event.target.checked);
-                if (Session.get("showPullDown5") == false) {
-                    Meteor.call('updateCert5Text', documentID, null);
-                    Meteor.call('updateCertStatus5', documentID, false);
-                }
-                else {
-                    Meteor.call('updateCertStatus5', documentID, true);
-                }
-            }
+            //'keyup [name=companyItem], change [name=companyItem]': function (event) {
+            //    var documentID = this._id;
+            //    var companyItem = event.target.value;
+            //    var companyType = document;
+            //    console.log(event.target.id);
+            //    if ((event.which == 13) || (event.which == 27)) {
+            //        $(event.target).blur();
+            //    }
+            //    if (event.target.id == "companyName") {
+            //        Meteor.call('updateCompanyName', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "companyAddress") {
+            //        Meteor.call('updateCompanyAddress', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "salesName") {
+            //        Meteor.call('updateSalesName', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "salesEmail") {
+            //        Meteor.call('updateSalesEmail', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "salesPhone") {
+            //        Meteor.call('updateSalesPhone', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "qualityName") {
+            //        Meteor.call('updateQualityName', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "qualityEmail") {
+            //        Meteor.call('updateQualityEmail', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "qualityPhone") {
+            //        Meteor.call('updateQualityPhone', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "logisticsName") {
+            //        Meteor.call('updateSalesName', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "logisticsEmail") {
+            //        Meteor.call('updateSalesEmail', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "logisticsPhone") {
+            //        Meteor.call('updateSalesPhone', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "differentName") {
+            //        Meteor.call('updateQualityName', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "differentEmail") {
+            //        Meteor.call('updateQualityEmail', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "differentPhone") {
+            //        Meteor.call('updateQualityPhone', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "describeInput") {
+            //        Meteor.call('updateDescribeInput', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "expirationDate1") {
+            //        Meteor.call('updateExpirationDate1', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "certNumber1") {
+            //        Meteor.call('updateCertNumber1', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "registrar1") {
+            //        Meteor.call('updateRegistrar1', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "expirationDate2") {
+            //        Meteor.call('updateExpirationDate2', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "certNumber2") {
+            //        Meteor.call('updateCertNumber2', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "registrar2") {
+            //        Meteor.call('updateRegistrar2', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "expirationDate3") {
+            //        Meteor.call('updateExpirationDate3', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "certNumber3") {
+            //        Meteor.call('updateCertNumber3', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "registrar3") {
+            //        Meteor.call('updateRegistrar3', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "certType4") {
+            //        Meteor.call('updateCertType4', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "expirationDate4") {
+            //        Meteor.call('updateExpirationDate4', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "certNumber4") {
+            //        Meteor.call('updateCertNumber4', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "registrar4") {
+            //        Meteor.call('updateRegistrar4', documentID, companyItem);
+            //    }
+            //    if (event.target.id == "cert5Text") {
+            //        Meteor.call('updateCert5Text', documentID, companyItem);
+            //    }
+            //}
+            //,
+            //'click .show-Option1': function () {
+            //    var documentID = this._id;
+            //    Session.set('showPullDown1', event.target.checked);
+            //    if (Session.get("showPullDown1") == false) {
+            //        Meteor.call('updateExpirationDate1', documentID, null);
+            //        Meteor.call('updateCertNumber1', documentID, null);
+            //        Meteor.call('updateRegistrar1', documentID, null);
+            //        Meteor.call('updateCertStatus1', documentID, false);
+            //    }
+            //    else {
+            //        Meteor.call('updateCertStatus1', documentID, true);
+            //    }
+            //},
+            //'click .show-Option2': function () {
+            //    var documentID = this._id;
+            //    Session.set('showPullDown2', event.target.checked);
+            //    if (Session.get("showPullDown2") == false) {
+            //        Meteor.call('updateExpirationDate2', documentID, null);
+            //        Meteor.call('updateCertNumber2', documentID, null);
+            //        Meteor.call('updateRegistrar2', documentID, null);
+            //        Meteor.call('updateCertStatus2', documentID, false);
+            //    }
+            //    else {
+            //        Meteor.call('updateCertStatus2', documentID, true);
+            //    }
+            //},
+            //'click .show-Option3': function () {
+            //    var documentID = this._id;
+            //    Session.set('showPullDown3', event.target.checked);
+            //    if (Session.get("showPullDown3") == false) {
+            //        Meteor.call('updateExpirationDate3', documentID, null);
+            //        Meteor.call('updateCertNumber3', documentID, null);
+            //        Meteor.call('updateRegistrar3', documentID, null);
+            //        Meteor.call('updateCertStatus3', documentID, false);
+            //    }
+            //    else {
+            //        Meteor.call('updateCertStatus3', documentID, true);
+            //    }
+            //},
+            //'click .show-Option4': function () {
+            //    var documentID = this._id;
+            //    Session.set('showPullDown4', event.target.checked);
+            //    if (Session.get("showPullDown4") == false) {
+            //        Meteor.call('updateCertType4', documentID, null);
+            //        Meteor.call('updateExpirationDate4', documentID, null);
+            //        Meteor.call('updateCertNumber4', documentID, null);
+            //        Meteor.call('updateRegistrar4', documentID, null);
+            //        Meteor.call('updateCertStatus4', documentID, false);
+            //    }
+            //    else {
+            //        Meteor.call('updateCertStatus4', documentID, true);
+            //    }
+            //},
+            //'click .show-Option5': function () {
+            //    var documentID = this._id;
+            //    Session.set('showPullDown5', event.target.checked);
+            //    if (Session.get("showPullDown5") == false) {
+            //        Meteor.call('updateCert5Text', documentID, null);
+            //        Meteor.call('updateCertStatus5', documentID, false);
+            //    }
+            //    else {
+            //        Meteor.call('updateCertStatus5', documentID, true);
+            //    }
+            //}
         }),
         Template.editCompany.helpers({
-            'showOption1': function () {
-                if ((CompanyList.find({_id: this._id}).fetch()[0].cert[0].certStatus == true) || Session.get("showPullDown1")) {
-                    if (Session.get("showPullDown1") == false) {
-                        return false;
-                    }
-                    else {
-                        return true;
-                    }
-                }
-
-            },
-            'showOption2': function () {
-                if ((CompanyList.find({_id: this._id}).fetch()[0].cert[1].certStatus == true) || Session.get("showPullDown2")) {
-                    return Session.get("showPullDown2");
-                }
-            },
-            'showOption3': function () {
-                if ((CompanyList.find({_id: this._id}).fetch()[0].cert[2].certStatus == true) || Session.get("showPullDown3")) {
-                    return Session.get("showPullDown3");
-                }
-            },
-            'showOption4': function () {
-                if ((CompanyList.find({_id: this._id}).fetch()[0].cert[3].certStatus == true) || Session.get("showPullDown4")) {
-                    return Session.get("showPullDown4");
-                }
-            },
-            'showOption5': function () {
-                if ((CompanyList.find({_id: this._id}).fetch()[0].cert[4].certStatus == true) || Session.get("showPullDown5")) {
-                    return Session.get("showPullDown5");
-                }
-            },
-            'expirationDate1': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[0].expirationDate;
-            },
-            'expirationDate2': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[1].expirationDate;
-            },
-            'expirationDate3': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[2].expirationDate;
-            },
-            'expirationDate4': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[3].expirationDate;
-            },
-            'expirationDate5': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[0].expirationDate;
-            },
-            'certNumber1': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[0].certNumber;
-            },
-            'certNumber2': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[1].certNumber;
-            },
-            'certNumber3': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[2].certNumber;
-            },
-            'certNumber4': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[3].certNumber;
-            },
-            'registrar1': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[0].registrar;
-            },
-            'registrar2': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[1].registrar;
-            },
-            'registrar3': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[2].registrar;
-            },
-            'registrar4': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[3].registrar;
-            },
-            'certType4': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[3].type;
-            },
-            'cert5Text': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[4].text;
-            }
+            //'showOption1': function () {
+            //    if ((CompanyList.find({_id: this._id}).fetch()[0].cert[0].certStatus == true) || Session.get("showPullDown1")) {
+            //        if (Session.get("showPullDown1") == false) {
+            //            return false;
+            //        }
+            //        else {
+            //            return true;
+            //        }
+            //    }
+            //
+            //},
+            //'showOption2': function () {
+            //    if ((CompanyList.find({_id: this._id}).fetch()[0].cert[1].certStatus == true) || Session.get("showPullDown2")) {
+            //        return Session.get("showPullDown2");
+            //    }
+            //},
+            //'showOption3': function () {
+            //    if ((CompanyList.find({_id: this._id}).fetch()[0].cert[2].certStatus == true) || Session.get("showPullDown3")) {
+            //        return Session.get("showPullDown3");
+            //    }
+            //},
+            //'showOption4': function () {
+            //    if ((CompanyList.find({_id: this._id}).fetch()[0].cert[3].certStatus == true) || Session.get("showPullDown4")) {
+            //        return Session.get("showPullDown4");
+            //    }
+            //},
+            //'showOption5': function () {
+            //    if ((CompanyList.find({_id: this._id}).fetch()[0].cert[4].certStatus == true) || Session.get("showPullDown5")) {
+            //        return Session.get("showPullDown5");
+            //    }
+            //},
+            //'expirationDate1': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[0].expirationDate;
+            //},
+            //'expirationDate2': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[1].expirationDate;
+            //},
+            //'expirationDate3': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[2].expirationDate;
+            //},
+            //'expirationDate4': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[3].expirationDate;
+            //},
+            //'expirationDate5': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[0].expirationDate;
+            //},
+            //'certNumber1': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[0].certNumber;
+            //},
+            //'certNumber2': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[1].certNumber;
+            //},
+            //'certNumber3': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[2].certNumber;
+            //},
+            //'certNumber4': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[3].certNumber;
+            //},
+            //'registrar1': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[0].registrar;
+            //},
+            //'registrar2': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[1].registrar;
+            //},
+            //'registrar3': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[2].registrar;
+            //},
+            //'registrar4': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[3].registrar;
+            //},
+            //'certType4': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[3].type;
+            //},
+            //'cert5Text': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[4].text;
+            //}
 
         }),
         Template.eventListDisplay.events({
-            'click .event': function () {
+            'click .event': function (e) {
+                e.stopPropagation();
                 var eventID = this._id;
                 Router.go("/events/details/" + this._id);
                 Session.set('selectedEvent', eventID);
             },
-            'click .btn-danger': function (event) {
+            'click .btn-danger': function (e) {
+                var eventID = this._id;
+                Session.set('selectedEvent', eventID);
+                e.stopPropagation();
                 var selectedEvent = Session.get('selectedEvent');
                 var confirm = window.confirm("Delete this Event?");
                 if (confirm) {
@@ -1248,10 +1622,11 @@ if (Meteor.isClient) {
         }),
         Template.eventListDisplay.helpers({
             'event': function () {
-                return EventList.find({}, {sort: {eventDate: 1}}).map(function (document, index) {
+                return EventsTest.find({}, {sort: {statusOption: -1}}).map(function (document, index) {
                     document.index = index + 1;
                     return document;
                 });
+
             },
             'selectedClass': function () {
                 var eventID = this._id;
@@ -1263,6 +1638,41 @@ if (Meteor.isClient) {
             'showSelectedEvent': function () {
                 var selectedEvent = Session.get('selectedEvent');
                 return EventList.findOne(selectedEvent);
+            },
+            'eventBad': function () {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            'eventMid': function () {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            'eventGood': function () {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            'statusOptionConverter': function () {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
+                    return "Open";
+                }
+                else if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
+                    return "Pending";
+                }
+                else {
+                    return "Closed";
+                }
             }
         }),
         Template.addEventForm.events({
@@ -1274,50 +1684,51 @@ if (Meteor.isClient) {
                 else {
                     Session.set('showDelivery', false);
                 }
-            },
-            'submit form': function () {
-                event.preventDefault();
-
-                var currentUserID = Meteor.userId();
-                var companyNameVar = document.getElementById("companySelect").value;
-                var eventDateVar = event.target.eventDate.value;
-                var eventTypeVar = document.getElementById("eventType").value;
-                var tlPartNumberVar = event.target.tlPartNumber.value;
-                var purchaseOrderVar = event.target.purchaseOrder.value;
-                var lotNumberVar = event.target.lotNumber.value;
-                var carNumberVar = event.target.carNumber.value;
-                var rootCauseVar = event.target.rootCause.value;
-                var statusOptionVar = document.getElementById("statusOption").value;
-
-                if (eventTypeVar == "Delivery") {
-                    var requiredDeliveryDateVar = document.getElementById("requiredDeliveryDate").value;
-                    var actualDeliveryDateVar = document.getElementById("actualDeliveryDate").value;
-                    if ((eventDateVar != "") && (tlPartNumberVar != "") && (purchaseOrderVar != "") && (lotNumberVar != "") && (carNumberVar != "")) {
-                        if ((requiredDeliveryDateVar != "") && (actualDeliveryDateVar != "")) {
-                            Meteor.call('insertEventData', companyNameVar, eventDateVar, eventTypeVar, tlPartNumberVar, purchaseOrderVar, lotNumberVar, carNumberVar, null, requiredDeliveryDateVar, actualDeliveryDateVar, rootCauseVar, statusOptionVar);
-                            alert("Successfully Added Event");
-                            Router.go('events');
-                        }
-                    }
-                    else {
-                        alert("Please complete the form")
-                    }
-                }
-
-                else if (eventTypeVar == "Quality") {
-                    var quantityRejectVar = document.getElementById("quantityReject").value;
-                    if ((eventDateVar != "") && (tlPartNumberVar != "") && (purchaseOrderVar != "") && (lotNumberVar != "") && (carNumberVar != "")) {
-                        if (quantityRejectVar != "") {
-                            Meteor.call('insertEventData', companyNameVar, eventDateVar, eventTypeVar, tlPartNumberVar, purchaseOrderVar, lotNumberVar, carNumberVar, quantityRejectVar, null, null, rootCauseVar, statusOptionVar);
-                            alert("Successfully Added Event");
-                            Router.go('events');
-                        }
-                    }
-                    else {
-                        alert("Please complete the form")
-                    }
-                }
             }
+            //,
+            //'submit form': function () {
+            //    event.preventDefault();
+            //
+            //    var currentUserID = Meteor.userId();
+            //    var companyNameVar = document.getElementById("companySelect").value;
+            //    var eventDateVar = event.target.eventDate.value;
+            //    var eventTypeVar = document.getElementById("eventType").value;
+            //    var tlPartNumberVar = event.target.tlPartNumber.value;
+            //    var purchaseOrderVar = event.target.purchaseOrder.value;
+            //    var lotNumberVar = event.target.lotNumber.value;
+            //    var carNumberVar = event.target.carNumber.value;
+            //    var rootCauseVar = event.target.rootCause.value;
+            //    var statusOptionVar = document.getElementById("statusOption").value;
+            //
+            //    if (eventTypeVar == "Delivery") {
+            //        var requiredDeliveryDateVar = document.getElementById("requiredDeliveryDate").value;
+            //        var actualDeliveryDateVar = document.getElementById("actualDeliveryDate").value;
+            //        if ((eventDateVar != "") && (tlPartNumberVar != "") && (purchaseOrderVar != "") && (lotNumberVar != "") && (carNumberVar != "")) {
+            //            if ((requiredDeliveryDateVar != "") && (actualDeliveryDateVar != "")) {
+            //                Meteor.call('insertEventData', companyNameVar, eventDateVar, eventTypeVar, tlPartNumberVar, purchaseOrderVar, lotNumberVar, carNumberVar, null, requiredDeliveryDateVar, actualDeliveryDateVar, rootCauseVar, statusOptionVar);
+            //                alert("Successfully Added Event");
+            //                Router.go('events');
+            //            }
+            //        }
+            //        else {
+            //            alert("Please complete the form")
+            //        }
+            //    }
+            //
+            //    else if (eventTypeVar == "Quality") {
+            //        var quantityRejectVar = document.getElementById("quantityReject").value;
+            //        if ((eventDateVar != "") && (tlPartNumberVar != "") && (purchaseOrderVar != "") && (lotNumberVar != "") && (carNumberVar != "")) {
+            //            if (quantityRejectVar != "") {
+            //                Meteor.call('insertEventData', companyNameVar, eventDateVar, eventTypeVar, tlPartNumberVar, purchaseOrderVar, lotNumberVar, carNumberVar, quantityRejectVar, null, null, rootCauseVar, statusOptionVar);
+            //                alert("Successfully Added Event");
+            //                Router.go('events');
+            //            }
+            //        }
+            //        else {
+            //            alert("Please complete the form")
+            //        }
+            //    }
+            //}
         }),
         Template.addEventForm.helpers({
             'showDelivery': function () {
@@ -1330,14 +1741,13 @@ if (Meteor.isClient) {
         }),
         Template.detailEvent.events({}),
         Template.detailEvent.helpers({
-            'showQuality': function () {
-                if (EventList.find({_id: this._id}).fetch()[0].eventType == "Quality") {
+            showDelivery: function () {
+                var docId = AutoForm.getFieldValue("eventType");
+                if (docId == "Delivery") {
                     return true;
                 }
-            },
-            'showDelivery': function () {
-                if (EventList.find({_id: this._id}).fetch()[0].eventType == "Delivery") {
-                    return true;
+                else {
+                    return false;
                 }
             }
         }),
@@ -1397,21 +1807,9 @@ if (Meteor.isClient) {
             }
         }),
         Template.editEvent.helpers({
-            selectData: function (data) {
-                if ((data == this.eventType) || (data == this.statusOption)) {
-                    return 'selected';
-                }
-            },
-            'showQuality': function () {
-                if (EventList.find({_id: this._id}).fetch()[0].eventType == "Quality") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            },
-            'showDelivery': function () {
-                if (EventList.find({_id: this._id}).fetch()[0].eventType == "Delivery") {
+            showDelivery: function () {
+                var docId = AutoForm.getFieldValue("eventType");
+                if (docId == "Delivery") {
                     return true;
                 }
                 else {
@@ -1433,38 +1831,83 @@ if (Meteor.isClient) {
                 }
             }
         }),
+        Template.companyEventListDisplay.events({
+            'click .event': function (e) {
+                e.stopPropagation();
+                var eventID = this._id;
+                Router.go("/events/details/" + this._id);
+                Session.set('selectedEvent', eventID);
+            }
+        }),
         Template.companyEventListDisplay.helpers({
             'event': function () {
-                return CompanyList.find({_id: this._id}, {sort: {eventDate: 1}}).fetch()[0].event.map(function (document, index) {
+                return EventsTest.find({companyName: this.companyName}, {sort: {statusOption: -1}}).map(function (document, index) {
                     document.index = index + 1;
+                    console.log(document);
                     return document;
                 });
+
+            },
+            'eventBad': function () {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            'eventMid': function () {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            'eventGood': function () {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            'statusOptionConverter': function () {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
+                    return "Open";
+                }
+                else if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
+                    return "Pending";
+                }
+                else {
+                    return "Closed";
+                }
             }
         }),
         Template.registerEmail.events({}),
         Template.registerEmail.helpers({}),
         Template.insertCompanyForm.helpers({
-            normalOption: function () {
-                var docId = AutoForm.getFieldValue("certification.0.certType");
-                if ((docId != "Other") && (docId != "None")) {
+            noStatus: function () {
+                var docId = (AutoForm.getFieldValue("salesPerson.status") || AutoForm.getFieldValue("qualityPerson.status") || AutoForm.getFieldValue("logisticsPerson.status"));
+                if (docId) {
                     return true;
                 }
                 else {
                     return false;
                 }
             },
-            otherOption: function () {
-                var docId = AutoForm.getFieldValue("certification.0.certType");
-                if (docId == "Other") {
+            otherCert: function () {
+                var docId = (AutoForm.getFieldValue("certification.0.certType") == "Other");
+                if (docId) {
                     return true;
                 }
                 else {
                     return false;
                 }
             },
-            noneOption: function () {
-                var docId = AutoForm.getFieldValue("certification.0.certType");
-                if (docId == "None") {
+            noneCert: function () {
+                var docId = (AutoForm.getFieldValue("certification.0.certType") == "None");
+                if (docId) {
                     return true;
                 }
                 else {
@@ -1646,6 +2089,17 @@ if (Meteor.isServer) {
         }
     });
 
+    Meteor.publish('events_Test', function () {
+        if (Roles.userIsInRole(this.userId, ['admin', 'employee'])) {
+            var currentUserID = this.userId;
+            return EventsTest.find({});
+        }
+        else {
+            this.stop();
+            return;
+        }
+    });
+
     Meteor.publish('userList', function () {
         if (Roles.userIsInRole(this.userId, ['admin'])) {
             var currentUserID = this.userId;
@@ -1671,7 +2125,18 @@ if (Meteor.isServer) {
         'remove': function (userId, doc) {
             return true;
         }
-    })
+    });
+    EventsTest.allow({
+        'insert': function (userId, doc) {
+            return true;
+        },
+        'update': function (userId, doc) {
+            return true;
+        },
+        'remove': function (userId, doc) {
+            return true;
+        }
+    });
     Meteor.methods({
         'insertCompanyData': function (companyNameVar, companyAddressVar, salesNameVar, salesEmailVar, salesPhoneVar,
                                        qualityNameVar, qualityEmailVar, qualityPhoneVar, logisticsNameVar, logisticsEmailVar,
@@ -1946,7 +2411,7 @@ if (Meteor.isServer) {
         'removeEventData': function (selectedEvent) {
             var currentUserID = Meteor.userId();
             if (Roles.userIsInRole(currentUserID, 'admin')) {
-                EventList.remove({_id: selectedEvent});
+                EventsTest.remove({_id: selectedEvent});
             }
         },
         'updateEventType': function (documentID, companyItem) {
@@ -2012,6 +2477,7 @@ if (Meteor.isServer) {
             // without waiting for the email sending to complete.
 
             this.unblock();
+
             //to.forEach(function (entry) {
             //    Email.send({
             //        to: entry,
@@ -2024,10 +2490,6 @@ if (Meteor.isServer) {
 
             Email.send(options);
 
-        },
-        'sendMail': function (options) {
-            this.unblock();
-            Email.send(options);
         }
 
     });
@@ -2084,14 +2546,14 @@ Router.route('/companies/edit/:_id', {
     },
     data: function () {
         var currentList = this.params._id;
-        return CompanyList.findOne({_id: currentList});
+        return CompaniesTest.findOne({_id: currentList});
     }
 });
 
 Router.route('/events', {
     waitOn: function () {
         // waitOn makes sure that this publication is ready before rendering your template
-        return Meteor.subscribe("theEvents");
+        return Meteor.subscribe("events_Test");
     }
 });
 
@@ -2103,11 +2565,11 @@ Router.route('/events/details/:_id', {
     template: 'detailEvent',
     waitOn: function () {
         // waitOn makes sure that this publication is ready before rendering your template
-        return Meteor.subscribe("theEvents");
+        return Meteor.subscribe("events_Test");
     },
     data: function () {
         var currentList = this.params._id;
-        return EventList.findOne({_id: currentList});
+        return EventsTest.findOne({_id: currentList});
     }
 });
 
@@ -2115,11 +2577,11 @@ Router.route('/events/edit/:_id', {
     template: 'editEvent',
     waitOn: function () {
         // waitOn makes sure that this publication is ready before rendering your template
-        return Meteor.subscribe("theEvents");
+        return Meteor.subscribe("events_Test");
     },
     data: function () {
         var currentList = this.params._id;
-        return EventList.findOne({_id: currentList});
+        return EventsTest.findOne({_id: currentList});
     }
 });
 
