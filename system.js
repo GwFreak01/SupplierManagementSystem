@@ -320,12 +320,12 @@ CompaniesSchema = new SimpleSchema({
                 return content.value;
             }
             else {
-                this.unset();
+                //this.unset();
             }
         }
     },
     "certification.$.expirationDate": {
-        type: String,
+        type: Date,
         label: "Expiration Date",
         optional: true,
         custom: function () {
@@ -351,7 +351,7 @@ CompaniesSchema = new SimpleSchema({
                 }
                 else {
                     //console.log(this.isSet);
-                    return "date";
+                    return "bootstrap-datepicker";
                 }
             }
         },
@@ -359,6 +359,8 @@ CompaniesSchema = new SimpleSchema({
             var type = this.field("certification.0.certType");
             var content = this.field("certification.0.expirationDate");
             if (type.value != "None") {
+                //var d = new Date (content);
+                //console.log(content);
                 return content.value;
             }
             else {
@@ -715,6 +717,10 @@ if (Meteor.isClient) {
                     toastr.success("Thank you for registering!", "Registration Success");
                     Router.go('/companies');
                 }
+            },
+            onError: function(insert, error) {
+                console.log(error);
+                return error;
             }
         }
     });
