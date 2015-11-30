@@ -625,9 +625,9 @@ EventSchema = new SimpleSchema({
             firstOption: "(Select a Status)",
             options: function () {
                 return [
-                    {label: "Open", value: "Open"},
-                    {label: "Pending", value: "Pending"},
-                    {label: "Closed", value: "Closed"}
+                    {label: "Open", value: 1},
+                    {label: "Pending", value: 0},
+                    {label: "Closed", value: -1}
                 ];
             }
         }
@@ -1606,8 +1606,9 @@ if (Meteor.isClient) {
         }),
         Template.eventListDisplay.helpers({
             'event': function () {
-                return EventsTest.find({}, {sort: {statusOption: "Open"}}).map(function (document, index) {
+                return EventsTest.find({}, {sort: {statusOption: -1}}).map(function (document, index) {
                     document.index = index + 1;
+                    console.log(document);
                     return document;
                 });
 
@@ -1624,7 +1625,7 @@ if (Meteor.isClient) {
                 return EventList.findOne(selectedEvent);
             },
             'eventBad': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {eventDate: 1}}).fetch()[0].statusOption == "Open") {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
                     return true;
                 }
                 else {
@@ -1632,7 +1633,7 @@ if (Meteor.isClient) {
                 }
             },
             'eventMid': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {eventDate: 1}}).fetch()[0].statusOption == "Pending") {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
                     return true;
                 }
                 else {
@@ -1640,7 +1641,7 @@ if (Meteor.isClient) {
                 }
             },
             'eventGood': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {eventDate: 1}}).fetch()[0].statusOption == "Closed") {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1") {
                     return true;
                 }
                 else {
@@ -1804,15 +1805,25 @@ if (Meteor.isClient) {
                 }
             }
         }),
+        Template.companyEventListDisplay.events({
+            'click .event': function (e) {
+                e.stopPropagation();
+                var eventID = this._id;
+                Router.go("/events/details/" + this._id);
+                Session.set('selectedEvent', eventID);
+            }
+        }),
         Template.companyEventListDisplay.helpers({
             'event': function () {
-                return EventsTest.find({_id: this._id}, {sort: {eventDate: 1}}).fetch()[0].event.map(function (document, index) {
+                return EventsTest.find({companyName: this.companyName}, {sort: {statusOption: -1}}).map(function (document, index) {
                     document.index = index + 1;
+                    console.log(document);
                     return document;
                 });
+
             },
             'eventBad': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {eventDate: 1}}).fetch()[0].statusOption == "Open") {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
                     return true;
                 }
                 else {
@@ -1820,7 +1831,7 @@ if (Meteor.isClient) {
                 }
             },
             'eventMid': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {eventDate: 1}}).fetch()[0].statusOption == "Pending") {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
                     return true;
                 }
                 else {
@@ -1828,7 +1839,7 @@ if (Meteor.isClient) {
                 }
             },
             'eventGood': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {eventDate: 1}}).fetch()[0].statusOption == "Closed") {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1") {
                     return true;
                 }
                 else {

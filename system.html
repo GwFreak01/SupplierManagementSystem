@@ -468,11 +468,10 @@
                 {{> afQuickField name='differentPerson'}}
                 {{> afQuickField name='itemDescription'}}
                 {{> afQuickField name='certification'}}
-
+                {{> companyEventListDisplay}}
                 <div class="form-group">
                     <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
                 </div>
-
             </fieldset>
         {{/autoForm}}
         <!--<div class="container">-->
@@ -955,22 +954,39 @@
                         <th>CAR #</th>
                         <th>Type</th>
                         <th>Status</th>
-                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     {{#each event}}
-                        <tr class="event">
-                            <td>{{index}}</td>
-                            <td>{{eventDate}}</td>
-                            <td>{{carNumber}}</td>
-                            <td>{{eventType}}</td>
-                            <td>{{statusOption}}</td>
-                            <td>
-                                <input type="button" id="editButton" class="btn btn-warning" value="Edit"
-                                       onclick="window.location.href='/events/edit/{{_id}}'">
-                                <input type="button" id="removeButton" class="btn btn-danger" value="Remove"></td>
-                        </tr>
+                        {{#if eventBad}}
+                            <tr class="event danger">
+                                <td>{{index}}</td>
+                                <td>{{eventDate}}</td>
+                                <td>{{carNumber}}</td>
+                                <td>{{eventType}}</td>
+                                <td>{{statusOption}}</td>
+
+                            </tr>
+                        {{/if}}
+                        {{#if eventMid}}
+                            <tr class="event warning">
+                                <td>{{index}}</td>
+                                <td>{{eventDate}}</td>
+                                <td>{{carNumber}}</td>
+                                <td>{{eventType}}</td>
+                                <td>{{statusOption}}</td>
+                            </tr>
+                        {{/if}}
+                        {{#if eventGood}}
+                            <tr class="event success">
+                                <td>{{index}}</td>
+                                <td>{{eventDate}}</td>
+                                <td>{{carNumber}}</td>
+                                <td>{{eventType}}</td>
+                                <td>{{statusOption}}</td>
+
+                            </tr>
+                        {{/if}}
                     {{/each}}
                     </tbody>
                 </table>
