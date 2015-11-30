@@ -272,7 +272,7 @@ CompaniesSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
-                AutoForm.resetForm();
+                //AutoForm.resetForm();
                 var shouldBeRequired = this.field('certification.0.certType').value;
                 //console.log(this.field('certification.0.certType').value);
                 //console.log(shouldBeRequired);
@@ -448,7 +448,7 @@ CompaniesSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
-                AutoForm.resetForm(this.formId);
+                //AutoForm.resetForm(this.formId);
                 var shouldBeRequired = this.field('certification.0.certType').value;
                 //console.log(this.field('certification.0.certType').value);
 
@@ -567,7 +567,7 @@ EventSchema = new SimpleSchema({
         },
         custom: function () {
             if (Meteor.isClient) {
-                AutoForm.resetForm();
+                //AutoForm.resetForm();
                 var shouldBeRequired = this.field('eventType').value;
                 //console.log(this.field('certification.0.certType').value);
                 //console.log(shouldBeRequired);
@@ -599,7 +599,7 @@ EventSchema = new SimpleSchema({
                 //console.log(shouldBeRequired);
                 if (shouldBeRequired == "Delivery") {
                     // inserts
-                    AutoForm.resetForm();
+                    //AutoForm.resetForm();
                     if (!this.operator) {
                         if (!this.isSet || this.value === null || this.value === "") return "required";
                     }
@@ -696,9 +696,10 @@ if (Meteor.isClient) {
                     "showMethod": "fadeIn",
                     "hideMethod": "fadeOut"
                 };
-                AutoForm.resetForm(this.formId);
+                //AutoForm.resetForm(this.formId);
                 if (Roles.userIsInRole(Meteor.userId(), 'supplier')) {
-
+                    //console.log(result)
+                    //var companyName = CompaniesTest.find({id: result}).fetch()[0].companyName;
                     var options = {
                         from: "sms@tandlautomatics.com",
                         to: "gwfreak01@gmail.com",
@@ -738,7 +739,7 @@ if (Meteor.isClient) {
                     "showMethod": "fadeIn",
                     "hideMethod": "fadeOut"
                 };
-                AutoForm.resetForm(this.result);
+                //AutoForm.resetForm(this.result);
                 toastr.success("Company Details Updated", "Update Success");
                 Router.go('/companies');
 
@@ -849,7 +850,7 @@ if (Meteor.isClient) {
                     "showMethod": "fadeIn",
                     "hideMethod": "fadeOut"
                 };
-                AutoForm.resetForm(this.result);
+                //AutoForm.resetForm(this.result);
                 toastr.success("Event Details Updated", "Update Success");
                 Router.go('/events');
 
@@ -1351,8 +1352,8 @@ if (Meteor.isClient) {
         }),
         Template.editCompany.events({
             'blur form': function () {
-                AutoForm.resetForm(this.formId);
-                console.log("This is a dog");
+                //AutoForm.resetForm(this.formId);
+                //console.log("This is a dog");
             },
             //'keyup [name=companyItem], change [name=companyItem]': function (event) {
             //    var documentID = this._id;
@@ -1617,7 +1618,6 @@ if (Meteor.isClient) {
             'event': function () {
                 return EventsTest.find({}, {sort: {statusOption: -1}}).map(function (document, index) {
                     document.index = index + 1;
-                    console.log(document);
                     return document;
                 });
 
