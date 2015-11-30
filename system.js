@@ -1647,6 +1647,17 @@ if (Meteor.isClient) {
                 else {
                     return false;
                 }
+            },
+            'statusOptionConverter': function () {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
+                    return "Open";
+                }
+                else if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
+                    return "Pending";
+                }
+                else {
+                    return "Closed";
+                }
             }
         }),
         Template.addEventForm.events({
@@ -1844,6 +1855,17 @@ if (Meteor.isClient) {
                 }
                 else {
                     return false;
+                }
+            },
+            'statusOptionConverter': function () {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
+                    return "Open";
+                }
+                else if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
+                    return "Pending";
+                }
+                else {
+                    return "Closed";
                 }
             }
         }),
