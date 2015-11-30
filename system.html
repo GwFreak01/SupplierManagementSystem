@@ -438,17 +438,15 @@
 <template name="insertCompanyForm">
     {{#autoForm schema="CompaniesSchema" id="insertCompanyForm" type="insert" collection="CompaniesTest" resetOnSuccess=false}}
 
-        {{> afQuickField name='companyName' value="Deez Nutz" }}
+        {{> afQuickField name='companyName'}}
         {{> afQuickField name='companyAddress'}}
         {{> afQuickField name='salesPerson'}}
         {{> afQuickField name='qualityPerson'}}
         {{> afQuickField name='logisticsPerson'}}
         {{> afQuickField name='differentPerson'}}
+
         {{> afQuickField name='itemDescription'}}
-
-
         {{> afQuickField name='certification'}}
-
         <div class="form-group">
             <button type="submit" class="btn btn-primary">Submit</button>
             <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Cancel</button>
@@ -457,121 +455,10 @@
     {{/autoForm}}
 </template>
 
-<template name="certificationForm1">
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Expiration Date</label>
-
-        <div class="col-sm-4">
-            <input type="date" class="form-control" name="expirationDate1" id="expirationDate1">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Certification Number</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="certNumber1" id="certNumber1">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Registrar</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="registrar1" id="registrar1">
-        </div>
-    </div>
-</template>
-
-<template name="certificationForm2">
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Expiration Date</label>
-
-        <div class="col-sm-4">
-            <input type="date" class="form-control" name="expirationDate2" id="expirationDate2">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Certification Number</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="certNumber2" id="certNumber2">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Registrar</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="registrar2" id="registrar2">
-        </div>
-    </div>
-</template>
-
-<template name="certificationForm3">
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Expiration Date</label>
-
-        <div class="col-sm-4">
-            <input type="date" class="form-control" name="expirationDate3" id="expirationDate3">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Certification Number</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="certNumber3" id="certNumber3">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Registrar</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="registrar3" id="registrar3">
-        </div>
-    </div>
-</template>
-
-<template name="certificationForm4">
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Certification Type</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="certType4" id="certType4">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Expiration Date</label>
-
-        <div class="col-sm-4">
-            <input type="date" class="form-control" name="expirationDate3" id="expirationDate3">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Certification Number</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="certNumber3" id="certNumber3">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Registrar</label>
-
-        <div class="col-sm-4">
-            <input type="text" class="form-control" name="registrar3" id="registrar3">
-        </div>
-    </div>
-</template>
-
 <template name="detailCompany">
     {{#if currentUser}}
         {{#autoForm schema="CompaniesSchema" id="insertCompanyForm" type="readonly" collection="CompaniesTest" doc=this resetOnSuccess=false}}
+            <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
             <fieldset>
                 {{> afQuickField name='companyName'}}
                 {{> afQuickField name='companyAddress'}}
@@ -953,7 +840,8 @@
 <template name="editCompany">
     {{#if currentUser}}
         {{#if isInRole 'admin, supplier'}}
-            {{#autoForm schema="CompaniesSchema" id="insertCompanyForm" type="update" collection="CompaniesTest" doc=this autosaveOnKeyup= true resetOnSuccess=false}}
+            {{#autoForm schema="CompaniesSchema" id="updateCompanyForm" type="update" collection="CompaniesTest" doc=this resetOnSuccess=false}}
+                <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
                 <fieldset>
                     {{> afQuickField name='companyName'}}
                     {{> afQuickField name='companyAddress'}}
@@ -963,81 +851,13 @@
                     {{> afQuickField name='differentPerson'}}
                     {{> afQuickField name='itemDescription'}}
                     {{> afQuickField name='certification'}}
-
                     <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Submit</button>
                         <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
                     </div>
 
                 </fieldset>
             {{/autoForm}}
-            <!--<h2> Company Details</h2><br><br>-->
-            <!--<u>Company Name</u><br>-->
-            <!--<input type="text" value="{{companyName}}" id="companyName" name="companyItem"><br><br>-->
-
-            <!--<u>Company Address</u><br>-->
-            <!--<input type="text"-->
-            <!--value="{{companyAddress.street}} {{companyAddress.street2}} {{companyAddress.city}} {{companyAddress.state}}{{companyAddress.zipcode}}"-->
-            <!--id="companyAddress" name="companyItem"><br><br>-->
-
-            <!--<u>Sales Manager</u><br>-->
-            <!--Name: <input type="text" value="{{salesName}}" id="salesName" name="companyItem"><br>-->
-            <!--E-Mail: <input type="text" value="{{salesEmail}}" id="salesEmail" name="companyItem"><br>-->
-            <!--Phone: <input type="text" value="{{salesPhone}}" id="salesPhone" name="companyItem"><br><br>-->
-
-            <!--<u>Quality Manager</u><br>-->
-            <!--Name: <input type="text" value="{{qualityName}}" id="qualityName" name="companyItem"><br>-->
-            <!--E-Mail: <input type="text" value="{{qualityEmail}}" id="qualityEmail" name="companyItem"><br>-->
-            <!--Phone: <input type="text" value="{{qualityPhone}}" id="qualityPhone" name="companyItem"><br><br>-->
-
-            <!--<u>Logistics Manager</u><br>-->
-            <!--Name: <input type="text" value="{{logisticsName}}" id="logisticsName" name="companyItem"><br>-->
-            <!--E-Mail: <input type="text" value="{{logisticsEmail}}" id="logisticsEmail" name="companyItem"><br>-->
-            <!--Phone: <input type="text" value="{{logisticsPhone}}" id="logisticsPhone" name="companyItem"><br><br>-->
-
-            <!--<u>Other Contact</u><br>-->
-            <!--Name: <input type="text" value="{{differentName}}" id="differentName" name="companyItem"><br>-->
-            <!--E-Mail: <input type="text" value="{{differentEmail}}" id="differentEmail" name="companyItem"><br>-->
-            <!--Phone: <input type="text" value="{{differentPhone}}" id="differentPhone" name="companyItem"><br><br>-->
-
-            <!--<u>Provide</u><br>-->
-            <!--<textarea maxlength="120" cols="60" rows="5" value="{{describeInput}}" id="describeInput" name="companyItem"-->
-            <!--</textarea><br><br>-->
-
-            <!--<u>Certifications</u><br>-->
-            <!--<input type="checkbox" checked="{{showOption1}}" name="companyItem" id="cert1"-->
-            <!--class="show-Option1">ISO9001<br>-->
-                <!--{{#if showOption1}}-->
-            <!--Expiration Date: <input type="date" value="{{expirationDate1}}" name="companyItem" id="expirationDate1"><br>-->
-            <!--Certification #: <input type="text" value="{{certNumber1}}" name="companyItem" id="certNumber1"><br>-->
-            <!--Registrar: <input type="text" value="{{registrar1}}" name="companyItem" id="registrar1"><br><br>-->
-                <!--{{/if}}-->
-            <!--<input type="checkbox" checked="{{showOption2}}" name="companyItem" id="cert2" class="show-Option2">ISO14001<br>-->
-                <!--{{#if showOption2}}-->
-            <!--Expiration Date: <input value="{{expirationDate2}}" type="date" name="companyItem" id="expirationDate2"><br>-->
-            <!--Certification #: <input type="text" value="{{certNumber2}}" name="companyItem" id="certNumber2"><br>-->
-            <!--Registrar: <input type="text" value="{{registrar2}}" name="companyItem" id="registrar2"><br><br>-->
-                <!--{{/if}}-->
-            <!--<input type="checkbox" checked="{{showOption3}}" name="companyItem" id="cert3"-->
-            <!--class="show-Option3">TS16949<br>-->
-                <!--{{#if showOption3}}-->
-            <!--Expiration Date: <input value="{{expirationDate3}}" type="date" name="companyItem" id="expirationDate3"><br>-->
-            <!--Certification #: <input type="text" value="{{certNumber3}}" name="companyItem" id="certNumber3"><br>-->
-            <!--Registrar: <input type="text" value="{{registrar3}}" name="companyItem" id="registrar3"><br><br>-->
-                <!--{{/if}}-->
-            <!--<input type="checkbox" checked="{{showOption4}}" name="companyItem" id="cert4"-->
-            <!--class="show-Option4">Other<br>-->
-                <!--{{#if showOption4}}-->
-            <!--Certification Type: <input type="text" value="{{certType4}}" name="companyItem" id="certType4"><br>-->
-            <!--Expiration Date: <input value="{{expirationDate4}}" type="date" name="companyItem" id="expirationDate4"><br>-->
-            <!--Certification #: <input type="text" value="{{certNumber4}}" name="companyItem" id="certNumber4"><br>-->
-            <!--Registrar: <input type="text" value="{{registrar4}}" name="companyItem" id="registrar4"><br><br>-->
-                <!--{{/if}}-->
-            <!--<input type="checkbox" checked="{{showOption5}}" name="companyItem" id="cert5" class="show-Option5">None<br>-->
-                <!--{{#if showOption5}}-->
-            <!--Do You Plan To Pursue Certification? If So When?<br>-->
-            <!--<textarea maxlength="120" cols="40" rows="3" value="{{cert5Text}}" name="companyItem"-->
-            <!--id="cert5Text"></textarea><br>-->
-                <!--{{/if}}-->
         {{/if}}
     {{/if}}
 </template>
@@ -1483,7 +1303,7 @@
     submit it to us within the next week. Follow the instructions below to access the T&L Supplier site and submit
     the profile for your company. Thank you in advance for your support.<br><br>
 
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. Go to http://107.170.167.85/<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. Go to <a href="http://107.170.167.85/">Supplier Registration</a><br>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. Enter the login information given below<br>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a. Username: supplier<br>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b. Password: apple1<br>
@@ -1494,7 +1314,7 @@
     Sincerely,<br>
     <b>William J. Green</b><br>
     Vice President - Sales and Marketing<br>
-    <img src="public/TL_Logo.png" alt="Logo" height="95" width="144"><br>
+    <img src="http://i.imgur.com/p4NrWee.png" alt="Logo" height="95" width="144"><br>
     770 Emerson Street<br>
     Rochester, NY 14613<br>
     Office 585 647-3717<br>

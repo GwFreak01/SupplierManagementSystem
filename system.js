@@ -12,7 +12,6 @@ CompaniesSchema = new SimpleSchema({
     companyName: {
         type: String,
         label: "Company Name",
-        //defaultValue: "cool corp",
         unique: true,
         index: true
     },
@@ -127,7 +126,8 @@ CompaniesSchema = new SimpleSchema({
     },
     "salesPerson.status": {
         type: Boolean,
-        label: "Check here for this person to receive the Quarterly Performance Reports"
+        label: "Check here for this person to receive the Quarterly Performance Reports",
+        defaultValue: false
     },
     qualityPerson: {
         type: Object,
@@ -158,7 +158,8 @@ CompaniesSchema = new SimpleSchema({
     },
     "qualityPerson.status": {
         type: Boolean,
-        label: "Check here for this person to receive the Quarterly Performance Reports"
+        label: "Check here for this person to receive the Quarterly Performance Reports",
+        defaultValue: false
     },
     logisticsPerson: {
         type: Object,
@@ -189,7 +190,8 @@ CompaniesSchema = new SimpleSchema({
     },
     "logisticsPerson.status": {
         type: Boolean,
-        label: "Check here for this person to receive the Quarterly Performance Reports"
+        label: "Check here for this person to receive the Quarterly Performance Reports",
+        defaultValue: false
     },
     differentPerson: {
         type: Object,
@@ -225,7 +227,17 @@ CompaniesSchema = new SimpleSchema({
     "differentPerson.status": {
         type: Boolean,
         label: "Check here for this person to receive the Quarterly Performance Reports",
-        optional: true
+        optional: true,
+        defaultValue: false,
+        autoform: {
+            type: function () {
+                var docId = (AutoForm.getFieldValue("salesPerson.status") || AutoForm.getFieldValue("qualityPerson.status") || AutoForm.getFieldValue("logisticsPerson.status"));
+                if (docId) {
+                    return "hidden";
+                }
+
+            }
+        }
     },
     itemDescription: {
         type: String,
@@ -238,6 +250,7 @@ CompaniesSchema = new SimpleSchema({
     },
     "certification.$.certType": {
         type: String,
+        label: "Type",
         autoform: {
             afFieldInput: {
                 firstOption: "(Select a Certification Type)",
@@ -251,21 +264,60 @@ CompaniesSchema = new SimpleSchema({
                     ];
                 }
             }
-        },
-        label: "Type"
-
+        }
     },
     "certification.$.other": {
         type: String,
-        label: "(If Other) Type",
+        label: "Certification Type",
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
-                var docId = AutoForm.getFieldValue("certification.0.certType");
+                var shouldBeRequired = this.field('certification.0.certType').value == "Other";
+                console.log(this.field('certification.0.certType').value);
 
-                if ((docId === "Other") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
-                    return "required";
+                var docId = AutoForm.getFieldValue("certification.0.certType");
+                if (shouldBeRequired) {
+                    // inserts
+
+                    if (!this.operator) {
+                        if (!this.isSet || this.value === null || this.value === "") return "required";
+                    }
+
+                    // updates
+                    else if (this.isSet) {
+                        if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                        if (this.operator === "$unset") return "required";
+                        if (this.operator === "$rename") return "required";
+                    }
                 }
+                ////insert
+                //if ((docId == "Other") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                //    document.getElementsByName("certification.0.reason").value() == null;
+                //    return "required";
+                //}
+                ////update
+                //else if (this.isSet) {
+                //    if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                //    if (this.operator === "$unset") return "required";
+                //    if (this.operator === "$rename") return "required";
+                //}
+            }
+        },
+        autoform: {
+            type: function () {
+                if (AutoForm.getFieldValue("certification.0.certType") != "Other") {
+                    return "hidden";
+                }
+            }
+        },
+        autoValue: function () {
+            var type = this.field("certification.0.certType");
+            var content = this.field("certification.0.other");
+            if (type.value == "Other") {
+                return content.value.split(' ')[0];
+            }
+            else {
+                this.unset();
             }
         }
     },
@@ -276,10 +328,33 @@ CompaniesSchema = new SimpleSchema({
         custom: function () {
             if (Meteor.isClient) {
                 var docId = AutoForm.getFieldValue("certification.0.certType");
-
+                //insert
                 if (!(docId === "None") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
                     return "required";
                 }
+                //update
+                else if (this.isSet) {
+                    if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                    if (this.operator === "$unset") return "required";
+                    if (this.operator === "$rename") return "required";
+                }
+            }
+        },
+        autoform: {
+            type: function () {
+                if (AutoForm.getFieldValue("certification.0.certType") == "None") {
+                    return "hidden";
+                }
+            }
+        },
+        autoValue: function () {
+            var type = this.field("certification.0.certType");
+            var content = this.field("certification.0.expirationDate");
+            if (type.value != "None") {
+                return content.value;
+            }
+            else {
+                this.unset();
             }
         }
     },
@@ -292,10 +367,33 @@ CompaniesSchema = new SimpleSchema({
         custom: function () {
             if (Meteor.isClient) {
                 var docId = AutoForm.getFieldValue("certification.0.certType");
-
+                //insert
                 if (!(docId === "None") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
                     return "required";
                 }
+                //update
+                else if (this.isSet) {
+                    if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                    if (this.operator === "$unset") return "required";
+                    if (this.operator === "$rename") return "required";
+                }
+            }
+        },
+        autoform: {
+            type: function () {
+                if (AutoForm.getFieldValue("certification.0.certType") == "None") {
+                    return "hidden";
+                }
+            }
+        },
+        autoValue: function () {
+            var type = this.field("certification.0.certType");
+            var content = this.field("certification.0.certNumber");
+            if (type.value != "None") {
+                return content.value;
+            }
+            else {
+                this.unset();
             }
         }
     },
@@ -306,24 +404,70 @@ CompaniesSchema = new SimpleSchema({
         custom: function () {
             if (Meteor.isClient) {
                 var docId = AutoForm.getFieldValue("certification.0.certType");
-
+                //insert
                 if (!(docId === "None") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
                     return "required";
                 }
+                //update
+                else if (this.isSet) {
+                    if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                    if (this.operator === "$unset") return "required";
+                    if (this.operator === "$rename") return "required";
+                }
+            }
+        },
+        autoform: {
+            type: function () {
+                if (AutoForm.getFieldValue("certification.0.certType") == "None") {
+                    return "hidden";
+                }
+            }
+        },
+        autoValue: function () {
+            var type = this.field("certification.0.certType");
+            var content = this.field("certification.0.registrar");
+            if (type.value != "None") {
+                return content.value;
+            }
+            else {
+                this.unset();
             }
         }
     },
     "certification.$.reason": {
         type: String,
-        label: "(If None) Do You Plan To Pursue Certification? If So When?",
+        label: "Do You Plan To Pursue Certification? If So When?",
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
                 var docId = AutoForm.getFieldValue("certification.0.certType");
-
+                //insert
                 if ((docId === "None") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
                     return "required";
                 }
+                //update
+                else if (this.isSet) {
+                    if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                    if (this.operator === "$unset") return "required";
+                    if (this.operator === "$rename") return "required";
+                }
+            }
+        },
+        autoform: {
+            type: function () {
+                if (AutoForm.getFieldValue("certification.0.certType") != "None") {
+                    return "hidden";
+                }
+            }
+        },
+        autoValue: function () {
+            var type = this.field("certification.0.certType");
+            var content = this.field("certification.0.reason");
+            if (type.value == "None") {
+                return content.value;
+            }
+            else {
+                this.unset();
             }
         }
     }
@@ -500,6 +644,7 @@ if (Meteor.isClient) {
                     "showMethod": "fadeIn",
                     "hideMethod": "fadeOut"
                 };
+                AutoForm.resetForm(this.result);
                 if (Roles.userIsInRole(Meteor.userId(), 'supplier')) {
 
                     var options = {
@@ -508,7 +653,7 @@ if (Meteor.isClient) {
                         subject: "New Company",
                         text: AutoForm.getFieldValue("companyName", "insertCompanyForm") + " has just registered"
                     };
-                    Meteor.call("sendMail", options);
+                    Meteor.call("sendEmail", options);
                     toastr.success("Thank you for registering!", "Registration Success");
                     Meteor.logout();
                     Router.go('/');
@@ -517,9 +662,88 @@ if (Meteor.isClient) {
                     toastr.success("Thank you for registering!", "Registration Success");
                     Router.go('/companies');
                 }
+            }
+        }
+    });
+    AutoForm.hooks({
+        updateCompanyForm: {
+            onSuccess: function (insert, result) {
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-full-width",
+                    "preventDuplicates": true,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                AutoForm.resetForm(this.result);
+                toastr.success("Company Details Updated", "Update Success");
+                Router.go('/companies');
 
             }
-
+            //formToModifier: function(modifier) {
+            //    // alter modifier
+            //    // return modifier;
+            //    AutoForm.resetForm("updateCompanyForm");
+            //    if (AutoForm.getFieldValue("certification.0.certType") == "Other") {
+            //        document.getElementsByName("certification.0.reason").value = null;
+            //        return modifier;
+            //    }
+            //    else if (AutoForm.getFieldValue("certification.0.certType") == "None") {
+            //        document.getElementsByName("certification.0.other").value = null;
+            //        document.getElementsByName("certification.0.expirationDate").value = null;
+            //        document.getElementsByName("certification.0.certNumber").value = null;
+            //        document.getElementsByName("certification.0.registrar").value = null;
+            //        return modifier;
+            //    }
+            //    else {
+            //        document.getElementsByName("certification.0.other").value = null;
+            //        document.getElementsByName("certification.0.reason").value = null;
+            //        return modifier;
+            //    }
+            //}
+            //before: {
+            // Replace `formType` with the form `type` attribute to which this hook applies
+            //update: function (doc) {
+            //console.log(isSet);
+            //AutoForm.resetForm("updateCompanyForm");
+            //console.log(AutoForm.getFieldValue("certification.0.certType"));
+            //if (AutoForm.getFieldValue("certification.0.certType") == "Other") {
+            //    document.getElementsByName("certification.0.reason").value = null;
+            //    console.log(AutoForm.validateField("updateCompanyForm","certification.0.reason"));
+            //    return doc;
+            //}
+            //else if (AutoForm.getFieldValue("certification.0.certType") == "None") {
+            //    document.getElementsByName("certification.0.other").value = null;
+            //    document.getElementsByName("certification.0.expirationDate").value = null;
+            //    document.getElementsByName("certification.0.certNumber").value = null;
+            //    document.getElementsByName("certification.0.registrar").value = null;
+            //    console.log(AutoForm.getValidationContext("updateCompanyForm"));
+            //    return doc;
+            //}
+            //else {
+            //    document.getElementsByName("certification.0.other").value = null;
+            //    document.getElementsByName("certification.0.reason").value = null;
+            //    console.log(AutoForm.getValidationContext("updateCompanyForm"));
+            //    return doc;
+            //}
+            // Then return it or pass it to this.result()
+            //return doc; (synchronous)
+            //return false; (synchronous, cancel)
+            //this.result(doc); (asynchronous)
+            //this.result(false); (asynchronous, cancel)
+            //}
+            //}
         }
     });
     AutoForm.hooks({
@@ -603,12 +827,15 @@ if (Meteor.isClient) {
         }),
         Template.companies.events({
             'click .btn-warning': function () {
-                var dataContext = {
-                    message: "You must see this, it's amazing!",
-                    url: "www.google.com",
-                    title: "Amazing stuff, click me !"
-                };
+                var cid_value = Date.now() + '.image.jpg';
 
+                var html = 'Embedded image: <img src="cid:' + cid_value + '" />';
+
+                var attachment = {
+                    fileName: "TL_Logo.png",
+                    filePath: "public/TL_Logo.png",
+                    cid: cid_value
+                };
                 var html = Blaze.toHTML(Template.registerEmail);
                 var options = {
                     from: 'sms@tandlautomatics.com',
@@ -876,7 +1103,7 @@ if (Meteor.isClient) {
             //                        subject: "New Company",
             //                        text: companyNameVar + " has just registered"
             //                    };
-            //                    Meteor.call("sendMail", options);
+            //                    Meteor.call("sendEmail", options);
             //                    alert("You have successfully registered!");
             //                    if (Roles.userIsInRole(currentUserID, "supplier")) {
             //                        Meteor.logout();
@@ -1034,6 +1261,17 @@ if (Meteor.isClient) {
 
         }),
         Template.editCompany.events({
+            'blur form': function () {
+                AutoForm.resetForm("insertCompanyForm");
+                console.log("This is a dog");
+                var docId = AutoForm.getFieldValue("certification.0.certType");
+                if (docId == "Other") {
+                    document.getElementsByName("certification.0.certType.reason").value = null;
+                }
+                else {
+
+                }
+            },
             //'keyup [name=companyItem], change [name=companyItem]': function (event) {
             //    var documentID = this._id;
             //    var companyItem = event.target.value;
@@ -1197,82 +1435,82 @@ if (Meteor.isClient) {
             //}
         }),
         Template.editCompany.helpers({
-            'showOption1': function () {
-                if ((CompanyList.find({_id: this._id}).fetch()[0].cert[0].certStatus == true) || Session.get("showPullDown1")) {
-                    if (Session.get("showPullDown1") == false) {
-                        return false;
-                    }
-                    else {
-                        return true;
-                    }
-                }
-
-            },
-            'showOption2': function () {
-                if ((CompanyList.find({_id: this._id}).fetch()[0].cert[1].certStatus == true) || Session.get("showPullDown2")) {
-                    return Session.get("showPullDown2");
-                }
-            },
-            'showOption3': function () {
-                if ((CompanyList.find({_id: this._id}).fetch()[0].cert[2].certStatus == true) || Session.get("showPullDown3")) {
-                    return Session.get("showPullDown3");
-                }
-            },
-            'showOption4': function () {
-                if ((CompanyList.find({_id: this._id}).fetch()[0].cert[3].certStatus == true) || Session.get("showPullDown4")) {
-                    return Session.get("showPullDown4");
-                }
-            },
-            'showOption5': function () {
-                if ((CompanyList.find({_id: this._id}).fetch()[0].cert[4].certStatus == true) || Session.get("showPullDown5")) {
-                    return Session.get("showPullDown5");
-                }
-            },
-            'expirationDate1': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[0].expirationDate;
-            },
-            'expirationDate2': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[1].expirationDate;
-            },
-            'expirationDate3': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[2].expirationDate;
-            },
-            'expirationDate4': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[3].expirationDate;
-            },
-            'expirationDate5': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[0].expirationDate;
-            },
-            'certNumber1': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[0].certNumber;
-            },
-            'certNumber2': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[1].certNumber;
-            },
-            'certNumber3': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[2].certNumber;
-            },
-            'certNumber4': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[3].certNumber;
-            },
-            'registrar1': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[0].registrar;
-            },
-            'registrar2': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[1].registrar;
-            },
-            'registrar3': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[2].registrar;
-            },
-            'registrar4': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[3].registrar;
-            },
-            'certType4': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[3].type;
-            },
-            'cert5Text': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[4].text;
-            }
+            //'showOption1': function () {
+            //    if ((CompanyList.find({_id: this._id}).fetch()[0].cert[0].certStatus == true) || Session.get("showPullDown1")) {
+            //        if (Session.get("showPullDown1") == false) {
+            //            return false;
+            //        }
+            //        else {
+            //            return true;
+            //        }
+            //    }
+            //
+            //},
+            //'showOption2': function () {
+            //    if ((CompanyList.find({_id: this._id}).fetch()[0].cert[1].certStatus == true) || Session.get("showPullDown2")) {
+            //        return Session.get("showPullDown2");
+            //    }
+            //},
+            //'showOption3': function () {
+            //    if ((CompanyList.find({_id: this._id}).fetch()[0].cert[2].certStatus == true) || Session.get("showPullDown3")) {
+            //        return Session.get("showPullDown3");
+            //    }
+            //},
+            //'showOption4': function () {
+            //    if ((CompanyList.find({_id: this._id}).fetch()[0].cert[3].certStatus == true) || Session.get("showPullDown4")) {
+            //        return Session.get("showPullDown4");
+            //    }
+            //},
+            //'showOption5': function () {
+            //    if ((CompanyList.find({_id: this._id}).fetch()[0].cert[4].certStatus == true) || Session.get("showPullDown5")) {
+            //        return Session.get("showPullDown5");
+            //    }
+            //},
+            //'expirationDate1': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[0].expirationDate;
+            //},
+            //'expirationDate2': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[1].expirationDate;
+            //},
+            //'expirationDate3': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[2].expirationDate;
+            //},
+            //'expirationDate4': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[3].expirationDate;
+            //},
+            //'expirationDate5': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[0].expirationDate;
+            //},
+            //'certNumber1': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[0].certNumber;
+            //},
+            //'certNumber2': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[1].certNumber;
+            //},
+            //'certNumber3': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[2].certNumber;
+            //},
+            //'certNumber4': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[3].certNumber;
+            //},
+            //'registrar1': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[0].registrar;
+            //},
+            //'registrar2': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[1].registrar;
+            //},
+            //'registrar3': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[2].registrar;
+            //},
+            //'registrar4': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[3].registrar;
+            //},
+            //'certType4': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[3].type;
+            //},
+            //'cert5Text': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[4].text;
+            //}
 
         }),
         Template.eventListDisplay.events({
@@ -1493,27 +1731,27 @@ if (Meteor.isClient) {
         Template.registerEmail.events({}),
         Template.registerEmail.helpers({}),
         Template.insertCompanyForm.helpers({
-            normalOption: function () {
-                var docId = AutoForm.getFieldValue("certification.0.certType");
-                if ((docId != "Other") && (docId != "None")) {
+            noStatus: function () {
+                var docId = (AutoForm.getFieldValue("salesPerson.status") || AutoForm.getFieldValue("qualityPerson.status") || AutoForm.getFieldValue("logisticsPerson.status"));
+                if (docId) {
                     return true;
                 }
                 else {
                     return false;
                 }
             },
-            otherOption: function () {
-                var docId = AutoForm.getFieldValue("certification.0.certType");
-                if (docId == "Other") {
+            otherCert: function () {
+                var docId = (AutoForm.getFieldValue("certification.0.certType") == "Other");
+                if (docId) {
                     return true;
                 }
                 else {
                     return false;
                 }
             },
-            noneOption: function () {
-                var docId = AutoForm.getFieldValue("certification.0.certType");
-                if (docId == "None") {
+            noneCert: function () {
+                var docId = (AutoForm.getFieldValue("certification.0.certType") == "None");
+                if (docId) {
                     return true;
                 }
                 else {
@@ -2083,6 +2321,7 @@ if (Meteor.isServer) {
             // without waiting for the email sending to complete.
 
             this.unblock();
+
             //to.forEach(function (entry) {
             //    Email.send({
             //        to: entry,
@@ -2095,10 +2334,6 @@ if (Meteor.isServer) {
 
             Email.send(options);
 
-        },
-        'sendMail': function (options) {
-            this.unblock();
-            Email.send(options);
         }
 
     });
