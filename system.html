@@ -893,18 +893,48 @@
                     </thead>
                     <tbody>
                     {{#each event}}
-                        <tr class="event">
-                            <td>{{index}}</td>
-                            <td>{{eventDate}}</td>
-                            <td>{{carNumber}}</td>
-                            <td>{{companyName}}</td>
-                            <td>{{eventType}}</td>
-                            <td>{{statusOption}}</td>
-                            <td>
-                                <input type="button" class="btn btn-warning" value="Edit"
-                                       onclick="window.location.href='/events/edit/{{_id}}'">
-                                <input type="button" class="btn btn-danger" value="Remove"></td>
-                        </tr>
+                        {{#if eventBad}}
+                            <tr class="event danger">
+                                <td>{{index}}</td>
+                                <td>{{eventDate}}</td>
+                                <td>{{carNumber}}</td>
+                                <td>{{companyName}}</td>
+                                <td>{{eventType}}</td>
+                                <td>{{statusOption}}</td>
+                                <td>
+                                    <input type="button" class="btn btn-warning" value="Edit"
+                                           onclick="window.location.href='/events/edit/{{_id}}'">
+                                    <input type="button" class="btn btn-danger" value="Remove"></td>
+                            </tr>
+                        {{/if}}
+                        {{#if eventMid}}
+                            <tr class="event warning">
+                                <td>{{index}}</td>
+                                <td>{{eventDate}}</td>
+                                <td>{{carNumber}}</td>
+                                <td>{{companyName}}</td>
+                                <td>{{eventType}}</td>
+                                <td>{{statusOption}}</td>
+                                <td>
+                                    <input type="button" class="btn btn-warning" value="Edit"
+                                           onclick="window.location.href='/events/edit/{{_id}}'">
+                                    <input type="button" class="btn btn-danger" value="Remove"></td>
+                            </tr>
+                        {{/if}}
+                        {{#if eventGood}}
+                            <tr class="event success">
+                                <td>{{index}}</td>
+                                <td>{{eventDate}}</td>
+                                <td>{{carNumber}}</td>
+                                <td>{{companyName}}</td>
+                                <td>{{eventType}}</td>
+                                <td>{{statusOption}}</td>
+                                <td>
+                                    <input type="button" class="btn btn-warning" value="Edit"
+                                           onclick="window.location.href='/events/edit/{{_id}}'">
+                                    <input type="button" class="btn btn-danger" value="Remove"></td>
+                            </tr>
+                        {{/if}}
                     {{/each}}
                     </tbody>
                 </table>
@@ -1107,115 +1137,140 @@
 
 <template name="detailEvent">
     {{#if currentUser}}
-        <div class="container">
-            <div class="col-md-10">
-                <h1>Event Details</h1><br><br>
-                <input type="button" class="btn btn-lg btn-info" name="back" value="Back"
-                       onclick="history.go(-1);return true;"/>
-                <br>
-                <br>
+        {{#autoForm schema="EventSchema" id="insertEventForm" type="readonly" collection="EventsTest" doc=this resetOnSuccess=false}}
+            <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
+            <fieldset>
+                {{> afQuickField name='companyName'}}
+                {{> afQuickField name='eventDate'}}
+                {{> afQuickField name='eventType'}}
+                {{> afQuickField name='tlPartNumber'}}
+                {{> afQuickField name='purchaseOrderNumber'}}
+                {{> afQuickField name='lotNumber'}}
+                {{> afQuickField name='carNumber'}}
+                {{#if showDelivery}}
+                    {{> afQuickField name='requiredDate'}}
+                    {{> afQuickField name='actualDate'}}
+                {{else}}
+                    {{> afQuickField name='quantityReject'}}
+                {{/if}}
+                {{> afQuickField name='rootCause'}}
+                {{> afQuickField name='statusOption'}}
 
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Company Name</label>
-
-                        <div class="col-sm-5 form-control-static">
-                            {{companyName}}
-                        </div>
-                    </div>
-
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Event Type</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{eventType}}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Event Date</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{eventDate}}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">T&L Part Number</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{tlPartNumber}}
-                        </div>
-                    </div>
-
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">T&L Purchase Order</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{purchaseOrder}}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Lot Number</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{lotNumber}}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">T&L CAR Number</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{carNumber}}
-                        </div>
-                    </div>
-
-                    {{#if showQuality}}
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Quantity Rejected</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{quantityReject}}
-                            </div>
-                        </div>
-                    {{/if}}
-
-                    {{#if showDelivery}}
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Required Delivery Date</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{requiredDeliveryDate}}
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Actual Delivery Date</label>
-
-                            <div class="col-sm-4 form-control-static">
-                                {{actualDeliveryDate}}
-                            </div>
-                        </div>
-                    {{/if}}
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Problem Description</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{rootCause}}
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">Status</label>
-
-                        <div class="col-sm-4 form-control-static">
-                            {{statusOption}}
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
                 </div>
-            </div>
-        </div>
+
+            </fieldset>
+        {{/autoForm}}
+        <!--<div class="container">-->
+        <!--<div class="col-md-10">-->
+        <!--<h1>Event Details</h1><br><br>-->
+        <!--<input type="button" class="btn btn-lg btn-info" name="back" value="Back"-->
+        <!--onclick="history.go(-1);return true;"/>-->
+        <!--<br>-->
+        <!--<br>-->
+
+        <!--<div class="form-horizontal">-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Company Name</label>-->
+
+        <!--<div class="col-sm-5 form-control-static">-->
+        <!--{{companyName}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Event Type</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{eventType}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Event Date</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{eventDate}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">T&L Part Number</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{tlPartNumber}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">T&L Purchase Order</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{purchaseOrder}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Lot Number</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{lotNumber}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">T&L CAR Number</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{carNumber}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+            <!--{{#if showQuality}}-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Quantity Rejected</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{quantityReject}}-->
+        <!--</div>-->
+        <!--</div>-->
+            <!--{{/if}}-->
+
+            <!--{{#if showDelivery}}-->
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Required Delivery Date</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{requiredDeliveryDate}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Actual Delivery Date</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{actualDeliveryDate}}-->
+        <!--</div>-->
+        <!--</div>-->
+            <!--{{/if}}-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Problem Description</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{rootCause}}-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-sm-2 control-label">Status</label>-->
+
+        <!--<div class="col-sm-4 form-control-static">-->
+        <!--{{statusOption}}-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
     {{/if}}
 </template>
 
@@ -1223,56 +1278,82 @@
     {{#if currentUser}}
 
         {{#if isInRole 'admin, supplier'}}
-            <h2> Event Details</h2><br><br>
+            {{#autoForm schema="EventSchema" id="updateEventForm" type="update" collection="EventsTest" doc=this resetOnSuccess=false}}
+                <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
+                <fieldset>
+                    {{> afQuickField name='companyName'}}
+                    {{> afQuickField name='eventDate'}}
+                    {{> afQuickField name='eventType'}}
+                    {{> afQuickField name='tlPartNumber'}}
+                    {{> afQuickField name='purchaseOrderNumber'}}
+                    {{> afQuickField name='lotNumber'}}
+                    {{> afQuickField name='carNumber'}}
+                    {{#if showDelivery}}
+                        {{> afQuickField name='requiredDate'}}
+                        {{> afQuickField name='actualDate'}}
+                    {{else}}
+                        {{> afQuickField name='quantityReject'}}
+                    {{/if}}
+                    {{> afQuickField name='rootCause'}}
+                    {{> afQuickField name='statusOption'}}
 
-            <u>Event Type</u><br>
-            <select id="eventType" name="eventType" class="eventType">
-                <option value="Quality" selected="{{selectData 'Quality'}}">Quality</option>
-                <option value="Delivery" selected="{{selectData 'Delivery'}}">Delivery</option>
-            </select><br><br>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
+                    </div>
 
-            <u>Event Date</u><br>
-            <input type="date" value="{{eventDate}}" id="eventDate" name="companyItem"><br><br>
+                </fieldset>
+            {{/autoForm}}
+            <!--<h2> Event Details</h2><br><br>-->
 
-            <u>T&L Part Number</u><br>
-            <input type="text" value="{{tlPartNumber}}" id="tlPartNumber" name="companyItem"><br><br>
+            <!--<u>Event Type</u><br>-->
+            <!--<select id="eventType" name="eventType" class="eventType">-->
+            <!--<option value="Quality" selected="{{selectData 'Quality'}}">Quality</option>-->
+            <!--<option value="Delivery" selected="{{selectData 'Delivery'}}">Delivery</option>-->
+            <!--</select><br><br>-->
 
-            <u>T&L Purchase Order</u><br>
-            <input type="text" value="{{purchaseOrder}}" id="purchaseOrder" name="companyItem"><br><br>
+            <!--<u>Event Date</u><br>-->
+            <!--<input type="date" value="{{eventDate}}" id="eventDate" name="companyItem"><br><br>-->
 
-            <u>Lot Number</u><br>
-            <input type="text" value="{{lotNumber}}" id="lotNumber" name="companyItem"><br><br>
+            <!--<u>T&L Part Number</u><br>-->
+            <!--<input type="text" value="{{tlPartNumber}}" id="tlPartNumber" name="companyItem"><br><br>-->
 
-            <u>T&L CAR Number</u><br>
-            <input type="text" value="{{carNumber}}" id="carNumber" name="companyItem"><br><br>
+            <!--<u>T&L Purchase Order</u><br>-->
+            <!--<input type="text" value="{{purchaseOrder}}" id="purchaseOrder" name="companyItem"><br><br>-->
 
-            {{#if showQuality}}
-                <p><u>Quantity Rejected</u><br>
-                    <input type="text" value="{{quantityReject}}" id="quantityReject" name="companyItem"><br><br>
-                </p>
-            {{/if}}
+            <!--<u>Lot Number</u><br>-->
+            <!--<input type="text" value="{{lotNumber}}" id="lotNumber" name="companyItem"><br><br>-->
 
-            {{#if showDelivery}}
-                <p><u>Required Delivery Date</u><br>
-                    <input type="date" value="{{requiredDeliveryDate}}" id="requiredDeliveryDate"
-                           name="companyItem"><br><br>
-                </p>
+            <!--<u>T&L CAR Number</u><br>-->
+            <!--<input type="text" value="{{carNumber}}" id="carNumber" name="companyItem"><br><br>-->
 
-                <p><u>Actual Delivery Date</u><br>
-                    <input type="date" value="{{actualDeliveryDate}}" id="actualDeliveryDate"
-                           name="companyItem"><br><br>
-                </p>
-            {{/if}}
+                <!--{{#if showQuality}}-->
+            <!--<p><u>Quantity Rejected</u><br>-->
+            <!--<input type="text" value="{{quantityReject}}" id="quantityReject" name="companyItem"><br><br>-->
+            <!--</p>-->
+                <!--{{/if}}-->
 
-            <u>Root Cause</u><br>
-            <input type="text" value="{{rootCause}}" id="rootCause" name="companyItem"><br><br>
+                <!--{{#if showDelivery}}-->
+            <!--<p><u>Required Delivery Date</u><br>-->
+            <!--<input type="date" value="{{requiredDeliveryDate}}" id="requiredDeliveryDate"-->
+            <!--name="companyItem"><br><br>-->
+            <!--</p>-->
 
-            <u>Status</u><br>
-            <select id="statusOption" name="companyItem" class="statusOption">
-                <option value="Open" selected="{{selectData 'Open'}}">Open</option>
-                <option value="Pending Action" selected="{{selectData 'Pending Action'}}">Pending Action</option>
-                <option value="Closed" selected="{{selectData 'Closed'}}">Closed</option>
-            </select><br><br>
+            <!--<p><u>Actual Delivery Date</u><br>-->
+            <!--<input type="date" value="{{actualDeliveryDate}}" id="actualDeliveryDate"-->
+            <!--name="companyItem"><br><br>-->
+            <!--</p>-->
+                <!--{{/if}}-->
+
+            <!--<u>Root Cause</u><br>-->
+            <!--<input type="text" value="{{rootCause}}" id="rootCause" name="companyItem"><br><br>-->
+
+            <!--<u>Status</u><br>-->
+            <!--<select id="statusOption" name="companyItem" class="statusOption">-->
+            <!--<option value="Open" selected="{{selectData 'Open'}}">Open</option>-->
+            <!--<option value="Pending Action" selected="{{selectData 'Pending Action'}}">Pending Action</option>-->
+            <!--<option value="Closed" selected="{{selectData 'Closed'}}">Closed</option>-->
+            <!--</select><br><br>-->
         {{/if}}
     {{/if}}
 </template>
@@ -1346,7 +1427,7 @@
             {{> afQuickField name='statusOption'}}
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Submit</button>
-                <button type="button" class="btn btn-danger">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Cancel</button>
             </div>
         </fieldset>
     {{/autoForm}}
