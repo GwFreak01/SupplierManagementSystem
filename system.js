@@ -907,15 +907,24 @@ if (Meteor.isClient) {
         }),
         Template.companies.events({
             'click .btn-warning': function () {
-                var cid_value = Date.now() + '.image.jpg';
-
-                var html = 'Embedded image: <img src="cid:' + cid_value + '" />';
-
-                var attachment = {
-                    fileName: "TL_Logo.png",
-                    filePath: "public/TL_Logo.png",
-                    cid: cid_value
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
                 };
+
                 var html = Blaze.toHTML(Template.registerEmail);
                 var options = {
                     from: 'sms@tandlautomatics.com',
@@ -925,7 +934,7 @@ if (Meteor.isClient) {
                     html: html
                 };
                 Meteor.call("sendEmail", options);
-                alert("Invitation Sent");
+                toastr.info("Invitation Sent");
             }
         }),
         Template.companies.helpers({
@@ -2538,7 +2547,7 @@ Router.route('/companies/edit/:_id', {
 Router.route('/events', {
     waitOn: function () {
         // waitOn makes sure that this publication is ready before rendering your template
-        return Meteor.subscribe("theEvents");
+        return Meteor.subscribe("events_Test");
     }
 });
 

@@ -887,7 +887,9 @@
                         <th>Company Name</th>
                         <th>Type</th>
                         <th>Status</th>
-                        <th></th>
+                        {{#if isInRole 'admin'}}
+                            <th></th>
+                        {{/if}}
                     </tr>
                     </thead>
                     <tbody>
@@ -900,10 +902,12 @@
                                 <td>{{companyName}}</td>
                                 <td>{{eventType}}</td>
                                 <td>{{statusOptionConverter}}</td>
-                                <td>
-                                    <input type="button" class="btn btn-warning" value="Edit"
-                                           onclick="window.location.href='/events/edit/{{_id}}'">
-                                    <input type="button" class="btn btn-danger" value="Remove"></td>
+                                {{#if isInRole 'admin'}}
+                                    <td>
+                                        <input type="button" class="btn btn-warning" value="Edit"
+                                               onclick="window.location.href='/events/edit/{{_id}}'">
+                                        <input type="button" class="btn btn-danger" value="Remove"></td>
+                                {{/if}}
                             </tr>
                         {{/if}}
                         {{#if eventMid}}
@@ -914,10 +918,12 @@
                                 <td>{{companyName}}</td>
                                 <td>{{eventType}}</td>
                                 <td>{{statusOptionConverter}}</td>
-                                <td>
-                                    <input type="button" class="btn btn-warning" value="Edit"
-                                           onclick="window.location.href='/events/edit/{{_id}}'">
-                                    <input type="button" class="btn btn-danger" value="Remove"></td>
+                                {{#if isInRole 'admin'}}
+                                    <td>
+                                        <input type="button" class="btn btn-warning" value="Edit"
+                                               onclick="window.location.href='/events/edit/{{_id}}'">
+                                        <input type="button" class="btn btn-danger" value="Remove"></td>
+                                {{/if}}
                             </tr>
                         {{/if}}
                         {{#if eventGood}}
@@ -928,10 +934,12 @@
                                 <td>{{companyName}}</td>
                                 <td>{{eventType}}</td>
                                 <td>{{statusOptionConverter}}</td>
-                                <td>
-                                    <input type="button" class="btn btn-warning" value="Edit"
-                                           onclick="window.location.href='/events/edit/{{_id}}'">
-                                    <input type="button" class="btn btn-danger" value="Remove"></td>
+                                {{#if isInRole 'admin'}}
+                                    <td>
+                                        <input type="button" class="btn btn-warning" value="Edit"
+                                               onclick="window.location.href='/events/edit/{{_id}}'">
+                                        <input type="button" class="btn btn-danger" value="Remove"></td>
+                                {{/if}}
                             </tr>
                         {{/if}}
                     {{/each}}
