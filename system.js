@@ -8,6 +8,9 @@ CompaniesTest = new Mongo.Collection("companies_Test");
 
 EventsTest = new Mongo.Collection("events_Test");
 
+FutureTasks = new Meteor.Collection('future_tasks'); // server-side only
+
+
 CompaniesSchema = new SimpleSchema({
     companyName: {
         type: String,
@@ -750,59 +753,7 @@ if (Meteor.isClient) {
                 Router.go('/companies');
 
             }
-            //formToModifier: function(modifier) {
-            //    // alter modifier
-            //    // return modifier;
-            //    AutoForm.resetForm("updateCompanyForm");
-            //    if (AutoForm.getFieldValue("certification.0.certType") == "Other") {
-            //        document.getElementsByName("certification.0.reason").value = null;
-            //        return modifier;
-            //    }
-            //    else if (AutoForm.getFieldValue("certification.0.certType") == "None") {
-            //        document.getElementsByName("certification.0.other").value = null;
-            //        document.getElementsByName("certification.0.expirationDate").value = null;
-            //        document.getElementsByName("certification.0.certNumber").value = null;
-            //        document.getElementsByName("certification.0.registrar").value = null;
-            //        return modifier;
-            //    }
-            //    else {
-            //        document.getElementsByName("certification.0.other").value = null;
-            //        document.getElementsByName("certification.0.reason").value = null;
-            //        return modifier;
-            //    }
-            //}
-            //before: {
-            // Replace `formType` with the form `type` attribute to which this hook applies
-            //update: function (doc) {
-            //console.log(isSet);
-            //AutoForm.resetForm("updateCompanyForm");
-            //console.log(AutoForm.getFieldValue("certification.0.certType"));
-            //if (AutoForm.getFieldValue("certification.0.certType") == "Other") {
-            //    document.getElementsByName("certification.0.reason").value = null;
-            //    console.log(AutoForm.validateField("updateCompanyForm","certification.0.reason"));
-            //    return doc;
-            //}
-            //else if (AutoForm.getFieldValue("certification.0.certType") == "None") {
-            //    document.getElementsByName("certification.0.other").value = null;
-            //    document.getElementsByName("certification.0.expirationDate").value = null;
-            //    document.getElementsByName("certification.0.certNumber").value = null;
-            //    document.getElementsByName("certification.0.registrar").value = null;
-            //    console.log(AutoForm.getValidationContext("updateCompanyForm"));
-            //    return doc;
-            //}
-            //else {
-            //    document.getElementsByName("certification.0.other").value = null;
-            //    document.getElementsByName("certification.0.reason").value = null;
-            //    console.log(AutoForm.getValidationContext("updateCompanyForm"));
-            //    return doc;
-            //}
-            // Then return it or pass it to this.result()
-            //return doc; (synchronous)
-            //return false; (synchronous, cancel)
-            //this.result(doc); (asynchronous)
-            //this.result(false); (asynchronous, cancel)
-            //}
-            //}
+
         }
     });
     AutoForm.hooks({
@@ -2477,21 +2428,32 @@ if (Meteor.isServer) {
             // without waiting for the email sending to complete.
 
             this.unblock();
-
-            //to.forEach(function (entry) {
-            //    Email.send({
-            //        to: entry,
-            //        from: from,
-            //        replyTo: replyTo,
-            //        subject: subject,
-            //        html: text
-            //    });
-            //});
-
             Email.send(options);
+        },
+        'addTask': function (id, details) {
+            SyncedCron.add({
+                name: id,
+                schedule: function(parser) {
+                    return parser.recur().on(details.date).fullDate();
+                },
+                job: function() {
+                    sendEmail(details);
+                    FutureTasks.remove(id);
+                    SyncedCron.remove(id);
+                    return id;
+                }
+            });
 
+        },
+        'scheduleMail': function (details) {
+            if (details.date < new Date()) {
+                sendMail(details);
+            } else {
+                var thisId = FutureTasks.insert(details);
+                addTask(thisId, details);
+            }
+            return true;
         }
-
     });
 }
 
