@@ -937,7 +937,8 @@ if (Meteor.isClient) {
                 var selectedCompany = Session.get('selectedCompany');
                 var confirm = window.confirm("Send Feedback?");
                 if (confirm) {
-                    Meteor.call('sendFeedbackEmail', selectedCompany);
+                    var html = Template.feedbackEmail;
+                    Meteor.call('sendFeedbackEmail', selectedCompany, Blaze.toHTML(Template.feedbackEmail));
                     //Meteor.call('removeCompanyData', selectedCompany);
                 }
             },
@@ -1848,6 +1849,8 @@ if (Meteor.isClient) {
         }),
         Template.registerEmail.events({}),
         Template.registerEmail.helpers({}),
+        Template.feedbackEmail.events({}),
+        Template.feedbackEmail.helpers({}),
         Template.insertCompanyForm.helpers({
             noStatus: function () {
                 var docId = (AutoForm.getFieldValue("salesPerson.status") || AutoForm.getFieldValue("qualityPerson.status") || AutoForm.getFieldValue("logisticsPerson.status"));
@@ -2441,13 +2444,42 @@ if (Meteor.isServer) {
             this.unblock();
             Email.send(options);
         },
-        'sendFeedbackEmail': function (selectedCompany) {
+        'sendFeedbackEmail': function (selectedCompany, html) {
             this.unblock();
 
-            Email.send(options);
             var currentUserID = Meteor.userId();
+            var sendPeople = [];
             if (Roles.userIsInRole(currentUserID, 'admin')) {
-                CompaniesTest.remove({_id: selectedCompany});
+                sendPeople.push(CompaniesTest.find({_id: selectedCompany}).fetch()[0].salesPerson);
+                sendPeople.push(CompaniesTest.find({_id: selectedCompany}).fetch()[0].qualityPerson);
+                sendPeople.push(CompaniesTest.find({_id: selectedCompany}).fetch()[0].logisticsPerson);
+                sendPeople.push(CompaniesTest.find({_id: selectedCompany}).fetch()[0].differentPerson);
+                sendPeople = sendPeople.filter(Boolean);
+                var i = 0;
+                //console.log(CompaniesTest.find({_id: selectedCompany}).fetch());
+                console.log(sendPeople);
+                while (i < sendPeople.length) {
+                    var emailStatus = sendPeople[i].status;
+                    if (emailStatus) {
+                        console.log(sendPeople[i].email + ": " + emailStatus);
+                        var options = {
+                            from: 'sms@tandlautomatics.com',
+                            to: sendPeople[i].email,
+                            replyTo: 'sms@tandlautomatics.com',
+                            subject: 'Quarterly Feedback - T&L Supplier Management Application',
+                            html: html
+                        };
+                        Email.send(options);
+                    }
+                    else {
+                        console.log("No different person email");
+                    }
+                    i++;
+                }
+
+                //return sendPeople;
+                //Email.send(options);
+                //CompaniesTest.remove({_id: selectedCompany});
             }
         },
         'addTask': function (id, details) {
