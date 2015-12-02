@@ -639,8 +639,8 @@ EventSchema = new SimpleSchema({
     }
 });
 
-
 CompaniesTest.attachSchema(CompaniesSchema);
+
 EventsTest.attachSchema(EventSchema);
 
 //CompaniesTest.insert({
@@ -707,7 +707,7 @@ if (Meteor.isClient) {
                     //var companyName = CompaniesTest.find({id: result}).fetch()[0].companyName;
                     var options = {
                         from: "sms@tandlautomatics.com",
-                        to: "gwfreak01@gmail.com",
+                        to: "sms@tandlautomatics.com",
                         subject: "New Company",
                         text: AutoForm.getFieldValue("companyName", "insertCompanyForm") + " has just registered"
                     };
@@ -721,7 +721,7 @@ if (Meteor.isClient) {
                     Router.go('/companies');
                 }
             },
-            onError: function(insert, error) {
+            onError: function (insert, error) {
                 console.log(error);
                 return error;
             }
@@ -928,6 +928,17 @@ if (Meteor.isClient) {
                 var confirm = window.confirm("Delete this Company?");
                 if (confirm) {
                     Meteor.call('removeCompanyData', selectedCompany);
+                }
+            },
+            'click .btn-info': function (e) {
+                var companyID = this._id;
+                Session.set('selectedCompany', companyID);
+                e.stopPropagation();
+                var selectedCompany = Session.get('selectedCompany');
+                var confirm = window.confirm("Send Feedback?");
+                if (confirm) {
+                    Meteor.call('sendFeedbackEmail', selectedCompany);
+                    //Meteor.call('removeCompanyData', selectedCompany);
                 }
             },
             'keyup [name=companyItem]': function (event) {
@@ -2430,13 +2441,22 @@ if (Meteor.isServer) {
             this.unblock();
             Email.send(options);
         },
+        'sendFeedbackEmail': function (selectedCompany) {
+            this.unblock();
+
+            Email.send(options);
+            var currentUserID = Meteor.userId();
+            if (Roles.userIsInRole(currentUserID, 'admin')) {
+                CompaniesTest.remove({_id: selectedCompany});
+            }
+        },
         'addTask': function (id, details) {
             SyncedCron.add({
                 name: id,
-                schedule: function(parser) {
+                schedule: function (parser) {
                     return parser.recur().on(details.date).fullDate();
                 },
-                job: function() {
+                job: function () {
                     sendEmail(details);
                     FutureTasks.remove(id);
                     SyncedCron.remove(id);
