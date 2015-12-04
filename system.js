@@ -8,6 +8,9 @@ CompaniesTest = new Mongo.Collection("companies_Test");
 
 EventsTest = new Mongo.Collection("events_Test");
 
+FutureTasks = new Meteor.Collection('future_tasks'); // server-side only
+
+
 CompaniesSchema = new SimpleSchema({
     companyName: {
         type: String,
@@ -636,8 +639,8 @@ EventSchema = new SimpleSchema({
     }
 });
 
-
 CompaniesTest.attachSchema(CompaniesSchema);
+
 EventsTest.attachSchema(EventSchema);
 
 //CompaniesTest.insert({
@@ -704,7 +707,7 @@ if (Meteor.isClient) {
                     //var companyName = CompaniesTest.find({id: result}).fetch()[0].companyName;
                     var options = {
                         from: "sms@tandlautomatics.com",
-                        to: "gwfreak01@gmail.com",
+                        to: "sms@tandlautomatics.com",
                         subject: "New Company",
                         text: AutoForm.getFieldValue("companyName", "insertCompanyForm") + " has just registered"
                     };
@@ -718,7 +721,7 @@ if (Meteor.isClient) {
                     Router.go('/companies');
                 }
             },
-            onError: function(insert, error) {
+            onError: function (insert, error) {
                 console.log(error);
                 return error;
             }
@@ -750,59 +753,7 @@ if (Meteor.isClient) {
                 Router.go('/companies');
 
             }
-            //formToModifier: function(modifier) {
-            //    // alter modifier
-            //    // return modifier;
-            //    AutoForm.resetForm("updateCompanyForm");
-            //    if (AutoForm.getFieldValue("certification.0.certType") == "Other") {
-            //        document.getElementsByName("certification.0.reason").value = null;
-            //        return modifier;
-            //    }
-            //    else if (AutoForm.getFieldValue("certification.0.certType") == "None") {
-            //        document.getElementsByName("certification.0.other").value = null;
-            //        document.getElementsByName("certification.0.expirationDate").value = null;
-            //        document.getElementsByName("certification.0.certNumber").value = null;
-            //        document.getElementsByName("certification.0.registrar").value = null;
-            //        return modifier;
-            //    }
-            //    else {
-            //        document.getElementsByName("certification.0.other").value = null;
-            //        document.getElementsByName("certification.0.reason").value = null;
-            //        return modifier;
-            //    }
-            //}
-            //before: {
-            // Replace `formType` with the form `type` attribute to which this hook applies
-            //update: function (doc) {
-            //console.log(isSet);
-            //AutoForm.resetForm("updateCompanyForm");
-            //console.log(AutoForm.getFieldValue("certification.0.certType"));
-            //if (AutoForm.getFieldValue("certification.0.certType") == "Other") {
-            //    document.getElementsByName("certification.0.reason").value = null;
-            //    console.log(AutoForm.validateField("updateCompanyForm","certification.0.reason"));
-            //    return doc;
-            //}
-            //else if (AutoForm.getFieldValue("certification.0.certType") == "None") {
-            //    document.getElementsByName("certification.0.other").value = null;
-            //    document.getElementsByName("certification.0.expirationDate").value = null;
-            //    document.getElementsByName("certification.0.certNumber").value = null;
-            //    document.getElementsByName("certification.0.registrar").value = null;
-            //    console.log(AutoForm.getValidationContext("updateCompanyForm"));
-            //    return doc;
-            //}
-            //else {
-            //    document.getElementsByName("certification.0.other").value = null;
-            //    document.getElementsByName("certification.0.reason").value = null;
-            //    console.log(AutoForm.getValidationContext("updateCompanyForm"));
-            //    return doc;
-            //}
-            // Then return it or pass it to this.result()
-            //return doc; (synchronous)
-            //return false; (synchronous, cancel)
-            //this.result(doc); (asynchronous)
-            //this.result(false); (asynchronous, cancel)
-            //}
-            //}
+
         }
     });
     AutoForm.hooks({
@@ -977,6 +928,18 @@ if (Meteor.isClient) {
                 var confirm = window.confirm("Delete this Company?");
                 if (confirm) {
                     Meteor.call('removeCompanyData', selectedCompany);
+                }
+            },
+            'click .btn-info': function (e) {
+                var companyID = this._id;
+                Session.set('selectedCompany', companyID);
+                e.stopPropagation();
+                var selectedCompany = Session.get('selectedCompany');
+                var confirm = window.confirm("Send Feedback?");
+                if (confirm) {
+                    var html = Template.feedbackEmail;
+                    Meteor.call('sendFeedbackEmail', selectedCompany, Blaze.toHTML(Template.feedbackEmail));
+                    //Meteor.call('removeCompanyData', selectedCompany);
                 }
             },
             'keyup [name=companyItem]': function (event) {
@@ -1886,6 +1849,8 @@ if (Meteor.isClient) {
         }),
         Template.registerEmail.events({}),
         Template.registerEmail.helpers({}),
+        Template.feedbackEmail.events({}),
+        Template.feedbackEmail.helpers({}),
         Template.insertCompanyForm.helpers({
             noStatus: function () {
                 var docId = (AutoForm.getFieldValue("salesPerson.status") || AutoForm.getFieldValue("qualityPerson.status") || AutoForm.getFieldValue("logisticsPerson.status"));
@@ -2477,21 +2442,70 @@ if (Meteor.isServer) {
             // without waiting for the email sending to complete.
 
             this.unblock();
-
-            //to.forEach(function (entry) {
-            //    Email.send({
-            //        to: entry,
-            //        from: from,
-            //        replyTo: replyTo,
-            //        subject: subject,
-            //        html: text
-            //    });
-            //});
-
             Email.send(options);
+        },
+        'sendFeedbackEmail': function (selectedCompany, html) {
+            this.unblock();
 
+            var currentUserID = Meteor.userId();
+            var sendPeople = [];
+            if (Roles.userIsInRole(currentUserID, 'admin')) {
+                sendPeople.push(CompaniesTest.find({_id: selectedCompany}).fetch()[0].salesPerson);
+                sendPeople.push(CompaniesTest.find({_id: selectedCompany}).fetch()[0].qualityPerson);
+                sendPeople.push(CompaniesTest.find({_id: selectedCompany}).fetch()[0].logisticsPerson);
+                sendPeople.push(CompaniesTest.find({_id: selectedCompany}).fetch()[0].differentPerson);
+                sendPeople = sendPeople.filter(Boolean);
+                var i = 0;
+                //console.log(CompaniesTest.find({_id: selectedCompany}).fetch());
+                console.log(sendPeople);
+                while (i < sendPeople.length) {
+                    var emailStatus = sendPeople[i].status;
+                    if (emailStatus) {
+                        console.log(sendPeople[i].email + ": " + emailStatus);
+                        var options = {
+                            from: 'sms@tandlautomatics.com',
+                            to: sendPeople[i].email,
+                            replyTo: 'sms@tandlautomatics.com',
+                            subject: 'Quarterly Feedback - T&L Supplier Management Application',
+                            html: html
+                        };
+                        Email.send(options);
+                    }
+                    else {
+                        console.log("No different person email");
+                    }
+                    i++;
+                }
+
+                //return sendPeople;
+                //Email.send(options);
+                //CompaniesTest.remove({_id: selectedCompany});
+            }
+        },
+        'addTask': function (id, details) {
+            SyncedCron.add({
+                name: id,
+                schedule: function (parser) {
+                    return parser.recur().on(details.date).fullDate();
+                },
+                job: function () {
+                    sendEmail(details);
+                    FutureTasks.remove(id);
+                    SyncedCron.remove(id);
+                    return id;
+                }
+            });
+
+        },
+        'scheduleMail': function (details) {
+            if (details.date < new Date()) {
+                sendMail(details);
+            } else {
+                var thisId = FutureTasks.insert(details);
+                addTask(thisId, details);
+            }
+            return true;
         }
-
     });
 }
 
