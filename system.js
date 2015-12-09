@@ -938,12 +938,19 @@ if (Meteor.isClient) {
                 console.log(selectedCompany);
                 var confirm = window.confirm("Send Feedback?");
                 if (confirm) {
-
+                    var start = new Date();
+                    var start1 = moment(start).format("YYYY-MM-DD");
+                    var end = new Date(new Date(start).setMonth(start.getMonth() - 3));
+                    var end1 = moment(end).format("YYYY-MM-DD");
                     var dataContext = {
-                        message2: EventsTest.find({companyName: this.companyName}, {sort: {statusOption: -1}}).fetch(),
+                        message2: EventsTest.find({companyName: this.companyName, eventDate: {$lt : start1, $gte: end1}}, {sort: {statusOption: -1}}).fetch(),
                         message: "You must see this, it's amazing !",
                         url: "http://myapp.com/content/amazingstuff",
                         title: "Amazing stuff, click me !"};
+                    console.log(dataContext.message2);
+                    console.log(start);
+                    console.log(start1);
+                    console.log(end);
                     var html = Blaze.toHTMLWithData(Template.feedbackEmail, dataContext);
                     //var data = EventsTest.find({companyName: this.companyName}, {sort: {statusOption: -1}}).fetch();
 
