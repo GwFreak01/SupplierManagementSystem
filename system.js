@@ -951,6 +951,7 @@ if (Meteor.isClient) {
                     console.log(start);
                     console.log(start1);
                     console.log(end);
+                    console.log(end1);
                     var html = Blaze.toHTMLWithData(Template.feedbackEmail, dataContext);
                     //var data = EventsTest.find({companyName: this.companyName}, {sort: {statusOption: -1}}).fetch();
 
