@@ -946,7 +946,33 @@ if (Meteor.isClient) {
                         message2: EventsTest.find({companyName: this.companyName, eventDate: {$lt : start1, $gte: end1}}, {sort: {statusOption: -1}}).fetch(),
                         message: "You must see this, it's amazing !",
                         url: "http://myapp.com/content/amazingstuff",
-                        title: "Amazing stuff, click me !"};
+                        title: "Amazing stuff, click me !"
+                        //,
+                        //eventBad: function () {
+                        //    if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
+                        //        return true;
+                        //    }
+                        //    else {
+                        //        return false;
+                        //    }
+                        //},
+                        //eventMid: function () {
+                        //    if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
+                        //        return true;
+                        //    }
+                        //    else {
+                        //        return false;
+                        //    }
+                        //},
+                        //eventGood: function () {
+                        //    if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1") {
+                        //        return true;
+                        //    }
+                        //    else {
+                        //        return false;
+                        //    }
+                        //}
+                    };
                     console.log(dataContext.message2);
                     console.log(start);
                     console.log(start1);
