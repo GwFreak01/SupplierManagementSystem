@@ -935,10 +935,25 @@ if (Meteor.isClient) {
                 Session.set('selectedCompany', companyID);
                 e.stopPropagation();
                 var selectedCompany = Session.get('selectedCompany');
+                console.log(selectedCompany);
                 var confirm = window.confirm("Send Feedback?");
                 if (confirm) {
-                    var html = Template.feedbackEmail;
-                    Meteor.call('sendFeedbackEmail', selectedCompany, Blaze.toHTML(Template.feedbackEmail));
+
+                    var dataContext = {
+                        message2: EventsTest.find({companyName: this.companyName}, {sort: {statusOption: -1}}).fetch(),
+                        message: "You must see this, it's amazing !",
+                        url: "http://myapp.com/content/amazingstuff",
+                        title: "Amazing stuff, click me !"};
+                    var html = Blaze.toHTMLWithData(Template.feedbackEmail, dataContext);
+                    //var data = EventsTest.find({companyName: this.companyName}, {sort: {statusOption: -1}}).fetch();
+
+                    var data = {
+                        event: EventsTest.find({companyName: this.companyName}, {sort: {statusOption: -1}}).fetch()
+                    };
+
+                    console.log(data);
+                    //console.log(html);
+                    Meteor.call('sendFeedbackEmail', selectedCompany, html);
                     //Meteor.call('removeCompanyData', selectedCompany);
                 }
             },
@@ -1850,7 +1865,47 @@ if (Meteor.isClient) {
         Template.registerEmail.events({}),
         Template.registerEmail.helpers({}),
         Template.feedbackEmail.events({}),
-        Template.feedbackEmail.helpers({}),
+        Template.feedbackEmail.helpers({
+            //'event': function () {
+            //    return EventsTest.find({companyName: this.companyName}, {sort: {statusOption: -1}}).fetch();
+            //
+            //},
+            'eventBad': function () {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            'eventMid': function () {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            'eventGood': function () {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            'statusOptionConverter': function () {
+                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
+                    return "Open";
+                }
+                else if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
+                    return "Pending";
+                }
+                else {
+                    return "Closed";
+                }
+            }
+        }),
         Template.insertCompanyForm.helpers({
             noStatus: function () {
                 var docId = (AutoForm.getFieldValue("salesPerson.status") || AutoForm.getFieldValue("qualityPerson.status") || AutoForm.getFieldValue("logisticsPerson.status"));
@@ -2450,6 +2505,16 @@ if (Meteor.isServer) {
             var currentUserID = Meteor.userId();
             var sendPeople = [];
             if (Roles.userIsInRole(currentUserID, 'admin')) {
+                //SSR.compileTemplate( 'htmlEmail', Assets.getText( 'hello.html' ) );
+
+                var emailData = {
+                    name: "Doug Funny",
+                    favoriteRestaurant: "Honker Burger",
+                    bestFriend: "Skeeter Valentine"
+                };
+                //console.log(Assets.getText(Template.feedbackEmail));
+                //SSR.compileTemplate('emailText', Assets.getText('hello.html'));
+                //SSR.compileTemplate("someEmailName", Assets.getText("hello.html"));
                 sendPeople.push(CompaniesTest.find({_id: selectedCompany}).fetch()[0].salesPerson);
                 sendPeople.push(CompaniesTest.find({_id: selectedCompany}).fetch()[0].qualityPerson);
                 sendPeople.push(CompaniesTest.find({_id: selectedCompany}).fetch()[0].logisticsPerson);
@@ -2457,7 +2522,44 @@ if (Meteor.isServer) {
                 sendPeople = sendPeople.filter(Boolean);
                 var i = 0;
                 //console.log(CompaniesTest.find({_id: selectedCompany}).fetch());
-                console.log(sendPeople);
+                //console.log(sendPeople);
+                //console.log(EventsTest.find({companyName: this.companyName}, {sort: {statusOption: -1}}).fetch());
+                //var html = SSR.render('someEmailName',{event: "potato"});
+                //    eventBad: function () {
+                //        if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
+                //            return true;
+                //        }
+                //        else {
+                //            return false;
+                //        }
+                //    },
+                //    eventMid: function () {
+                //        if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
+                //            return true;
+                //        }
+                //        else {
+                //            return false;
+                //        }
+                //    },
+                //    eventGood: function () {
+                //        if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1") {
+                //            return true;
+                //        }
+                //        else {
+                //            return false;
+                //        }
+                //    },
+                //    statusOptionConverter: function () {
+                //        if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
+                //            return "Open";
+                //        }
+                //        else if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
+                //            return "Pending";
+                //        }
+                //        else {
+                //            return "Closed";
+                //        }
+                //    }});
                 while (i < sendPeople.length) {
                     var emailStatus = sendPeople[i].status;
                     if (emailStatus) {
@@ -2467,6 +2569,7 @@ if (Meteor.isServer) {
                             to: sendPeople[i].email,
                             replyTo: 'sms@tandlautomatics.com',
                             subject: 'Quarterly Feedback - T&L Supplier Management Application',
+                            //html: SSR.render( 'htmlEmail', emailData )
                             html: html
                         };
                         Email.send(options);
