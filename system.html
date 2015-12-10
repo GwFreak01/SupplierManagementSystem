@@ -975,6 +975,7 @@
                                 <td>{{eventType}}</td>
                                 <td>{{statusOptionConverter}}</td>
 
+
                             </tr>
                         {{/if}}
                         {{#if eventMid}}
@@ -1433,10 +1434,6 @@
 </template>
 
 <template name="feedbackEmail">
-
-    <!--<p>{{message}}</p>-->
-    <!--<a href="{{url}}">{{title}}</a>-->
-    <!--{{message2}}-->
     Dear Valued T&L Supplier,
     <br><br>
 
@@ -1453,17 +1450,19 @@
                     <th>CAR #</th>
                     <th>Type</th>
                     <th>Status</th>
+                    <th>Problem Description</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr></tr>
-                {{#each message2}}
+                {{#each eventItems}}
                     {{#if eventBad}}
                         <tr class="event danger" bgcolor="#ff3300">
                             <td>{{eventDate}}</td>
                             <td>{{carNumber}}</td>
                             <td>{{eventType}}</td>
                             <td>{{statusOptionConverter}}</td>
+                            <td>{{rootCause}}</td>
 
                         </tr>
                     {{/if}}
@@ -1473,6 +1472,7 @@
                             <td>{{carNumber}}</td>
                             <td>{{eventType}}</td>
                             <td>{{statusOptionConverter}}</td>
+                            <td>{{rootCause}}</td>
                         </tr>
                     {{/if}}
                     {{#if eventGood}}
@@ -1481,7 +1481,7 @@
                             <td>{{carNumber}}</td>
                             <td>{{eventType}}</td>
                             <td>{{statusOptionConverter}}</td>
-
+                            <td>{{rootCause}}</td>
                         </tr>
                     {{/if}}
                 {{/each}}
@@ -1490,7 +1490,17 @@
         </div>
     </div>
     <br><br>
-
+    Your current status is
+    {{#if green}}
+    <font color="#00ff00"><b>GREEN</b></font>
+    {{/if}}
+    {{#if yellow}}
+        <font color="#feff00"><b>YELLOW</b></font>
+    {{/if}}
+    {{#if red}}
+        <font color="#ff3300"><b>RED</b></font>
+    {{/if}}
+    <br><br>
     Sincerely,<br>
     <b>William J. Green</b><br>
     Vice President - Sales and Marketing<br>

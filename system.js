@@ -942,50 +942,37 @@ if (Meteor.isClient) {
                     var start1 = moment(start).format("YYYY-MM-DD");
                     var end = new Date(new Date(start).setMonth(start.getMonth() - 3));
                     var end1 = moment(end).format("YYYY-MM-DD");
+                    var num = 0;
+                    num = num + EventsTest.find({
+                            companyName: this.companyName,
+                            eventDate: {$lte: start1, $gte: end1},
+                            statusOption: "0"
+                        }, {sort: {statusOption: -1, eventDate: -1}}).count();
+                    num = num + EventsTest.find({
+                            companyName: this.companyName,
+                            eventDate: {$lte: start1, $gte: end1},
+                            statusOption: "1"
+                        }, {sort: {statusOption: -1, eventDate: -1}}).count();
+                    //console.log(num);
+                    Session.set('eventNumber', num);
                     var dataContext = {
-                        message2: EventsTest.find({companyName: this.companyName, eventDate: {$lt : start1, $gte: end1}}, {sort: {statusOption: -1}}).fetch(),
-                        message: "You must see this, it's amazing !",
-                        url: "http://myapp.com/content/amazingstuff",
-                        title: "Amazing stuff, click me !"
-                        //,
-                        //eventBad: function () {
-                        //    if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
-                        //        return true;
-                        //    }
-                        //    else {
-                        //        return false;
-                        //    }
-                        //},
-                        //eventMid: function () {
-                        //    if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
-                        //        return true;
-                        //    }
-                        //    else {
-                        //        return false;
-                        //    }
-                        //},
-                        //eventGood: function () {
-                        //    if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1") {
-                        //        return true;
-                        //    }
-                        //    else {
-                        //        return false;
-                        //    }
-                        //}
+                        eventItems: EventsTest.find({
+                            companyName: this.companyName,
+                            eventDate: {$lte: start1, $gte: end1}
+                        }, {sort: {statusOption: -1, eventDate: -1}}).fetch()
                     };
-                    console.log(dataContext.message2);
-                    console.log(start);
-                    console.log(start1);
-                    console.log(end);
-                    console.log(end1);
+                    //console.log(dataContext.eventItems);
+                    //console.log(start);
+                    //console.log(start1);
+                    //console.log(end);
+                    //console.log(end1);
                     var html = Blaze.toHTMLWithData(Template.feedbackEmail, dataContext);
-                    //var data = EventsTest.find({companyName: this.companyName}, {sort: {statusOption: -1}}).fetch();
 
                     var data = {
                         event: EventsTest.find({companyName: this.companyName}, {sort: {statusOption: -1}}).fetch()
                     };
 
-                    console.log(data);
+                    //console.log(data);
                     //console.log(html);
                     Meteor.call('sendFeedbackEmail', selectedCompany, html);
                     //Meteor.call('removeCompanyData', selectedCompany);
@@ -1634,7 +1621,7 @@ if (Meteor.isClient) {
         }),
         Template.eventListDisplay.helpers({
             'event': function () {
-                return EventsTest.find({}, {sort: {statusOption: -1}}).map(function (document, index) {
+                return EventsTest.find({}, {sort: {statusOption: -1, eventDate: 1}}).map(function (document, index) {
                     document.index = index + 1;
                     return document;
                 });
@@ -1853,7 +1840,12 @@ if (Meteor.isClient) {
         }),
         Template.companyEventListDisplay.helpers({
             'event': function () {
-                return EventsTest.find({companyName: this.companyName}, {sort: {statusOption: -1}}).map(function (document, index) {
+                return EventsTest.find({companyName: this.companyName}, {
+                    sort: {
+                        statusOption: -1,
+                        eventDate: -1
+                    }
+                }).map(function (document, index) {
                     document.index = index + 1;
                     console.log(document);
                     return document;
@@ -1937,6 +1929,85 @@ if (Meteor.isClient) {
                 }
                 else {
                     return "Closed";
+                }
+            },
+            'green': function () {
+                var start = new Date();
+                var start1 = moment(start).format("YYYY-MM-DD");
+                var end = new Date(new Date(start).setMonth(start.getMonth() - 3));
+                var end1 = moment(end).format("YYYY-MM-DD");
+                var num = EventsTest.find({
+                    companyName: this.companyName,
+                    eventDate: {$lte: start1, $gte: end1},
+                    statusOption: "0"
+                }, {sort: {statusOption: -1, eventDate: -1}}).count();
+
+                num += EventsTest.find({
+                    companyName: this.companyName,
+                    eventDate: {$lte: start1, $gte: end1},
+                    statusOption: "1"
+                }, {sort: {statusOption: -1, eventDate: -1}}).count();
+                var rand = Session.get('eventNumber');
+                console.log(rand);
+                if (rand < 2) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            'yellow': function () {
+                var start = new Date();
+                var start1 = moment(start).format("YYYY-MM-DD");
+                var end = new Date(new Date(start).setMonth(start.getMonth() - 3));
+                var end1 = moment(end).format("YYYY-MM-DD");
+                var num1 = 0;
+                num1 = num1 + EventsTest.find({
+                        companyName: this.companyName,
+                        eventDate: {$lte: start1, $gte: end1},
+                        statusOption: "0"
+                    }, {sort: {statusOption: -1, eventDate: -1}}).count();
+                num1 = num1 + EventsTest.find({
+                        companyName: this.companyName,
+                        eventDate: {$lte: start1, $gte: end1},
+                        statusOption: "1"
+                    }, {sort: {statusOption: -1, eventDate: -1}}).count();
+                //console.log(num1);
+                var rand = Session.get('eventNumber');
+                console.log(rand);
+
+                if ((2 <= rand) && (rand <= 4)) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+
+            },
+            'red': function () {
+                var start = new Date();
+                var start1 = moment(start).format("YYYY-MM-DD");
+                var end = new Date(new Date(start).setMonth(start.getMonth() - 3));
+                var end1 = moment(end).format("YYYY-MM-DD");
+                var num2 = 0;
+                num2 = num2 + EventsTest.find({
+                        companyName: this.companyName,
+                        eventDate: {$lte: start1, $gte: end1},
+                        statusOption: "0"
+                    }, {sort: {statusOption: -1, eventDate: -1}}).count();
+                num2 = num2 + EventsTest.find({
+                        companyName: this.companyName,
+                        eventDate: {$lte: start1, $gte: end1},
+                        statusOption: "1"
+                    }, {sort: {statusOption: -1, eventDate: -1}}).count();
+                var rand = Session.get('eventNumber');
+                console.log(rand);
+
+                if (rand > 4) {
+                    return true;
+                }
+                else {
+                    return false;
                 }
             }
         }),
@@ -2539,61 +2610,12 @@ if (Meteor.isServer) {
             var currentUserID = Meteor.userId();
             var sendPeople = [];
             if (Roles.userIsInRole(currentUserID, 'admin')) {
-                //SSR.compileTemplate( 'htmlEmail', Assets.getText( 'hello.html' ) );
-
-                var emailData = {
-                    name: "Doug Funny",
-                    favoriteRestaurant: "Honker Burger",
-                    bestFriend: "Skeeter Valentine"
-                };
-                //console.log(Assets.getText(Template.feedbackEmail));
-                //SSR.compileTemplate('emailText', Assets.getText('hello.html'));
-                //SSR.compileTemplate("someEmailName", Assets.getText("hello.html"));
                 sendPeople.push(CompaniesTest.find({_id: selectedCompany}).fetch()[0].salesPerson);
                 sendPeople.push(CompaniesTest.find({_id: selectedCompany}).fetch()[0].qualityPerson);
                 sendPeople.push(CompaniesTest.find({_id: selectedCompany}).fetch()[0].logisticsPerson);
                 sendPeople.push(CompaniesTest.find({_id: selectedCompany}).fetch()[0].differentPerson);
                 sendPeople = sendPeople.filter(Boolean);
                 var i = 0;
-                //console.log(CompaniesTest.find({_id: selectedCompany}).fetch());
-                //console.log(sendPeople);
-                //console.log(EventsTest.find({companyName: this.companyName}, {sort: {statusOption: -1}}).fetch());
-                //var html = SSR.render('someEmailName',{event: "potato"});
-                //    eventBad: function () {
-                //        if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
-                //            return true;
-                //        }
-                //        else {
-                //            return false;
-                //        }
-                //    },
-                //    eventMid: function () {
-                //        if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
-                //            return true;
-                //        }
-                //        else {
-                //            return false;
-                //        }
-                //    },
-                //    eventGood: function () {
-                //        if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1") {
-                //            return true;
-                //        }
-                //        else {
-                //            return false;
-                //        }
-                //    },
-                //    statusOptionConverter: function () {
-                //        if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
-                //            return "Open";
-                //        }
-                //        else if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
-                //            return "Pending";
-                //        }
-                //        else {
-                //            return "Closed";
-                //        }
-                //    }});
                 while (i < sendPeople.length) {
                     var emailStatus = sendPeople[i].status;
                     if (emailStatus) {
