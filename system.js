@@ -1,5 +1,6 @@
 SimpleSchema.debug = true;
 
+
 CompanyList = new Mongo.Collection("companies");
 
 EventList = new Mongo.Collection("events");
@@ -893,6 +894,49 @@ if (Meteor.isClient) {
                 };
                 Meteor.call("sendEmail", options);
                 toastr.info("Invitation Sent");
+            },
+            'click .btn-info': function (e) {
+                var companyID = this._id;
+                Session.set('selectedCompany', companyID);
+                e.stopPropagation();
+                //var selectedCompany = Session.get('selectedCompany');
+                //console.log(selectedCompany);
+                var confirm = window.confirm("Send All Feedback?");
+                if (confirm) {
+                    var companyList = CompaniesTest.find().fetch();
+                    //console.log(companyList);
+                    var start = new Date();
+                    var start1 = moment(start).format("YYYY-MM-DD");
+                    var end = new Date(new Date(start).setMonth(start.getMonth() - 3));
+                    var end1 = moment(end).format("YYYY-MM-DD");
+                    _.each(companyList, function (company) {
+                        var selectedCompany = company._id;
+                        var num = 0;
+                        num += EventsTest.find({
+                            companyName: company.companyName,
+                            eventDate: {$lte: start1, $gte: end1},
+                            statusOption: "0"
+                        }, {sort: {statusOption: -1, eventDate: -1}}).count();
+                        num += EventsTest.find({
+                            companyName: company.companyName,
+                            eventDate: {$lte: start1, $gte: end1},
+                            statusOption: "1"
+                        }, {sort: {statusOption: -1, eventDate: -1}}).count();
+                        console.log(company.companyName + " has " + num + " red/yellow events");
+                        Session.set('eventNumber', num);
+                        var data = {
+                            eventItems: EventsTest.find({
+                                companyName: company.companyName,
+                                eventDate: {$lte: start1, $gte: end1}
+                            }, {sort: {statusOption: -1, eventDate: -1}}).fetch()
+                        }
+                        console.log(data);
+
+                        var html = Blaze.toHTMLWithData(Template.feedbackEmail, data);
+                        //SyncedCron.nextScheduledAtDate(jobName);
+                        Meteor.call('sendFeedbackEmail', selectedCompany, html);
+                    });
+                }
             }
         }),
         Template.companies.helpers({
@@ -2051,103 +2095,6 @@ if (Meteor.isClient) {
                 }
             }
         })
-    //,
-    //Template.insertCompanyForm.events({
-    //    'submit form': function () {
-    //        event.preventDefault();
-    //        var insertFormHook = {
-    //            after: {
-    //                // Replace `formType` with the form `type` attribute to which this hook applies
-    //                insert: function (error, result) {
-    //                    console.log(result);
-    //                    toastr.options = {
-    //                        "closeButton": false,
-    //                        "debug": false,
-    //                        "newestOnTop": false,
-    //                        "progressBar": false,
-    //                        "positionClass": "toast-top-full-width",
-    //                        "preventDuplicates": true,
-    //                        "onclick": null,
-    //                        "showDuration": "300",
-    //                        "hideDuration": "1000",
-    //                        "timeOut": "5000",
-    //                        "extendedTimeOut": "1000",
-    //
-    //                        "showEasing": "swing",
-    //                        "hideEasing": "linear",
-    //                        "showMethod": "fadeIn",
-    //                        "hideMethod": "fadeOut"
-    //                    };
-    //                    if (error) {
-    //                        console.log("Insert Error:", error);
-    //                    }
-    //                    else {
-    //                        if (Roles.userIsInRole(this.userId, "supplier")) {
-    //                            toastr.success("Thank you for registering!", "Registration Success");
-    //                            Meteor.logout();
-    //                            Router.go('/');
-    //                            return result;
-    //                            console.log("Insert Result:", result);
-    //                        }
-    //                        else {
-    //                            toastr.success("Thank you for registering!", "Registration Success");
-    //                            Router.go('/');
-    //                            return result;
-    //                            console.log("Insert Result:", result);
-    //                        }
-    //                    }
-    //                }
-    //            },
-    //            //onSuccess: function (insert, result) {
-    //            //    toastr.options = {
-    //            //        "closeButton": false,
-    //            //        "debug": false,
-    //            //        "newestOnTop": false,
-    //            //        "progressBar": false,
-    //            //        "positionClass": "toast-top-full-width",
-    //            //        "preventDuplicates": true,
-    //            //        "onclick": null,
-    //            //        "showDuration": "300",
-    //            //        "hideDuration": "1000",
-    //            //        "timeOut": "5000",
-    //            //        "extendedTimeOut": "1000",
-    //            //
-    //            //        "showEasing": "swing",
-    //            //        "hideEasing": "linear",
-    //            //        "showMethod": "fadeIn",
-    //            //        "hideMethod": "fadeOut"
-    //            //    };
-    //            //    if (Roles.userIsInRole(this.userId, "supplier")) {
-    //            //        toastr.success("Thank you for registering!", "Registration Success");
-    //            //        Meteor.logout();
-    //            //        Router.go('/');
-    //            //    }
-    //            //    else {
-    //            //        toastr.success("Thank you for registering!", "Registration Success");
-    //            //        Router.go('/');
-    //            //    }
-    //            //
-    //            //}
-    //        };
-    //        AutoForm.hooks({
-    //            insertCompanyForm: insertFormHook,
-    //            insertCompanyForm: {
-    //                onSuccess: function (operation, result, template) {
-    //
-    //                },
-    //                onError: function () {
-    //
-    //                }
-    //            }
-    //        });
-    //        //AutoForm.addHooks()
-    //        //alert("You have successfully registered!");
-    //        //                    if (Roles.userIsInRole(this.userId, "supplier")) {
-    //        //                        Meteor.logout();
-    //        //                    }
-    //        //                    Router.go('/');
-    //    }
-    //})
 }
 
 if (Meteor.isServer) {
@@ -2179,7 +2126,30 @@ if (Meteor.isServer) {
                 }
             });
         }
+        FutureTasks.find().forEach(function (mail) {
+            if (mail.date < new Date()) {
+                sendFeedbackEmail(selectedCompany, html);
+            } else {
+
+                addTask(mail._id, mail);
+            }
+        });
+        SyncedCron.start();
     });
+    //SyncedCron.add({
+    //    name: "Quarterly Feedback Email 1",
+    //    schedule: function (parser) {
+    //        //return parser.recur().on(details.date).fullDate();
+    //        return parser.text("Every 1 minute");
+    //    },
+    //    job: function () {
+    //        console.log("I am the best");
+    //        //sendFeedbackEmail(selectedCompany, html);
+    //        //FutureTasks.remove(id);
+    //        //SyncedCron.remove(id);
+    //        //return id;
+    //    }
+    //});
 
     Meteor.publish('theCompanies', function () {
         if (Roles.userIsInRole(this.userId, ['admin', 'employee'])) {
@@ -2625,7 +2595,6 @@ if (Meteor.isServer) {
                             to: sendPeople[i].email,
                             replyTo: 'sms@tandlautomatics.com',
                             subject: 'Quarterly Feedback - T&L Supplier Management Application',
-                            //html: SSR.render( 'htmlEmail', emailData )
                             html: html
                         };
                         Email.send(options);
@@ -2635,20 +2604,18 @@ if (Meteor.isServer) {
                     }
                     i++;
                 }
-
-                //return sendPeople;
-                //Email.send(options);
-                //CompaniesTest.remove({_id: selectedCompany});
             }
         },
-        'addTask': function (id, details) {
+        'addTask': function (id, details, selectedCompany, html) {
             SyncedCron.add({
-                name: id,
+                name: "Quarterly Feedback Email",
                 schedule: function (parser) {
-                    return parser.recur().on(details.date).fullDate();
+                    //return parser.recur().on(details.date).fullDate();
+                    return parser.text("Every 3 Months");
                 },
                 job: function () {
-                    sendEmail(details);
+                    console.log("I am the best");
+                    //sendFeedbackEmail(selectedCompany, html);
                     FutureTasks.remove(id);
                     SyncedCron.remove(id);
                     return id;
@@ -2656,9 +2623,9 @@ if (Meteor.isServer) {
             });
 
         },
-        'scheduleMail': function (details) {
+        'scheduleMail': function (details, selectedCompany, html) {
             if (details.date < new Date()) {
-                sendMail(details);
+                sendFeedbackEmail(selectedCompany, html);
             } else {
                 var thisId = FutureTasks.insert(details);
                 addTask(thisId, details);
