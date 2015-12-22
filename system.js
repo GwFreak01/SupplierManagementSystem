@@ -935,6 +935,7 @@ if (Meteor.isClient) {
                         var html = Blaze.toHTMLWithData(Template.feedbackEmail, data);
                         //SyncedCron.nextScheduledAtDate(jobName);
                         Meteor.call('sendFeedbackEmail', selectedCompany, html);
+                        //console.log(FutureTasks.find().fetch());
                     });
                 }
             }
@@ -2098,6 +2099,9 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
+    SyncedCron.config({
+        collectionName: 'cronHistory'
+    });
     Meteor.startup(function () {
         process.env.MAIL_URL = 'smtp://postmaster%40sandbox9a11769c25e04579a3d65d9e8f4e20cd.mailgun.org:b54cb40a370534e4f1ff467f7e836cf3@smtp.mailgun.org:587';
         if (!Meteor.users.findOne()) {
@@ -2128,10 +2132,9 @@ if (Meteor.isServer) {
         }
         FutureTasks.find().forEach(function (mail) {
             if (mail.date < new Date()) {
-                sendFeedbackEmail(selectedCompany, html);
+                Meteor.call('scheduleMail', mail);
             } else {
-
-                addTask(mail._id, mail);
+                Meteor.call('addTask', mail._id, mail);
             }
         });
         SyncedCron.start();
@@ -2595,9 +2598,11 @@ if (Meteor.isServer) {
                             to: sendPeople[i].email,
                             replyTo: 'sms@tandlautomatics.com',
                             subject: 'Quarterly Feedback - T&L Supplier Management Application',
-                            html: html
+                            html: html,
+                            date: new Date()
                         };
-                        Email.send(options);
+                        Meteor.call('scheduleMail', options);
+                        //Email.send(options);
                     }
                     else {
                         console.log("No different person email");
@@ -2606,7 +2611,7 @@ if (Meteor.isServer) {
                 }
             }
         },
-        'addTask': function (id, details, selectedCompany, html) {
+        'addTask': function (thisId, options) {
             SyncedCron.add({
                 name: "Quarterly Feedback Email",
                 schedule: function (parser) {
@@ -2614,8 +2619,9 @@ if (Meteor.isServer) {
                     return parser.text("Every 3 Months");
                 },
                 job: function () {
-                    console.log("I am the best");
+                    //console.log("I am the best");
                     //sendFeedbackEmail(selectedCompany, html);
+                    Email.send(options);
                     FutureTasks.remove(id);
                     SyncedCron.remove(id);
                     return id;
@@ -2623,12 +2629,12 @@ if (Meteor.isServer) {
             });
 
         },
-        'scheduleMail': function (details, selectedCompany, html) {
-            if (details.date < new Date()) {
-                sendFeedbackEmail(selectedCompany, html);
+        'scheduleMail': function (options) {
+            if (options.date < new Date()) {
+                Email.send(options);
             } else {
-                var thisId = FutureTasks.insert(details);
-                addTask(thisId, details);
+                var thisId = FutureTasks.insert(options);
+                Meteor.call('addTask', thisId, options);
             }
             return true;
         }
