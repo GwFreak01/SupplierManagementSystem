@@ -1,3 +1,9 @@
+//Rolling Yearly Cummitalive Events
+//Q1'14-Q1'15 -> Q2'14-Q2'15
+//Bill, Mark, Dan, Vince - SMS App Icon
+//Jan 6 - Finalize Report Function and check on outstanding suppliers not yet registered
+//Jan 13 - Roll out final process to T&L Users (Icons on Desktops + Training)
+
 SimpleSchema.debug = true;
 
 
@@ -268,6 +274,18 @@ CompaniesSchema = new SimpleSchema({
                     ];
                 }
             }
+        },
+        autoValue: function () {
+            var type = this.field("certification.0.certType");
+            var content = this.field("certification.0.expirationDate");
+            if (type.value != "None") {
+                //var d = new Date (content);
+                //console.log(content);
+                return type.value;
+            }
+            else {
+                //this.unset();
+            }
         }
     },
     "certification.$.other": {
@@ -290,9 +308,14 @@ CompaniesSchema = new SimpleSchema({
 
                     // updates
                     else if (this.isSet) {
-                        if (this.operator === "$set" && this.value === null || this.value === "") return "required";
-                        if (this.operator === "$unset") return "required";
-                        if (this.operator === "$rename") return "required";
+                        if (this.operator === "$set" && this.value === null || this.value === "") {
+                            return "required";
+                        }
+                        //if (this.operator === "$unset") return "required";
+                        //if (this.operator === "$rename") return "required";
+                    }
+                    else {
+                        //this.unset();
                     }
                 }
                 ////insert
@@ -319,12 +342,14 @@ CompaniesSchema = new SimpleSchema({
             var type = this.siblingField("certification.0.certType");
             var content = this.siblingField("certification.0.other");
             //console.log(type);
+            console.log(type);
             if (type.value == "Other") {
                 console.log(content.value);
                 return content.value;
             }
             else {
-                //this.unset();
+                this.unset();
+                //return "$unset";
             }
         }
     },
@@ -341,9 +366,16 @@ CompaniesSchema = new SimpleSchema({
                 }
                 //update
                 else if (this.isSet) {
-                    if (this.operator === "$set" && this.value === null || this.value === "") return "required";
-                    if (this.operator === "$unset") return "required";
-                    if (this.operator === "$rename") return "required";
+                    if (this.operator === "$set" && this.value === null || this.value === "") {
+                        return "required";
+                    }
+                    else {
+                        //this.unset();
+
+                        //return "$unset";
+                    }
+                    //if (this.operator === "$unset") return "required";
+                    //if (this.operator === "$rename") return "required";
                 }
             }
         },
@@ -636,6 +668,21 @@ EventSchema = new SimpleSchema({
                     {label: "Closed", value: -1}
                 ];
             }
+        },
+        autoValue: function () {
+            var type = this.field("statusOption");
+            var content = this.field("certification.0.expirationDate");
+            console.log(this._id);
+            console.log(EventsTest.find({_id: this._id}).fetch());
+            return type.value;
+            //if (type.value != "None") {
+            //    var d = new Date (content);
+            //    console.log(content);
+            //    return type.value;
+            //}
+            //else {
+            //    this.unset();
+            //}
         }
     }
 });
@@ -1043,8 +1090,6 @@ if (Meteor.isClient) {
                 return CompanyList.findOne(selectedCompany);
             }
         }),
-        Template.addCompanyForm.events({
-        }),
         Template.addCompanyForm.helpers({
             'showOption1': function () {
                 return Session.get("showPullDown1");
@@ -1072,10 +1117,7 @@ if (Meteor.isClient) {
             '[name=insertCompanyForm]': function () {
                 return CompaniesTest.findOne({_id: this._id});
             },
-            'getcompanyAddress': function () {
-                var company = CompaniesTest.findOne({_id: this._id});
-                return (company.street + " " + company.street2 + ", " + company.city + ", " + company.state + " " + company.zipcode);
-            },
+
             'showOption1': function () {
                 if (CompanyList.find({_id: this._id}).fetch()[0].cert[0].certStatus == true) {
                     return true;
@@ -1259,8 +1301,7 @@ if (Meteor.isClient) {
                 }
             }
         }),
-        Template.editEvent.events({
-        }),
+        Template.editEvent.events({}),
         Template.editEvent.helpers({
             showDelivery: function () {
                 var docId = AutoForm.getFieldValue("eventType");
@@ -1512,6 +1553,9 @@ if (Meteor.isServer) {
     });
     Meteor.startup(function () {
         process.env.MAIL_URL = 'smtp://postmaster%40sandbox9a11769c25e04579a3d65d9e8f4e20cd.mailgun.org:b54cb40a370534e4f1ff467f7e836cf3@smtp.mailgun.org:587';
+        //process.env.MAIL_URL = 'smtp://postmaster@sandboxf72dcb6d24b74639b5832e8ecba2b886.mailgun.org:23862cf6d8d1a0c7f81fb5bf3565f130@smtp.mailgun.org:587';
+        //process.env.MAIL_URL = 'stmp://tpham:8ofFic1al~@tandlautomatics.com:25';
+
         if (!Meteor.users.findOne()) {
             var users = [
                 {name: "Admin User", username: "admin", roles: ['admin']},
@@ -1538,14 +1582,14 @@ if (Meteor.isServer) {
                 }
             });
         }
-        FutureTasks.find().forEach(function (mail) {
-            if (mail.date < new Date()) {
-                Meteor.call('scheduleMail', mail);
-            } else {
-                Meteor.call('addTask', mail._id, mail);
-            }
-        });
-        SyncedCron.start();
+        //FutureTasks.find().forEach(function (mail) {
+        //    if (mail.date < new Date()) {
+        //        Meteor.call('scheduleMail', mail);
+        //    } else {
+        //        Meteor.call('addTask', mail._id, mail);
+        //    }
+        //});
+        //SyncedCron.start();
     });
     //SyncedCron.add({
     //    name: "Quarterly Feedback Email 1",
