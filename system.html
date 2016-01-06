@@ -1,4 +1,4 @@
-<template name="main">
+<template name="main" xmlns="http://www.w3.org/1999/html">
     <div class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -447,6 +447,32 @@
     {{/if}}
 </template>
 
+<template name="insertEventForm">
+    {{#autoForm schema="EventSchema" id="insertEventForm" type="insert" collection="EventsTest" resetOnSuccess=false}}
+        <fieldset>
+            {{> afQuickField name='companyName'}}
+            {{> afQuickField name='eventDate'}}
+            {{> afQuickField name='eventType'}}
+            {{> afQuickField name='tlPartNumber'}}
+            {{> afQuickField name='purchaseOrderNumber'}}
+            {{> afQuickField name='lotNumber'}}
+            {{> afQuickField name='carNumber'}}
+            <!--{{#if showDelivery}}-->
+                {{> afQuickField name='requiredDate'}}
+                {{> afQuickField name='actualDate'}}
+            <!--{{else}}-->
+                {{> afQuickField name='quantityReject'}}
+            <!--{{/if}}-->
+            {{> afQuickField name='rootCause'}}
+            {{> afQuickField name='statusOption'}}
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Cancel</button>
+            </div>
+        </fieldset>
+    {{/autoForm}}
+</template>
+
 <template name="detailEvent">
     {{#if currentUser}}
         {{#autoForm schema="EventSchema" id="insertEventForm" type="readonly" collection="EventsTest" doc=this resetOnSuccess=false}}
@@ -459,12 +485,12 @@
                 {{> afQuickField name='purchaseOrderNumber'}}
                 {{> afQuickField name='lotNumber'}}
                 {{> afQuickField name='carNumber'}}
-                {{#if showDelivery}}
+                <!--{{#if showDelivery}}-->
                     {{> afQuickField name='requiredDate'}}
                     {{> afQuickField name='actualDate'}}
-                {{else}}
+                <!--{{else}}-->
                     {{> afQuickField name='quantityReject'}}
-                {{/if}}
+                <!--{{/if}}-->
                 {{> afQuickField name='rootCause'}}
                 {{> afQuickField name='statusOption'}}
 
@@ -492,12 +518,12 @@
                     {{> afQuickField name='purchaseOrderNumber'}}
                     {{> afQuickField name='lotNumber'}}
                     {{> afQuickField name='carNumber'}}
-                    {{#if showDelivery}}
+                    <!--{{#if showDelivery}}-->
                         {{> afQuickField name='requiredDate'}}
                         {{> afQuickField name='actualDate'}}
-                    {{else}}
+                    <!--{{else}}-->
                         {{> afQuickField name='quantityReject'}}
-                    {{/if}}
+                    <!--{{/if}}-->
                     {{> afQuickField name='rootCause'}}
                     {{> afQuickField name='statusOption'}}
 
@@ -566,7 +592,7 @@
     Dear Valued T&L Supplier,
     <br><br>
 
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Attached you will find your delivery and quality performance summary report for the
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Attached, you will find your delivery and quality performance summary report for the
     prior quarter. Please review the information and contact Dan Barnhoorn if you have any questions.
     <br><br>
 
@@ -619,6 +645,14 @@
         </div>
     </div>
     <br><br>
+
+    <center>
+    <b><u>Status Legend</u></b><br><br>
+    <font color="#00ff00"><b>GREEN</b></font> | 0 to 2 Open/Pending Events <br><br>
+    <font color="#feff00"><b>YELLOW</b></font> | 2 to 4 Open/Pending Events <br><br>
+    <font color="#ff3300"><b>RED</b></font> | 4+ Open/Pending Events <br><br>
+    </center>
+
     Your current status is
     {{#if green}}
     <font color="#00ff00"><b>GREEN</b></font>.<br><br>
@@ -646,28 +680,3 @@
     <a href="www.tandlautomatics.com">www.tandlautomatics.com</a><br>
 </template>
 
-<template name="insertEventForm">
-    {{#autoForm schema="EventSchema" id="insertEventForm" type="insert" collection="EventsTest" resetOnSuccess=false}}
-        <fieldset>
-            {{> afQuickField name='companyName'}}
-            {{> afQuickField name='eventDate'}}
-            {{> afQuickField name='eventType'}}
-            {{> afQuickField name='tlPartNumber'}}
-            {{> afQuickField name='purchaseOrderNumber'}}
-            {{> afQuickField name='lotNumber'}}
-            {{> afQuickField name='carNumber'}}
-            {{#if showDelivery}}
-                {{> afQuickField name='requiredDate'}}
-                {{> afQuickField name='actualDate'}}
-            {{else}}
-                {{> afQuickField name='quantityReject'}}
-            {{/if}}
-            {{> afQuickField name='rootCause'}}
-            {{> afQuickField name='statusOption'}}
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">Submit</button>
-                <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Cancel</button>
-            </div>
-        </fieldset>
-    {{/autoForm}}
-</template>

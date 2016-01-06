@@ -312,42 +312,6 @@ CompaniesSchema = new SimpleSchema({
                     //if (this.operator === "$unset") return "required";
                     //if (this.operator === "$rename") return "required";
                 }
-
-                //AutoForm.resetForm();
-                //var shouldBeRequired = this.field('certification.0.certType').value;
-                ////console.log(this.field('certification.0.certType').value);
-                ////console.log(shouldBeRequired);
-                //var docId = AutoForm.getFieldValue("certification.0.certType");
-                //if (shouldBeRequired == "Other") {
-                //    // inserts
-                //
-                //    if (!this.operator) {
-                //        if (!this.isSet || this.value === null || this.value === "") return "required";
-                //    }
-                //
-                //    // updates
-                //    else if (this.isSet) {
-                //        if (this.operator === "$set" && this.value === null || this.value === "") {
-                //            return "required";
-                //        }
-                //        //if (this.operator === "$unset") return "required";
-                //        //if (this.operator === "$rename") return "required";
-                //    }
-                //    else {
-                //        //this.unset();
-                //    }
-                //}
-                ////insert
-                //if ((docId == "Other") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
-                //    document.getElementsByName("certification.0.reason").value() == null;
-                //    return "required";
-                //}
-                ////update
-                //else if (this.isSet) {
-                //    if (this.operator === "$set" && this.value === null || this.value === "") return "required";
-                //    if (this.operator === "$unset") return "required";
-                //    if (this.operator === "$rename") return "required";
-                //}
             }
         },
         autoform: {
@@ -559,10 +523,18 @@ EventSchema = new SimpleSchema({
         }
     },
     eventDate: {
-        type: String,
+        type: Date,
         label: "Event Date",
         autoform: {
-            type: "date"
+            type: function () {
+                return "bootstrap-datepicker";
+            }
+        },
+        autoValue: function () {
+            console.log(this.field("eventDate").value);
+            var tempDate = this.field("eventDate").value;
+            //return moment(tempDate).format("YYYY-MM-DD");
+            return tempDate;
         }
     },
     eventType: {
@@ -601,13 +573,83 @@ EventSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
-                var docId = AutoForm.getFieldValue("eventType");
+                //AutoForm.resetForm(this.formId);
+                var shouldBeRequired = this.field('eventType').value;
+                //console.log(this.field('certification.0.certType').value);
 
-                if ((docId === "Quality") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
-                    return "required";
+                if (shouldBeRequired == "Quality") {
+                    // inserts
+
+                    if (!this.operator) {
+                        if (!this.isSet || this.value === null || this.value === "") return "required";
+                    }
+
+                    // updates
+                    else if (this.isSet) {
+                        if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                        if (this.operator === "$unset") return "required";
+                        if (this.operator === "$rename") return "required";
+                    }
                 }
             }
+        },
+        autoform: {
+            type: function () {
+                if (AutoForm.getFieldValue("eventType") != "Quality") {
+                    return "hidden";
+                }
+            }
+        },
+        autoValue: function () {
+            var type = this.field("eventType");
+            var content = this.field("quantityReject");
+            if (type.value == "Quality") {
+                return content.value;
+            }
+            else {
+                this.unset();
+            }
         }
+        //custom: function () {
+        //    if (Meteor.isClient) {
+        //        //AutoForm.resetForm(this.formId);
+        //        var shouldBeRequired = this.field('eventType').value;
+        //        //console.log(this.field('certification.0.certType').value);
+        //
+        //        if (shouldBeRequired == "Quality") {
+        //            // inserts
+        //
+        //            if (!this.operator) {
+        //                if (!this.isSet || this.value === null || this.value === "") return "required";
+        //            }
+        //
+        //            // updates
+        //            else if (this.isSet) {
+        //                if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+        //                if (this.operator === "$unset") return "required";
+        //                if (this.operator === "$rename") return "required";
+        //            }
+        //        }
+        //
+        //    }
+        //},
+        //autoform: {
+        //    type: function () {
+        //        if (AutoForm.getFieldValue("eventType") != "Quality") {
+        //            return "hidden";
+        //        }
+        //    }
+        //},
+        //autoValue: function () {
+        //    var type = this.field("eventType");
+        //    var content = this.field("quantityReject");
+        //    if (type.value == "None") {
+        //        return content.value;
+        //    }
+        //    else {
+        //        this.unset();
+        //    }
+        //}
     },
     requiredDate: {
         type: Date,
@@ -615,19 +657,10 @@ EventSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
-                var docId = AutoForm.getFieldValue("eventType");
-
-                if ((docId === "Delivery") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
-                    return "required";
-                }
-            }
-        },
-        custom: function () {
-            if (Meteor.isClient) {
-                //AutoForm.resetForm();
+                //AutoForm.resetForm(this.formId);
                 var shouldBeRequired = this.field('eventType').value;
                 //console.log(this.field('certification.0.certType').value);
-                //console.log(shouldBeRequired);
+
                 if (shouldBeRequired == "Delivery") {
                     // inserts
 
@@ -643,7 +676,79 @@ EventSchema = new SimpleSchema({
                     }
                 }
             }
+        },
+        autoform: {
+            type: function () {
+                if (AutoForm.getFieldValue("eventType") != "Delivery") {
+                    return "hidden";
+                }
+                else {
+                    return "bootstrap-datepicker";
+                }
+            }
+        },
+        autoValue: function () {
+            var type = this.field("eventType");
+            var content = this.field("requiredDate");
+            if (type.value == "Delivery") {
+                return content.value;
+            }
+            else {
+                this.unset();
+            }
         }
+        //custom: function () {
+        //    if (Meteor.isClient) {
+        //        var docId = AutoForm.getFieldValue("eventType");
+        //        //insert
+        //        if (!(docId === "Quality") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+        //            return "required";
+        //        }
+        //        //update
+        //        else if (this.isSet) {
+        //            if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+        //            if (this.operator === "$unset") return "required";
+        //            if (this.operator === "$rename") return "required";
+        //        }
+        //
+        //
+        //        //var docId = AutoForm.getFieldValue("eventType");
+        //        ////insert
+        //        //if (!(docId === "Delivery") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+        //        //    return "required";
+        //        //}
+        //        ////update
+        //        //else if (this.isSet) {
+        //        //    if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+        //        //    if (this.operator === "$unset") return "required";
+        //        //    if (this.operator === "$rename") return "required";
+        //        //}
+        //        //var docId = AutoForm.getFieldValue("eventType");
+        //        //
+        //        //if ((docId === "Delivery") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+        //        //    return "required";
+        //        //}
+        //    }
+        //},
+        //autoform: {
+        //    type: function () {
+        //        if (AutoForm.getFieldValue("eventType") != "Delivery") {
+        //            return "hidden";
+        //        }
+        //    }
+        //},
+        //autoValue: function () {
+        //    var type = this.field("eventType");
+        //    var content = this.field("requiredDate");
+        //    console.log("This is required Date info" + type.value + content.value);
+        //    if (type.value === "Delivery") {
+        //        return content.value;
+        //    }
+        //    else {
+        //        this.unset();
+        //    }
+        //}
+
     },
     actualDate: {
         type: Date,
@@ -651,12 +756,13 @@ EventSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
+                //AutoForm.resetForm(this.formId);
                 var shouldBeRequired = this.field('eventType').value;
                 //console.log(this.field('certification.0.certType').value);
-                //console.log(shouldBeRequired);
+
                 if (shouldBeRequired == "Delivery") {
                     // inserts
-                    //AutoForm.resetForm();
+
                     if (!this.operator) {
                         if (!this.isSet || this.value === null || this.value === "") return "required";
                     }
@@ -669,7 +775,66 @@ EventSchema = new SimpleSchema({
                     }
                 }
             }
+        },
+        autoform: {
+            type: function () {
+                if (AutoForm.getFieldValue("eventType") != "Delivery") {
+                    return "hidden";
+                }
+                else {
+                    return "bootstrap-datepicker";
+                }
+            }
+        },
+        autoValue: function () {
+            var type = this.field("eventType");
+            var content = this.field("requiredDate");
+            if (type.value == "Delivery") {
+                return content.value;
+            }
+            else {
+                this.unset();
+            }
         }
+        //custom: function () {
+        //    if (Meteor.isClient) {
+        //        var shouldBeRequired = this.field('eventType').value;
+        //        //console.log(this.field('certification.0.certType').value);
+        //        //console.log(shouldBeRequired);
+        //        if (shouldBeRequired == "Delivery") {
+        //            // inserts
+        //            //AutoForm.resetForm();
+        //            if (!this.operator) {
+        //                if (!this.isSet || this.value === null || this.value === "") return "required";
+        //            }
+        //
+        //            // updates
+        //            else if (this.isSet) {
+        //                if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+        //                if (this.operator === "$unset") return "required";
+        //                if (this.operator === "$rename") return "required";
+        //            }
+        //        }
+        //    }
+        //},
+        //autoform: {
+        //    type: function () {
+        //        if (AutoForm.getFieldValue("eventType") != "Delivery") {
+        //            return "hidden";
+        //        }
+        //    }
+        //},
+        //autoValue: function () {
+        //    var type = this.field("eventType");
+        //    var content = this.field("actualDate");
+        //    console.log("This is required Date info" + type.value + content.value);
+        //    if (type.value === "Delivery") {
+        //        return content.value;
+        //    }
+        //    else {
+        //        this.unset();
+        //    }
+        //}
     },
     rootCause: {
         type: String,
@@ -1571,7 +1736,9 @@ if (Meteor.isServer) {
         collectionName: 'cronHistory'
     });
     Meteor.startup(function () {
+        //EMAIL 1
         process.env.MAIL_URL = 'smtp://postmaster%40sandbox9a11769c25e04579a3d65d9e8f4e20cd.mailgun.org:b54cb40a370534e4f1ff467f7e836cf3@smtp.mailgun.org:587';
+        //BACKUP EMAIL 2
         //process.env.MAIL_URL = 'smtp://postmaster@sandboxf72dcb6d24b74639b5832e8ecba2b886.mailgun.org:23862cf6d8d1a0c7f81fb5bf3565f130@smtp.mailgun.org:587';
         //process.env.MAIL_URL = 'stmp://tpham:8ofFic1al~@tandlautomatics.com:25';
 
@@ -1753,9 +1920,11 @@ if (Meteor.isServer) {
                             subject: 'Quarterly Feedback - T&L Supplier Management Application',
                             html: html,
                             date: new Date()
+                            //,
+                            //cc: ["gwfreak01@gmail.com", "bill@tandlautomatics.com"]
                         };
-                        Meteor.call('scheduleMail', options);
-                        //Email.send(options);
+                        //Meteor.call('scheduleMail', options);
+                        Email.send(options);
                     }
                     else {
                         console.log("No different person email");
