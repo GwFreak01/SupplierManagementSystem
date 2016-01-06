@@ -294,30 +294,49 @@ CompaniesSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
-                //AutoForm.resetForm();
-                var shouldBeRequired = this.field('certification.0.certType').value;
-                //console.log(this.field('certification.0.certType').value);
-                //console.log(shouldBeRequired);
                 var docId = AutoForm.getFieldValue("certification.0.certType");
-                if (shouldBeRequired == "Other") {
-                    // inserts
-
-                    if (!this.operator) {
-                        if (!this.isSet || this.value === null || this.value === "") return "required";
-                    }
-
-                    // updates
-                    else if (this.isSet) {
-                        if (this.operator === "$set" && this.value === null || this.value === "") {
-                            return "required";
-                        }
-                        //if (this.operator === "$unset") return "required";
-                        //if (this.operator === "$rename") return "required";
+                //insert
+                if (!(docId === "Other") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                    return "required";
+                }
+                //update
+                else if (this.isSet) {
+                    if (this.operator === "$set" && this.value === null || this.value === "") {
+                        return "required";
                     }
                     else {
                         //this.unset();
+
+                        //return "$unset";
                     }
+                    //if (this.operator === "$unset") return "required";
+                    //if (this.operator === "$rename") return "required";
                 }
+
+                //AutoForm.resetForm();
+                //var shouldBeRequired = this.field('certification.0.certType').value;
+                ////console.log(this.field('certification.0.certType').value);
+                ////console.log(shouldBeRequired);
+                //var docId = AutoForm.getFieldValue("certification.0.certType");
+                //if (shouldBeRequired == "Other") {
+                //    // inserts
+                //
+                //    if (!this.operator) {
+                //        if (!this.isSet || this.value === null || this.value === "") return "required";
+                //    }
+                //
+                //    // updates
+                //    else if (this.isSet) {
+                //        if (this.operator === "$set" && this.value === null || this.value === "") {
+                //            return "required";
+                //        }
+                //        //if (this.operator === "$unset") return "required";
+                //        //if (this.operator === "$rename") return "required";
+                //    }
+                //    else {
+                //        //this.unset();
+                //    }
+                //}
                 ////insert
                 //if ((docId == "Other") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
                 //    document.getElementsByName("certification.0.reason").value() == null;
@@ -339,11 +358,11 @@ CompaniesSchema = new SimpleSchema({
             }
         },
         autoValue: function () {
-            var type = this.siblingField("certification.0.certType");
-            var content = this.siblingField("certification.0.other");
+            var type = this.field("certification.0.certType");
+            var content = this.field("certification.0.other");
             //console.log(type);
             console.log(type);
-            if (type.value == "Other") {
+            if (type.value === "Other") {
                 console.log(content.value);
                 return content.value;
             }
@@ -954,7 +973,7 @@ if (Meteor.isClient) {
                     //console.log(companyList);
                     var start = new Date();
                     var start1 = moment(start).format("YYYY-MM-DD");
-                    var end = new Date(new Date(start).setMonth(start.getMonth() - 3));
+                    var end = new Date(new Date(start).setMonth(start.getMonth() - 12));
                     var end1 = moment(end).format("YYYY-MM-DD");
                     _.each(companyList, function (company) {
                         var selectedCompany = company._id;
@@ -1032,7 +1051,7 @@ if (Meteor.isClient) {
                 if (confirm) {
                     var start = new Date();
                     var start1 = moment(start).format("YYYY-MM-DD");
-                    var end = new Date(new Date(start).setMonth(start.getMonth() - 3));
+                    var end = new Date(new Date(start).setMonth(start.getMonth() - 12));
                     var end1 = moment(end).format("YYYY-MM-DD");
                     var num = 0;
                     num = num + EventsTest.find({
@@ -1428,7 +1447,7 @@ if (Meteor.isClient) {
             'green': function () {
                 var start = new Date();
                 var start1 = moment(start).format("YYYY-MM-DD");
-                var end = new Date(new Date(start).setMonth(start.getMonth() - 3));
+                var end = new Date(new Date(start).setMonth(start.getMonth() - 12));
                 var end1 = moment(end).format("YYYY-MM-DD");
                 var num = EventsTest.find({
                     companyName: this.companyName,
@@ -1453,7 +1472,7 @@ if (Meteor.isClient) {
             'yellow': function () {
                 var start = new Date();
                 var start1 = moment(start).format("YYYY-MM-DD");
-                var end = new Date(new Date(start).setMonth(start.getMonth() - 3));
+                var end = new Date(new Date(start).setMonth(start.getMonth() - 12));
                 var end1 = moment(end).format("YYYY-MM-DD");
                 var num1 = 0;
                 num1 = num1 + EventsTest.find({
@@ -1481,7 +1500,7 @@ if (Meteor.isClient) {
             'red': function () {
                 var start = new Date();
                 var start1 = moment(start).format("YYYY-MM-DD");
-                var end = new Date(new Date(start).setMonth(start.getMonth() - 3));
+                var end = new Date(new Date(start).setMonth(start.getMonth() - 12));
                 var end1 = moment(end).format("YYYY-MM-DD");
                 var num2 = 0;
                 num2 = num2 + EventsTest.find({
