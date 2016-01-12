@@ -604,6 +604,7 @@ EventSchema = new SimpleSchema({
             var type = this.field("eventType");
             var content = this.field("quantityReject");
             if (type.value == "Quality") {
+                console.log(content.value);
                 return content.value;
             }
             else {
@@ -907,7 +908,7 @@ Router.configure({
 });
 
 if (Meteor.isClient) {
-    Meteor.subscribe('theCompanies');
+    //Meteor.subscribe('theCompanies');
     Meteor.subscribe('theEvents');
     Meteor.subscribe('userList');
     Meteor.subscribe('companies_Test');
@@ -1261,18 +1262,19 @@ if (Meteor.isClient) {
             //},
             'company': function () {
                 return CompaniesTest.find({}, {sort: {companyName: 1}});
-            },
-            'selectedClass': function () {
-                var companyID = this._id;
-                var selectedCompany = Session.get('selectedCompany');
-                if (companyID == selectedCompany) {
-                    return "selected";
-                }
-            },
-            'showSelectedCompany': function () {
-                var selectedCompany = Session.get('selectedCompany');
-                return CompanyList.findOne(selectedCompany);
             }
+            //,
+            //'selectedClass': function () {
+            //    var companyID = this._id;
+            //    var selectedCompany = Session.get('selectedCompany');
+            //    if (companyID == selectedCompany) {
+            //        return "selected";
+            //    }
+            //},
+            //'showSelectedCompany': function () {
+            //    var selectedCompany = Session.get('selectedCompany');
+            //    return CompanyList.findOne(selectedCompany);
+            //}
         }),
         Template.addCompanyForm.helpers({
             'showOption1': function () {
@@ -1300,86 +1302,85 @@ if (Meteor.isClient) {
         Template.detailCompany.helpers({
             '[name=insertCompanyForm]': function () {
                 return CompaniesTest.findOne({_id: this._id});
-            },
-
-            'showOption1': function () {
-                if (CompanyList.find({_id: this._id}).fetch()[0].cert[0].certStatus == true) {
-                    return true;
-                }
-            },
-            'showOption2': function () {
-                if (CompanyList.find({_id: this._id}).fetch()[0].cert[1].certStatus == true) {
-                    return true;
-                }
-            },
-            'showOption3': function () {
-                if (CompanyList.find({_id: this._id}).fetch()[0].cert[2].certStatus == true) {
-                    return true;
-                }
-            },
-            'showOption4': function () {
-                if (CompanyList.find({_id: this._id}).fetch()[0].cert[3].certStatus == true) {
-                    return true;
-                }
-            },
-            'showOption5': function () {
-                if (CompanyList.find({_id: this._id}).fetch()[0].cert[4].certStatus == true) {
-                    return true;
-                }
-            },
-            'expirationDate1': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[0].expirationDate;
-            },
-            'expirationDate2': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[1].expirationDate;
-            },
-            'expirationDate3': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[2].expirationDate;
-            },
-            'expirationDate4': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[3].expirationDate;
-            },
-            'expirationDate5': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[0].expirationDate;
-            },
-            'certNumber1': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[0].certNumber;
-            },
-            'certNumber2': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[1].certNumber;
-            },
-            'certNumber3': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[2].certNumber;
-            },
-            'certNumber4': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[3].certNumber;
-            },
-            'registrar1': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[0].registrar;
-            },
-            'registrar2': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[1].registrar;
-            },
-            'registrar3': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[2].registrar;
-            },
-            'registrar4': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[3].registrar;
-            },
-            'certType4': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[3].type;
-            },
-            'cert5Text': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].cert[4].text;
-            },
-            'different': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].differentName != "";
-
-            },
-            'event': function () {
-                return CompanyList.find({_id: this._id}).fetch()[0].event;
             }
-
+            //,
+            //'showOption1': function () {
+            //    if (CompanyList.find({_id: this._id}).fetch()[0].cert[0].certStatus == true) {
+            //        return true;
+            //    }
+            //},
+            //'showOption2': function () {
+            //    if (CompanyList.find({_id: this._id}).fetch()[0].cert[1].certStatus == true) {
+            //        return true;
+            //    }
+            //},
+            //'showOption3': function () {
+            //    if (CompanyList.find({_id: this._id}).fetch()[0].cert[2].certStatus == true) {
+            //        return true;
+            //    }
+            //},
+            //'showOption4': function () {
+            //    if (CompanyList.find({_id: this._id}).fetch()[0].cert[3].certStatus == true) {
+            //        return true;
+            //    }
+            //},
+            //'showOption5': function () {
+            //    if (CompanyList.find({_id: this._id}).fetch()[0].cert[4].certStatus == true) {
+            //        return true;
+            //    }
+            //},
+            //'expirationDate1': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[0].expirationDate;
+            //},
+            //'expirationDate2': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[1].expirationDate;
+            //},
+            //'expirationDate3': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[2].expirationDate;
+            //},
+            //'expirationDate4': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[3].expirationDate;
+            //},
+            //'expirationDate5': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[0].expirationDate;
+            //},
+            //'certNumber1': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[0].certNumber;
+            //},
+            //'certNumber2': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[1].certNumber;
+            //},
+            //'certNumber3': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[2].certNumber;
+            //},
+            //'certNumber4': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[3].certNumber;
+            //},
+            //'registrar1': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[0].registrar;
+            //},
+            //'registrar2': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[1].registrar;
+            //},
+            //'registrar3': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[2].registrar;
+            //},
+            //'registrar4': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[3].registrar;
+            //},
+            //'certType4': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[3].type;
+            //},
+            //'cert5Text': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[4].text;
+            //},
+            //'different': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].differentName != "";
+            //
+            //},
+            //'event': function () {
+            //    return CompanyList.find({_id: this._id}).fetch()[0].event;
+            //}
         }),
         Template.eventListDisplay.events({
             'click .event': function (e) {
@@ -1455,47 +1456,47 @@ if (Meteor.isClient) {
             }
         }),
         Template.addEventForm.events({
-            'change #eventType': function (event, template) {
-                var eventTypeVar = document.getElementById("eventType").value;
-                if (eventTypeVar == "Delivery") {
-                    Session.set('showDelivery', true);
-                }
-                else {
-                    Session.set('showDelivery', false);
-                }
-            }
+            //'change #eventType': function (event, template) {
+            //    var eventTypeVar = document.getElementById("eventType").value;
+            //    if (eventTypeVar == "Delivery") {
+            //        Session.set('showDelivery', true);
+            //    }
+            //    else {
+            //        Session.set('showDelivery', false);
+            //    }
+            //}
         }),
         Template.addEventForm.helpers({
-            'showDelivery': function () {
-                var currentUserID = Meteor.userId();
-                return Session.get("showDelivery");
-            },
-            'company': function () {
-                return CompanyList.find({}, {sort: {companyName: 1}});
-            }
+            //'showDelivery': function () {
+            //    var currentUserID = Meteor.userId();
+            //    return Session.get("showDelivery");
+            //},
+            //'company': function () {
+            //    return CompanyList.find({}, {sort: {companyName: 1}});
+            //}
         }),
         Template.detailEvent.helpers({
-            showDelivery: function () {
-                var docId = AutoForm.getFieldValue("eventType");
-                if (docId == "Delivery") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
+            //showDelivery: function () {
+            //    var docId = AutoForm.getFieldValue("eventType");
+            //    if (docId == "Delivery") {
+            //        return true;
+            //    }
+            //    else {
+            //        return false;
+            //    }
+            //}
         }),
         Template.editEvent.events({}),
         Template.editEvent.helpers({
-            showDelivery: function () {
-                var docId = AutoForm.getFieldValue("eventType");
-                if (docId == "Delivery") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
+            //showDelivery: function () {
+            //    var docId = AutoForm.getFieldValue("eventType");
+            //    if (docId == "Delivery") {
+            //        return true;
+            //    }
+            //    else {
+            //        return false;
+            //    }
+            //}
         }),
         Template.main.events({
             'click .logout': function () {
@@ -1792,16 +1793,16 @@ if (Meteor.isServer) {
     //    }
     //});
 
-    Meteor.publish('theCompanies', function () {
-        if (Roles.userIsInRole(this.userId, ['admin', 'employee'])) {
-            var currentUserID = this.userId;
-            return CompanyList.find({});
-        }
-        else {
-            this.stop();
-            return;
-        }
-    });
+    //Meteor.publish('theCompanies', function () {
+    //    if (Roles.userIsInRole(this.userId, ['admin', 'employee'])) {
+    //        var currentUserID = this.userId;
+    //        return CompanyList.find({});
+    //    }
+    //    else {
+    //        this.stop();
+    //        return;
+    //    }
+    //});
 
     Meteor.publish('theEvents', function () {
         if (Roles.userIsInRole(this.userId, ['admin', 'employee'])) {
