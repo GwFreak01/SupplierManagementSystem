@@ -4,7 +4,7 @@
 //Jan 6 - Finalize Report Function and check on outstanding suppliers not yet registered
 //Jan 13 - Roll out final process to T&L Users (Icons on Desktops + Training)
 
-//SimpleSchema.debug = true;
+SimpleSchema.debug = true;
 
 CompaniesTest = new Mongo.Collection("companies_Test");
 
@@ -555,10 +555,9 @@ EventSchema = new SimpleSchema({
                 }
             }
         },
-
         autoValue: function () {
             var type = this.siblingField("eventType");
-            var content = this.siblingField("requiredDate");
+            var content = this.siblingField("quantityReject");
             console.log(type.value);
             console.log(content.value);
             if (type.value == "Quality") {
@@ -582,7 +581,7 @@ EventSchema = new SimpleSchema({
             }
             else if (type.value == "Delivery") {
                 if (this.operator) {
-                    if (this.isSet || this.value != null || this.value != "") {
+                    if (this.isSet || this.value === null || this.value === "") {
                         console.log("7");
                         return {$unset: ''};
                     }
@@ -628,7 +627,6 @@ EventSchema = new SimpleSchema({
                 }
             }
         },
-
         autoValue: function () {
             var type = this.siblingField("eventType");
             var content = this.siblingField("requiredDate");
@@ -1070,20 +1068,22 @@ if (Meteor.isClient) {
                 if (confirm) {
                     var companyList = CompaniesTest.find().fetch();
                     var start = new Date();
-                    var start1 = moment(start).format("YYYY-MM-DD");
+                    //var start1 = moment(start).format("YYYY-MM-DD");
+                    var start1 = moment(start);
                     var end = new Date(new Date(start).setMonth(start.getMonth() - 12));
-                    var end1 = moment(end).format("YYYY-MM-DD");
+                    //var end1 = moment(end).format("YYYY-MM-DD");
+                    var end1 = moment(end);
                     _.each(companyList, function (company) {
                         var selectedCompany = company._id;
                         var num = 0;
                         num += EventsTest.find({
                             companyName: company.companyName,
-                            eventDate: {$lte: start1, $gte: end1},
+                            eventDate: {$lte: start, $gte: end},
                             statusOption: "0"
                         }, {sort: {statusOption: -1, eventDate: -1}}).count();
                         num += EventsTest.find({
                             companyName: company.companyName,
-                            eventDate: {$lte: start1, $gte: end1},
+                            eventDate: {$lte: start, $gte: end},
                             statusOption: "1"
                         }, {sort: {statusOption: -1, eventDate: -1}}).count();
                         console.log(company.companyName + " has " + num + " red/yellow events");
@@ -1091,7 +1091,7 @@ if (Meteor.isClient) {
                         var data = {
                             eventItems: EventsTest.find({
                                 companyName: company.companyName,
-                                eventDate: {$lte: start1, $gte: end1}
+                                eventDate: {$lte: start, $gte: end}
                             }, {sort: {statusOption: -1, eventDate: -1}}).fetch()
                         }
                         var html = Blaze.toHTMLWithData(Template.feedbackEmail, data);
@@ -1144,25 +1144,30 @@ if (Meteor.isClient) {
                 var confirm = window.confirm("Send Feedback?");
                 if (confirm) {
                     var start = new Date();
-                    var start1 = moment(start).format("YYYY-MM-DD");
+                    //var start1 = moment(start).format("YYYY-MM-DD");
+                    var start1 = moment(start);
+                    console.log("Start Date: " + start);
                     var end = new Date(new Date(start).setMonth(start.getMonth() - 12));
-                    var end1 = moment(end).format("YYYY-MM-DD");
+                    //var end1 = moment(end).format("YYYY-MM-DD");
+                    var end1 = moment(end);
+                    console.log("End Date: " + end);
                     var num = 0;
                     num = num + EventsTest.find({
                             companyName: this.companyName,
-                            eventDate: {$lte: start1, $gte: end1},
+                            eventDate: {$lte: start, $gte: end},
                             statusOption: "0"
                         }, {sort: {statusOption: -1, eventDate: -1}}).count();
                     num = num + EventsTest.find({
                             companyName: this.companyName,
-                            eventDate: {$lte: start1, $gte: end1},
+                            eventDate: {$lte: start, $gte: end},
                             statusOption: "1"
                         }, {sort: {statusOption: -1, eventDate: -1}}).count();
                     Session.set('eventNumber', num);
+                    console.log("Number of red/yellow events: " + Session.get('eventNumber'));
                     var dataContext = {
                         eventItems: EventsTest.find({
                             companyName: this.companyName,
-                            eventDate: {$lte: start1, $gte: end1}
+                            eventDate: {$lte: start, $gte: end}
                         }, {sort: {statusOption: -1, eventDate: -1}}).fetch()
                     };
                     var html = Blaze.toHTMLWithData(Template.feedbackEmail, dataContext);
@@ -1246,6 +1251,39 @@ if (Meteor.isClient) {
                 }
                 else {
                     return "Closed";
+                }
+            }
+        }),
+        Template.insertEventForm.helpers({
+            'showDelivery': function () {
+                var docId = AutoForm.getFieldValue("eventType");
+                if (docId == "Delivery") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }),
+        Template.detailEvent.helpers({
+            'showDelivery': function () {
+                var docId = AutoForm.getFieldValue("eventType");
+                if (docId == "Delivery") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }),
+        Template.editEvent.helpers({
+            'showDelivery': function () {
+                var docId = AutoForm.getFieldValue("eventType");
+                if (docId == "Delivery") {
+                    return true;
+                }
+                else {
+                    return false;
                 }
             }
         }),
@@ -1358,18 +1396,20 @@ if (Meteor.isClient) {
             },
             'green': function () {
                 var start = new Date();
-                var start1 = moment(start).format("YYYY-MM-DD");
+                //var start1 = moment(start).format("YYYY-MM-DD");
+                var start1 = moment(start);
                 var end = new Date(new Date(start).setMonth(start.getMonth() - 12));
-                var end1 = moment(end).format("YYYY-MM-DD");
+                //var end1 = moment(end).format("YYYY-MM-DD");
+                var end1 = moment(end);
                 var num = EventsTest.find({
                     companyName: this.companyName,
-                    eventDate: {$lte: start1, $gte: end1},
+                    eventDate: {$lte: start, $gte: end},
                     statusOption: "0"
                 }, {sort: {statusOption: -1, eventDate: -1}}).count();
 
                 num += EventsTest.find({
                     companyName: this.companyName,
-                    eventDate: {$lte: start1, $gte: end1},
+                    eventDate: {$lte: start, $gte: end},
                     statusOption: "1"
                 }, {sort: {statusOption: -1, eventDate: -1}}).count();
                 var rand = Session.get('eventNumber');
@@ -1383,18 +1423,20 @@ if (Meteor.isClient) {
             },
             'yellow': function () {
                 var start = new Date();
-                var start1 = moment(start).format("YYYY-MM-DD");
+                //var start1 = moment(start).format("YYYY-MM-DD");
+                var start1 = moment(start);
                 var end = new Date(new Date(start).setMonth(start.getMonth() - 12));
-                var end1 = moment(end).format("YYYY-MM-DD");
+                //var end1 = moment(end).format("YYYY-MM-DD");
+                var end1 = moment(end);
                 var num1 = 0;
                 num1 = num1 + EventsTest.find({
                         companyName: this.companyName,
-                        eventDate: {$lte: start1, $gte: end1},
+                        eventDate: {$lte: start, $gte: end},
                         statusOption: "0"
                     }, {sort: {statusOption: -1, eventDate: -1}}).count();
                 num1 = num1 + EventsTest.find({
                         companyName: this.companyName,
-                        eventDate: {$lte: start1, $gte: end1},
+                        eventDate: {$lte: start, $gte: end},
                         statusOption: "1"
                     }, {sort: {statusOption: -1, eventDate: -1}}).count();
                 var rand = Session.get('eventNumber');
@@ -1407,18 +1449,20 @@ if (Meteor.isClient) {
             },
             'red': function () {
                 var start = new Date();
-                var start1 = moment(start).format("YYYY-MM-DD");
+                //var start1 = moment(start).format("YYYY-MM-DD");
+                var start1 = moment(start);
                 var end = new Date(new Date(start).setMonth(start.getMonth() - 12));
-                var end1 = moment(end).format("YYYY-MM-DD");
+                //var end1 = moment(end).format("YYYY-MM-DD");
+                var end1 = moment(end);
                 var num2 = 0;
                 num2 = num2 + EventsTest.find({
                         companyName: this.companyName,
-                        eventDate: {$lte: start1, $gte: end1},
+                        eventDate: {$lte: start, $gte: end},
                         statusOption: "0"
                     }, {sort: {statusOption: -1, eventDate: -1}}).count();
                 num2 = num2 + EventsTest.find({
                         companyName: this.companyName,
-                        eventDate: {$lte: start1, $gte: end1},
+                        eventDate: {$lte: start, $gte: end},
                         statusOption: "1"
                     }, {sort: {statusOption: -1, eventDate: -1}}).count();
                 var rand = Session.get('eventNumber');
