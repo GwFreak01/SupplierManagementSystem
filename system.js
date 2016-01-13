@@ -1490,11 +1490,27 @@ if (Meteor.isServer) {
                 {name: "Supplier User", username: "supplier", roles: ['supplier']}
             ];
             _.each(users, function (user) {
-                var id = Accounts.createUser({
-                    username: user.username,
-                    password: "apple1",
-                    profile: {name: user.name}
-                });
+                if (user.username == "admin") {
+                    var id = Accounts.createUser({
+                        username: user.username,
+                        password: "tlsms",
+                        profile: {name: user.name}
+                    });
+                }
+                else if (user.username == "employee") {
+                    var id = Accounts.createUser({
+                        username: user.username,
+                        password: "tlemployee",
+                        profile: {name: user.name}
+                    });
+                }
+                else if (user.username == "supplier"){
+                    var id = Accounts.createUser({
+                        username: user.username,
+                        password: "apple1",
+                        profile: {name: user.name}
+                    });
+                }
                 if (user.roles.length > 0) {
                     // Need _id of existing user record so this call must come
                     // after `Accounts.createUser` or `Accounts.onCreate`
