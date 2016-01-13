@@ -456,9 +456,13 @@
             {{> afQuickField name='purchaseOrderNumber'}}
             {{> afQuickField name='lotNumber'}}
             {{> afQuickField name='carNumber'}}
+            {{#if showDelivery}}
                 {{> afQuickField name='requiredDate'}}
                 {{> afQuickField name='actualDate'}}
+            {{else}}
                 {{> afQuickField name='quantityReject'}}
+
+            {{/if}}
             {{> afQuickField name='rootCause'}}
             {{> afQuickField name='statusOption'}}
             <div class="form-group">
@@ -481,9 +485,12 @@
                 {{> afQuickField name='purchaseOrderNumber'}}
                 {{> afQuickField name='lotNumber'}}
                 {{> afQuickField name='carNumber'}}
+                    {{#if showDelivery}}
                 {{> afQuickField name='requiredDate'}}
                 {{> afQuickField name='actualDate'}}
+                    {{else}}
                 {{> afQuickField name='quantityReject'}}
+                    {{/if}}
                 {{> afQuickField name='rootCause'}}
                 {{> afQuickField name='statusOption'}}
 
@@ -511,9 +518,12 @@
                     {{> afQuickField name='purchaseOrderNumber'}}
                     {{> afQuickField name='lotNumber'}}
                     {{> afQuickField name='carNumber'}}
+                        {{#if showDelivery}}
                     {{> afQuickField name='requiredDate'}}
                     {{> afQuickField name='actualDate'}}
+                        {{else}}
                     {{> afQuickField name='quantityReject'}}
+                        {{/if}}
                     {{> afQuickField name='rootCause'}}
                     {{> afQuickField name='statusOption' }}
 
