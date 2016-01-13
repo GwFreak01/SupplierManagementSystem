@@ -234,7 +234,7 @@
 <template name="editCompany">
     {{#if currentUser}}
         {{#if isInRole 'admin, supplier'}}
-            {{#autoForm schema="CompaniesSchema" id="updateCompanyForm" type="update" collection="CompaniesTest" doc=this resetOnSuccess=false}}
+            {{#autoForm schema="CompaniesSchema" id="updateCompanyForm" type="update" collection="CompaniesTest" doc=companyDoc resetOnSuccess=false}}
                 <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
                 <fieldset>
                     {{> afQuickField name='companyName'}}
@@ -525,7 +525,7 @@
                         {{> afQuickField name='quantityReject'}}
                     <!--{{/if}}-->
                     {{> afQuickField name='rootCause'}}
-                    {{> afQuickField name='statusOption'}}
+                    {{> afQuickField name='statusOption' }}
 
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary">Submit</button>
@@ -601,11 +601,11 @@
             <table class="table table-striped table-hover" align="center">
                 <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>CAR #</th>
-                    <th>Type</th>
-                    <th>Status</th>
-                    <th>Problem Description</th>
+                    <th><u>Date</u></th>
+                    <th><u>CAR #</u></th>
+                    <th><u>Type</u></th>
+                    <th><u>Status</u></th>
+                    <th><u>Problem Description</u></th>
                 </tr>
                 </thead>
                 <tbody>

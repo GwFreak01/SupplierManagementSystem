@@ -293,24 +293,22 @@ CompaniesSchema = new SimpleSchema({
         label: "Certification Type",
         optional: true,
         custom: function () {
-            if (Meteor.isClient) {
-                var docId = AutoForm.getFieldValue("certification.0.certType");
-                //insert
-                if (!(docId === "Other") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
-                    return "required";
-                }
-                //update
-                else if (this.isSet) {
-                    if (this.operator === "$set" && this.value === null || this.value === "") {
-                        return "required";
-                    }
-                    else {
-                        //this.unset();
 
-                        //return "$unset";
+
+            if (Meteor.isClient) {
+                var shouldBeRequired = this.field('certification.0.certType').value;
+                console.log("certType.value: " + shouldBeRequired);
+                if (shouldBeRequired == "Other") {
+                    // inserts
+                    if (!this.operator) {
+                        if (!this.isSet || this.value === null || this.value === "") return "required";
                     }
-                    //if (this.operator === "$unset") return "required";
-                    //if (this.operator === "$rename") return "required";
+                    // updates
+                    else if (!this.isSet) {
+                        if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return "required";
+                        if (this.operator === "$unset") return "required";
+                        if (this.operator === "$rename") return "required";
+                    }
                 }
             }
         },
@@ -324,15 +322,11 @@ CompaniesSchema = new SimpleSchema({
         autoValue: function () {
             var type = this.field("certification.0.certType");
             var content = this.field("certification.0.other");
-            //console.log(type);
-            console.log(type);
-            if (type.value === "Other") {
-                console.log(content.value);
+            if (type.value != "None") {
                 return content.value;
             }
             else {
                 this.unset();
-                //return "$unset";
             }
         }
     },
@@ -342,35 +336,26 @@ CompaniesSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
-                var docId = AutoForm.getFieldValue("certification.0.certType");
-                //insert
-                if (!(docId === "None") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
-                    return "required";
-                }
-                //update
-                else if (this.isSet) {
-                    if (this.operator === "$set" && this.value === null || this.value === "") {
-                        return "required";
+                var shouldBeRequired = this.field('certification.0.certType').value;
+                console.log("certType.value: " + shouldBeRequired);
+                if (shouldBeRequired != "None") {
+                    // inserts
+                    if (!this.operator) {
+                        if (!this.isSet || this.value === null || this.value === "") return "required";
                     }
-                    else {
-                        //this.unset();
-
-                        //return "$unset";
+                    // updates
+                    else if (!this.isSet) {
+                        if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return "required";
+                        if (this.operator === "$unset") return "required";
+                        if (this.operator === "$rename") return "required";
                     }
-                    //if (this.operator === "$unset") return "required";
-                    //if (this.operator === "$rename") return "required";
                 }
             }
         },
         autoform: {
             type: function () {
                 if (AutoForm.getFieldValue("certification.0.certType") == "None") {
-                    //console.log(this.isSet);
                     return "hidden";
-                }
-                else {
-                    //console.log(this.isSet);
-                    return "bootstrap-datepicker";
                 }
             }
         },
@@ -378,14 +363,13 @@ CompaniesSchema = new SimpleSchema({
             var type = this.field("certification.0.certType");
             var content = this.field("certification.0.expirationDate");
             if (type.value != "None") {
-                //var d = new Date (content);
-                //console.log(content);
                 return content.value;
             }
             else {
                 this.unset();
             }
         }
+
     },
     "certification.$.certNumber": {
         type: String,
@@ -395,16 +379,19 @@ CompaniesSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
-                var docId = AutoForm.getFieldValue("certification.0.certType");
-                //insert
-                if (!(docId === "None") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
-                    return "required";
-                }
-                //update
-                else if (this.isSet) {
-                    if (this.operator === "$set" && this.value === null || this.value === "") return "required";
-                    if (this.operator === "$unset") return "required";
-                    if (this.operator === "$rename") return "required";
+                var shouldBeRequired = this.field('certification.0.certType').value;
+                console.log("certType.value: " + shouldBeRequired);
+                if (shouldBeRequired != "None") {
+                    // inserts
+                    if (!this.operator) {
+                        if (!this.isSet || this.value === null || this.value === "") return "required";
+                    }
+                    // updates
+                    else if (!this.isSet) {
+                        if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return "required";
+                        if (this.operator === "$unset") return "required";
+                        if (this.operator === "$rename") return "required";
+                    }
                 }
             }
         },
@@ -432,16 +419,19 @@ CompaniesSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
-                var docId = AutoForm.getFieldValue("certification.0.certType");
-                //insert
-                if (!(docId === "None") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
-                    return "required";
-                }
-                //update
-                else if (this.isSet) {
-                    if (this.operator === "$set" && this.value === null || this.value === "") return "required";
-                    if (this.operator === "$unset") return "required";
-                    if (this.operator === "$rename") return "required";
+                var shouldBeRequired = this.field('certification.0.certType').value;
+                console.log("certType.value: " + shouldBeRequired);
+                if (shouldBeRequired != "None") {
+                    // inserts
+                    if (!this.operator) {
+                        if (!this.isSet || this.value === null || this.value === "") return "required";
+                    }
+                    // updates
+                    else if (!this.isSet) {
+                        if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return "required";
+                        if (this.operator === "$unset") return "required";
+                        if (this.operator === "$rename") return "required";
+                    }
                 }
             }
         },
@@ -469,24 +459,28 @@ CompaniesSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
-                //AutoForm.resetForm(this.formId);
                 var shouldBeRequired = this.field('certification.0.certType').value;
-                //console.log(this.field('certification.0.certType').value);
-
+                console.log("certType.value: " + shouldBeRequired);
+                console.log("reason - this.value: " + this.value);
+                console.log("this.operator: " + this.operator);
+                console.log("this.isSet: " + this.isSet);
                 if (shouldBeRequired == "None") {
                     // inserts
-
                     if (!this.operator) {
+                        console.log("Number 1");
                         if (!this.isSet || this.value === null || this.value === "") return "required";
                     }
-
                     // updates
-                    else if (this.isSet) {
-                        if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                    else if (!this.isSet) {
+                        console.log("Number 2");
+
+                        if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return "required";
                         if (this.operator === "$unset") return "required";
                         if (this.operator === "$rename") return "required";
                     }
                 }
+                console.log("Number 3");
+
             }
         },
         autoform: {
@@ -500,6 +494,8 @@ CompaniesSchema = new SimpleSchema({
             var type = this.field("certification.0.certType");
             var content = this.field("certification.0.reason");
             if (type.value == "None") {
+                console.log("content.value: " + content.value);
+                console.log("type.value: " + type.value);
                 return content.value;
             }
             else {
@@ -525,11 +521,11 @@ EventSchema = new SimpleSchema({
     eventDate: {
         type: Date,
         label: "Event Date",
-        autoform: {
-            type: function () {
-                return "bootstrap-datepicker";
-            }
-        },
+        //autoform: {
+        //    type: function () {
+        //        return "bootstrap-datepicker";
+        //    }
+        //},
         autoValue: function () {
             console.log(this.field("eventDate").value);
             var tempDate = this.field("eventDate").value;
@@ -573,84 +569,52 @@ EventSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
-                //AutoForm.resetForm(this.formId);
-                var shouldBeRequired = this.field('eventType').value;
-                //console.log(this.field('certification.0.certType').value);
-
+                var shouldBeRequired = this.siblingField('eventType').value;
+                console.log("Quantity Reject Info");
+                console.log("certType.value: " + shouldBeRequired);
+                console.log("reason - this.value: " + this.value);
+                console.log("this.operator: " + this.operator);
+                console.log("this.isSet: " + this.isSet);
                 if (shouldBeRequired == "Quality") {
                     // inserts
-
                     if (!this.operator) {
+                        console.log("Number 1");
                         if (!this.isSet || this.value === null || this.value === "") return "required";
                     }
-
                     // updates
                     else if (this.isSet) {
+                        console.log("Number 2");
+
                         if (this.operator === "$set" && this.value === null || this.value === "") return "required";
                         if (this.operator === "$unset") return "required";
                         if (this.operator === "$rename") return "required";
                     }
+
                 }
+                console.log("Number 3");
             }
         },
         autoform: {
             type: function () {
-                if (AutoForm.getFieldValue("eventType") != "Quality") {
+                if (AutoForm.getFieldValue("eventType") == "Delivery") {
                     return "hidden";
                 }
             }
         },
         autoValue: function () {
-            var type = this.field("eventType");
-            var content = this.field("quantityReject");
+            var type = this.siblingField("eventType");
+            var content = this.siblingField("quantityReject");
             if (type.value == "Quality") {
-                console.log(content.value);
+                console.log("AutoValue Info");
+                console.log("content.value: " + content.value);
+                console.log("type.value: " + type.value);
                 return content.value;
             }
             else {
-                this.unset();
+                console.log("Unset quantityReject");
+                return {$unset: ''};
             }
         }
-        //custom: function () {
-        //    if (Meteor.isClient) {
-        //        //AutoForm.resetForm(this.formId);
-        //        var shouldBeRequired = this.field('eventType').value;
-        //        //console.log(this.field('certification.0.certType').value);
-        //
-        //        if (shouldBeRequired == "Quality") {
-        //            // inserts
-        //
-        //            if (!this.operator) {
-        //                if (!this.isSet || this.value === null || this.value === "") return "required";
-        //            }
-        //
-        //            // updates
-        //            else if (this.isSet) {
-        //                if (this.operator === "$set" && this.value === null || this.value === "") return "required";
-        //                if (this.operator === "$unset") return "required";
-        //                if (this.operator === "$rename") return "required";
-        //            }
-        //        }
-        //
-        //    }
-        //},
-        //autoform: {
-        //    type: function () {
-        //        if (AutoForm.getFieldValue("eventType") != "Quality") {
-        //            return "hidden";
-        //        }
-        //    }
-        //},
-        //autoValue: function () {
-        //    var type = this.field("eventType");
-        //    var content = this.field("quantityReject");
-        //    if (type.value == "None") {
-        //        return content.value;
-        //    }
-        //    else {
-        //        this.unset();
-        //    }
-        //}
     },
     requiredDate: {
         type: Date,
@@ -658,97 +622,53 @@ EventSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
-                //AutoForm.resetForm(this.formId);
-                var shouldBeRequired = this.field('eventType').value;
-                //console.log(this.field('certification.0.certType').value);
-
+                var shouldBeRequired = this.siblingField('eventType').value;
+                console.log("Required Date Info");
+                console.log("certType.value: " + shouldBeRequired);
+                console.log("reason - this.value: " + this.value);
+                console.log("this.operator: " + this.operator);
+                console.log("this.isSet: " + this.isSet);
                 if (shouldBeRequired == "Delivery") {
                     // inserts
-
                     if (!this.operator) {
+                        console.log("Number 1");
                         if (!this.isSet || this.value === null || this.value === "") return "required";
                     }
-
                     // updates
                     else if (this.isSet) {
-                        if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                        console.log("Number 2");
+
+                        if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return "required";
                         if (this.operator === "$unset") return "required";
                         if (this.operator === "$rename") return "required";
                     }
                 }
+                console.log("Number 3");
+
             }
         },
         autoform: {
             type: function () {
-                if (AutoForm.getFieldValue("eventType") != "Delivery") {
+                if (AutoForm.getFieldValue("eventType") == "Quality") {
                     return "hidden";
-                }
-                else {
-                    return "bootstrap-datepicker";
                 }
             }
         },
         autoValue: function () {
-            var type = this.field("eventType");
-            var content = this.field("requiredDate");
+            var type = this.siblingField("eventType");
+            var content = this.siblingField("requiredDate");
             if (type.value == "Delivery") {
+                console.log("AutoValue Info");
+                console.log("content.value: " + content.value);
+                console.log("type.value: " + type.value);
                 return content.value;
             }
             else {
-                this.unset();
+                console.log("Unset requiredDate");
+                return {$unset: ''};
             }
         }
-        //custom: function () {
-        //    if (Meteor.isClient) {
-        //        var docId = AutoForm.getFieldValue("eventType");
-        //        //insert
-        //        if (!(docId === "Quality") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
-        //            return "required";
-        //        }
-        //        //update
-        //        else if (this.isSet) {
-        //            if (this.operator === "$set" && this.value === null || this.value === "") return "required";
-        //            if (this.operator === "$unset") return "required";
-        //            if (this.operator === "$rename") return "required";
-        //        }
-        //
-        //
-        //        //var docId = AutoForm.getFieldValue("eventType");
-        //        ////insert
-        //        //if (!(docId === "Delivery") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
-        //        //    return "required";
-        //        //}
-        //        ////update
-        //        //else if (this.isSet) {
-        //        //    if (this.operator === "$set" && this.value === null || this.value === "") return "required";
-        //        //    if (this.operator === "$unset") return "required";
-        //        //    if (this.operator === "$rename") return "required";
-        //        //}
-        //        //var docId = AutoForm.getFieldValue("eventType");
-        //        //
-        //        //if ((docId === "Delivery") && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
-        //        //    return "required";
-        //        //}
-        //    }
-        //},
-        //autoform: {
-        //    type: function () {
-        //        if (AutoForm.getFieldValue("eventType") != "Delivery") {
-        //            return "hidden";
-        //        }
-        //    }
-        //},
-        //autoValue: function () {
-        //    var type = this.field("eventType");
-        //    var content = this.field("requiredDate");
-        //    console.log("This is required Date info" + type.value + content.value);
-        //    if (type.value === "Delivery") {
-        //        return content.value;
-        //    }
-        //    else {
-        //        this.unset();
-        //    }
-        //}
+
 
     },
     actualDate: {
@@ -757,85 +677,53 @@ EventSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
-                //AutoForm.resetForm(this.formId);
-                var shouldBeRequired = this.field('eventType').value;
-                //console.log(this.field('certification.0.certType').value);
-
+                var shouldBeRequired = this.siblingField('eventType').value;
+                console.log("Actual Date Info");
+                console.log("certType.value: " + shouldBeRequired);
+                console.log("reason - this.value: " + this.value);
+                console.log("this.operator: " + this.operator);
+                console.log("this.isSet: " + this.isSet);
                 if (shouldBeRequired == "Delivery") {
                     // inserts
-
                     if (!this.operator) {
+                        console.log("Number 1");
                         if (!this.isSet || this.value === null || this.value === "") return "required";
                     }
-
                     // updates
                     else if (this.isSet) {
-                        if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                        console.log("Number 2");
+
+                        if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return "required";
                         if (this.operator === "$unset") return "required";
                         if (this.operator === "$rename") return "required";
                     }
                 }
+                console.log("Number 3");
+
             }
         },
         autoform: {
             type: function () {
-                if (AutoForm.getFieldValue("eventType") != "Delivery") {
+                if (AutoForm.getFieldValue("eventType") == "Quality") {
                     return "hidden";
-                }
-                else {
-                    return "bootstrap-datepicker";
                 }
             }
         },
         autoValue: function () {
-            var type = this.field("eventType");
-            var content = this.field("requiredDate");
+            var type = this.siblingField("eventType");
+            var content = this.siblingField("actualDate");
             if (type.value == "Delivery") {
+                console.log("AutoValue Info");
+                console.log("content.value: " + content.value);
+                console.log("type.value: " + type.value);
                 return content.value;
             }
             else {
-                this.unset();
+                console.log("Unset actualDate");
+                return {$unset: ''};
             }
         }
-        //custom: function () {
-        //    if (Meteor.isClient) {
-        //        var shouldBeRequired = this.field('eventType').value;
-        //        //console.log(this.field('certification.0.certType').value);
-        //        //console.log(shouldBeRequired);
-        //        if (shouldBeRequired == "Delivery") {
-        //            // inserts
-        //            //AutoForm.resetForm();
-        //            if (!this.operator) {
-        //                if (!this.isSet || this.value === null || this.value === "") return "required";
-        //            }
-        //
-        //            // updates
-        //            else if (this.isSet) {
-        //                if (this.operator === "$set" && this.value === null || this.value === "") return "required";
-        //                if (this.operator === "$unset") return "required";
-        //                if (this.operator === "$rename") return "required";
-        //            }
-        //        }
-        //    }
-        //},
-        //autoform: {
-        //    type: function () {
-        //        if (AutoForm.getFieldValue("eventType") != "Delivery") {
-        //            return "hidden";
-        //        }
-        //    }
-        //},
-        //autoValue: function () {
-        //    var type = this.field("eventType");
-        //    var content = this.field("actualDate");
-        //    console.log("This is required Date info" + type.value + content.value);
-        //    if (type.value === "Delivery") {
-        //        return content.value;
-        //    }
-        //    else {
-        //        this.unset();
-        //    }
-        //}
+
     },
     rootCause: {
         type: String,
@@ -853,22 +741,47 @@ EventSchema = new SimpleSchema({
                     {label: "Closed", value: -1}
                 ];
             }
-        },
-        autoValue: function () {
-            var type = this.field("statusOption");
-            var content = this.field("certification.0.expirationDate");
-            console.log(this._id);
-            console.log(EventsTest.find({_id: this._id}).fetch());
-            return type.value;
-            //if (type.value != "None") {
-            //    var d = new Date (content);
-            //    console.log(content);
-            //    return type.value;
-            //}
-            //else {
-            //    this.unset();
-            //}
         }
+        //,
+        //autoValue: function () {
+        //    var type = this.field("statusOption");
+        //    var content = this.field("certification.0.expirationDate");
+        //    console.log("StatusOption Info");
+        //    console.log("type:" + type);
+        //    //console.log("Doc Id: " + EventsTest.find({_id: this.docId}));
+        //    //console.log("Status Option: " + EventsTest.find({_id: Session.get("eventID")}).fetch()[0].statusOption);
+        //    //console.log(EventsTest.find({_id: this._id}).fetch());
+        //    //var status = EventsTest.find({_id: Session.get("eventID")}).fetch()[0].statusOption;
+        //    //return [
+        //    //    {label: "Open", value: 1},
+        //    //    {label: "Pending", value: 0},
+        //    //    {label: "Closed", value: -1}
+        //    //];
+        //    //if (status == "1") {
+        //    //    return
+        //    //}
+        //    //return "Deez Buts";
+        //    //switch (status) {
+        //    //    case "1":
+        //    //        return "Open";
+        //    //        break;
+        //    //    case "0":
+        //    //        return "Pending";
+        //    //        break;
+        //    //    case "-1":
+        //    //        return "Closed";
+        //    //        break;
+        //    //
+        //    //}
+        //    //if (type.value != "None") {
+        //    //    var d = new Date (content);
+        //    //    console.log(content);
+        //    //    return type.value;
+        //    //}
+        //    //else {
+        //    //    this.unset();
+        //    //}
+        //}
     }
 });
 
@@ -941,7 +854,7 @@ if (Meteor.isClient) {
                     var options = {
                         from: "sms@tandlautomatics.com",
                         to: "sms@tandlautomatics.com",
-                        subject: "New Company",
+                        subject: "New Company - T&L Supplier Management Application",
                         text: AutoForm.getFieldValue("companyName", "insertCompanyForm") + " has just registered"
                     };
                     Meteor.call("sendEmail", options);
@@ -962,6 +875,12 @@ if (Meteor.isClient) {
     });
     AutoForm.hooks({
         updateCompanyForm: {
+            //before: {
+            //    update: function (doc) {
+            //        AutoForm.resetForm(doc);
+            //        return doc;
+            //    }
+            //},
             onSuccess: function (insert, result) {
                 toastr.options = {
                     "closeButton": false,
@@ -1013,8 +932,10 @@ if (Meteor.isClient) {
                 Router.go('/events');
 
                 toastr.success("Successfully Added New Event", "Event Submit Success");
-
-
+            },
+            onError: function (insert, error) {
+                console.log(error);
+                return error;
             }
 
         }
@@ -1382,24 +1303,29 @@ if (Meteor.isClient) {
             //    return CompanyList.find({_id: this._id}).fetch()[0].event;
             //}
         }),
-        Template.eventListDisplay.events({
-            'click .event': function (e) {
-                e.stopPropagation();
-                var eventID = this._id;
-                Router.go("/events/details/" + this._id);
-                Session.set('selectedEvent', eventID);
-            },
-            'click .btn-danger': function (e) {
-                var eventID = this._id;
-                Session.set('selectedEvent', eventID);
-                e.stopPropagation();
-                var selectedEvent = Session.get('selectedEvent');
-                var confirm = window.confirm("Delete this Event?");
-                if (confirm) {
-                    Meteor.call('removeEventData', selectedEvent);
-                }
+        Template.editCompany.helpers({
+            'companyDoc': function () {
+                return CompaniesTest.findOne({_id: this._id});
             }
-        }),
+        })
+    Template.eventListDisplay.events({
+        'click .event': function (e) {
+            e.stopPropagation();
+            var eventID = this._id;
+            Router.go("/events/details/" + this._id);
+            Session.set('selectedEvent', eventID);
+        },
+        'click .btn-danger': function (e) {
+            var eventID = this._id;
+            Session.set('selectedEvent', eventID);
+            e.stopPropagation();
+            var selectedEvent = Session.get('selectedEvent');
+            var confirm = window.confirm("Delete this Event?");
+            if (confirm) {
+                Meteor.call('removeEventData', selectedEvent);
+            }
+        }
+    }),
         Template.eventListDisplay.helpers({
             'event': function () {
                 return EventsTest.find({}, {sort: {statusOption: -1, eventDate: 1}}).map(function (document, index) {
@@ -1488,15 +1414,10 @@ if (Meteor.isClient) {
         }),
         Template.editEvent.events({}),
         Template.editEvent.helpers({
-            //showDelivery: function () {
-            //    var docId = AutoForm.getFieldValue("eventType");
-            //    if (docId == "Delivery") {
-            //        return true;
-            //    }
-            //    else {
-            //        return false;
-            //    }
-            //}
+            'eventDoc': function () {
+                console.log(EventsTest.findOne({_id: this._id}));
+                return EventsTest.findOne({_id: this._id});
+            }
         }),
         Template.main.events({
             'click .logout': function () {
@@ -2050,6 +1971,7 @@ Router.route('/events/edit/:_id', {
     },
     data: function () {
         var currentList = this.params._id;
+        //Session.set("eventID", currentList);
         return EventsTest.findOne({_id: currentList});
     }
 });
