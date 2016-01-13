@@ -132,9 +132,10 @@
                 <input type="button" class="btn btn-info" value="Send All Feedback"><br><br>
                 {{> companyListDisplay}}
                 <br>
-                <input type="email" class="form-control-static" name="emailInvite" id="emailInvite" placeholder="New Company Email"><input type="button"
-                                                                                                           class="btn btn-warning"
-                                                                                                           value="Send Invitation">
+                <input type="email" class="form-control-static" name="emailInvite" id="emailInvite"
+                       placeholder="New Company Email"><input type="button"
+                                                              class="btn btn-warning"
+                                                              value="Send Invitation">
 
             </div>
         {{/if}}
@@ -203,7 +204,6 @@
             <button type="submit" class="btn btn-primary">Submit</button>
             <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Cancel</button>
         </div>
-
     {{/autoForm}}
 </template>
 
@@ -227,14 +227,13 @@
                 </div>
             </fieldset>
         {{/autoForm}}
-
     {{/if}}
 </template>
 
 <template name="editCompany">
     {{#if currentUser}}
         {{#if isInRole 'admin, supplier'}}
-            {{#autoForm schema="CompaniesSchema" id="updateCompanyForm" type="update" collection="CompaniesTest" doc=companyDoc resetOnSuccess=false}}
+            {{#autoForm schema="CompaniesSchema" id="updateCompanyForm" type="update" collection="CompaniesTest" doc=this resetOnSuccess=false}}
                 <button type="button" class="btn btn-danger" onclick="history.go(-1);return true;">Back</button>
                 <fieldset>
                     {{> afQuickField name='companyName'}}
@@ -457,12 +456,9 @@
             {{> afQuickField name='purchaseOrderNumber'}}
             {{> afQuickField name='lotNumber'}}
             {{> afQuickField name='carNumber'}}
-            <!--{{#if showDelivery}}-->
                 {{> afQuickField name='requiredDate'}}
                 {{> afQuickField name='actualDate'}}
-            <!--{{else}}-->
                 {{> afQuickField name='quantityReject'}}
-            <!--{{/if}}-->
             {{> afQuickField name='rootCause'}}
             {{> afQuickField name='statusOption'}}
             <div class="form-group">
@@ -485,12 +481,9 @@
                 {{> afQuickField name='purchaseOrderNumber'}}
                 {{> afQuickField name='lotNumber'}}
                 {{> afQuickField name='carNumber'}}
-                <!--{{#if showDelivery}}-->
-                    {{> afQuickField name='requiredDate'}}
-                    {{> afQuickField name='actualDate'}}
-                <!--{{else}}-->
-                    {{> afQuickField name='quantityReject'}}
-                <!--{{/if}}-->
+                {{> afQuickField name='requiredDate'}}
+                {{> afQuickField name='actualDate'}}
+                {{> afQuickField name='quantityReject'}}
                 {{> afQuickField name='rootCause'}}
                 {{> afQuickField name='statusOption'}}
 
@@ -518,12 +511,9 @@
                     {{> afQuickField name='purchaseOrderNumber'}}
                     {{> afQuickField name='lotNumber'}}
                     {{> afQuickField name='carNumber'}}
-                    <!--{{#if showDelivery}}-->
-                        {{> afQuickField name='requiredDate'}}
-                        {{> afQuickField name='actualDate'}}
-                    <!--{{else}}-->
-                        {{> afQuickField name='quantityReject'}}
-                    <!--{{/if}}-->
+                    {{> afQuickField name='requiredDate'}}
+                    {{> afQuickField name='actualDate'}}
+                    {{> afQuickField name='quantityReject'}}
                     {{> afQuickField name='rootCause'}}
                     {{> afQuickField name='statusOption' }}
 
@@ -647,15 +637,15 @@
     <br><br>
 
     <center>
-    <b><u>Status Legend</u></b><br><br>
-    <font color="#00ff00"><b>GREEN</b></font> | 0 to 2 Open/Pending Events <br><br>
-    <font color="#feff00"><b>YELLOW</b></font> | 2 to 4 Open/Pending Events <br><br>
-    <font color="#ff3300"><b>RED</b></font> | 4+ Open/Pending Events <br><br>
+        <b><u>Status Legend</u></b><br><br>
+        <font color="#00ff00"><b>GREEN</b></font> | 0 to 2 Open/Pending Events <br><br>
+        <font color="#feff00"><b>YELLOW</b></font> | 2 to 4 Open/Pending Events <br><br>
+        <font color="#ff3300"><b>RED</b></font> | 4+ Open/Pending Events <br><br>
     </center>
 
     Your current status is
     {{#if green}}
-    <font color="#00ff00"><b>GREEN</b></font>.<br><br>
+        <font color="#00ff00"><b>GREEN</b></font>.<br><br>
         Thank you for your ongoing support.
     {{/if}}
     {{#if yellow}}

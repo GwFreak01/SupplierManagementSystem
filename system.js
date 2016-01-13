@@ -4,19 +4,11 @@
 //Jan 6 - Finalize Report Function and check on outstanding suppliers not yet registered
 //Jan 13 - Roll out final process to T&L Users (Icons on Desktops + Training)
 
-SimpleSchema.debug = true;
-
-
-CompanyList = new Mongo.Collection("companies");
-
-EventList = new Mongo.Collection("events");
+//SimpleSchema.debug = true;
 
 CompaniesTest = new Mongo.Collection("companies_Test");
 
 EventsTest = new Mongo.Collection("events_Test");
-
-FutureTasks = new Meteor.Collection('future_tasks'); // server-side only
-
 
 CompaniesSchema = new SimpleSchema({
     companyName: {
@@ -277,14 +269,8 @@ CompaniesSchema = new SimpleSchema({
         },
         autoValue: function () {
             var type = this.field("certification.0.certType");
-            var content = this.field("certification.0.expirationDate");
             if (type.value != "None") {
-                //var d = new Date (content);
-                //console.log(content);
                 return type.value;
-            }
-            else {
-                //this.unset();
             }
         }
     },
@@ -293,11 +279,8 @@ CompaniesSchema = new SimpleSchema({
         label: "Certification Type",
         optional: true,
         custom: function () {
-
-
             if (Meteor.isClient) {
                 var shouldBeRequired = this.field('certification.0.certType').value;
-                console.log("certType.value: " + shouldBeRequired);
                 if (shouldBeRequired == "Other") {
                     // inserts
                     if (!this.operator) {
@@ -337,7 +320,6 @@ CompaniesSchema = new SimpleSchema({
         custom: function () {
             if (Meteor.isClient) {
                 var shouldBeRequired = this.field('certification.0.certType').value;
-                console.log("certType.value: " + shouldBeRequired);
                 if (shouldBeRequired != "None") {
                     // inserts
                     if (!this.operator) {
@@ -380,7 +362,6 @@ CompaniesSchema = new SimpleSchema({
         custom: function () {
             if (Meteor.isClient) {
                 var shouldBeRequired = this.field('certification.0.certType').value;
-                console.log("certType.value: " + shouldBeRequired);
                 if (shouldBeRequired != "None") {
                     // inserts
                     if (!this.operator) {
@@ -420,7 +401,6 @@ CompaniesSchema = new SimpleSchema({
         custom: function () {
             if (Meteor.isClient) {
                 var shouldBeRequired = this.field('certification.0.certType').value;
-                console.log("certType.value: " + shouldBeRequired);
                 if (shouldBeRequired != "None") {
                     // inserts
                     if (!this.operator) {
@@ -460,27 +440,18 @@ CompaniesSchema = new SimpleSchema({
         custom: function () {
             if (Meteor.isClient) {
                 var shouldBeRequired = this.field('certification.0.certType').value;
-                console.log("certType.value: " + shouldBeRequired);
-                console.log("reason - this.value: " + this.value);
-                console.log("this.operator: " + this.operator);
-                console.log("this.isSet: " + this.isSet);
                 if (shouldBeRequired == "None") {
                     // inserts
                     if (!this.operator) {
-                        console.log("Number 1");
                         if (!this.isSet || this.value === null || this.value === "") return "required";
                     }
                     // updates
                     else if (!this.isSet) {
-                        console.log("Number 2");
-
                         if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return "required";
                         if (this.operator === "$unset") return "required";
                         if (this.operator === "$rename") return "required";
                     }
                 }
-                console.log("Number 3");
-
             }
         },
         autoform: {
@@ -494,12 +465,11 @@ CompaniesSchema = new SimpleSchema({
             var type = this.field("certification.0.certType");
             var content = this.field("certification.0.reason");
             if (type.value == "None") {
-                console.log("content.value: " + content.value);
-                console.log("type.value: " + type.value);
                 return content.value;
             }
             else {
-                this.unset();
+                //this.unset();
+                return {$unset: ''};
             }
         }
     }
@@ -521,15 +491,8 @@ EventSchema = new SimpleSchema({
     eventDate: {
         type: Date,
         label: "Event Date",
-        //autoform: {
-        //    type: function () {
-        //        return "bootstrap-datepicker";
-        //    }
-        //},
         autoValue: function () {
-            console.log(this.field("eventDate").value);
             var tempDate = this.field("eventDate").value;
-            //return moment(tempDate).format("YYYY-MM-DD");
             return tempDate;
         }
     },
@@ -545,7 +508,6 @@ EventSchema = new SimpleSchema({
                 ];
             }
         }
-
     },
     tlPartNumber: {
         type: String,
@@ -569,51 +531,71 @@ EventSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
-                var shouldBeRequired = this.siblingField('eventType').value;
-                console.log("Quantity Reject Info");
-                console.log("certType.value: " + shouldBeRequired);
-                console.log("reason - this.value: " + this.value);
-                console.log("this.operator: " + this.operator);
-                console.log("this.isSet: " + this.isSet);
+                console.log(this.field("quantityReject"));
+                var shouldBeRequired = this.field('eventType').value;
                 if (shouldBeRequired == "Quality") {
                     // inserts
                     if (!this.operator) {
-                        console.log("Number 1");
                         if (!this.isSet || this.value === null || this.value === "") return "required";
                     }
                     // updates
                     else if (this.isSet) {
-                        console.log("Number 2");
-
-                        if (this.operator === "$set" && this.value === null || this.value === "") return "required";
+                        if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return "required";
                         if (this.operator === "$unset") return "required";
                         if (this.operator === "$rename") return "required";
                     }
-
                 }
-                console.log("Number 3");
             }
         },
         autoform: {
             type: function () {
-                if (AutoForm.getFieldValue("eventType") == "Delivery") {
+                if (AutoForm.getFieldValue("eventType") != "Quality") {
+
                     return "hidden";
                 }
             }
         },
+
         autoValue: function () {
             var type = this.siblingField("eventType");
-            var content = this.siblingField("quantityReject");
+            var content = this.siblingField("requiredDate");
+            console.log(type.value);
+            console.log(content.value);
             if (type.value == "Quality") {
-                console.log("AutoValue Info");
-                console.log("content.value: " + content.value);
-                console.log("type.value: " + type.value);
-                return content.value;
+                console.log(this.operator);
+                console.log(!this.operator);
+                console.log(this.isSet);
+                //insert
+                if (!this.operator) {
+                    if (!this.isSet || this.value === null || this.value === "") {
+                        console.log("15");
+                        return content.value;
+                    }
+                }
+                // updates
+                else if (this.isSet) {
+                    if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return content.value;
+                }
+                else {
+                    return content.value;
+                }
             }
-            else {
-                console.log("Unset quantityReject");
-                return {$unset: ''};
+            else if (type.value == "Delivery") {
+                if (this.operator) {
+                    if (this.isSet || this.value != null || this.value != "") {
+                        console.log("7");
+                        return {$unset: ''};
+                    }
+                }
+                // updates
+                else if (!this.isSet) {
+                    if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return content.value;
+                }
+                else {
+                    return content.value;
+                }
             }
+
         }
     },
     requiredDate: {
@@ -622,54 +604,110 @@ EventSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
+                console.log(this.field("requiredDate"));
                 var shouldBeRequired = this.siblingField('eventType').value;
-                console.log("Required Date Info");
-                console.log("certType.value: " + shouldBeRequired);
-                console.log("reason - this.value: " + this.value);
-                console.log("this.operator: " + this.operator);
-                console.log("this.isSet: " + this.isSet);
                 if (shouldBeRequired == "Delivery") {
                     // inserts
                     if (!this.operator) {
-                        console.log("Number 1");
                         if (!this.isSet || this.value === null || this.value === "") return "required";
                     }
                     // updates
                     else if (this.isSet) {
-                        console.log("Number 2");
 
                         if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return "required";
                         if (this.operator === "$unset") return "required";
                         if (this.operator === "$rename") return "required";
                     }
                 }
-                console.log("Number 3");
-
             }
         },
         autoform: {
             type: function () {
-                if (AutoForm.getFieldValue("eventType") == "Quality") {
+                if (AutoForm.getFieldValue("eventType") != "Delivery") {
                     return "hidden";
                 }
             }
         },
+
         autoValue: function () {
             var type = this.siblingField("eventType");
             var content = this.siblingField("requiredDate");
+            console.log(type.value);
+            console.log(content.value);
             if (type.value == "Delivery") {
-                console.log("AutoValue Info");
-                console.log("content.value: " + content.value);
-                console.log("type.value: " + type.value);
-                return content.value;
+                console.log(this.operator);
+                console.log(!this.operator);
+                console.log(this.isSet);
+                //insert
+                if (!this.operator) {
+                    if (!this.isSet || this.value === null || this.value === "") {
+                        console.log("7");
+                        return content.value;
+                    }
+                }
+                // updates
+                else if (this.isSet) {
+                    if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return content.value;
+                }
+                else {
+                    return content.value;
+                }
             }
-            else {
-                console.log("Unset requiredDate");
-                return {$unset: ''};
+            else if (type.value == "Quality") {
+                console.log(this.operator);
+                console.log(!this.operator);
+                console.log(this.isSet);
+                //insert
+                if (this.operator) {
+                    if (!this.isSet || this.value === null || this.value === "") {
+                        console.log("15");
+                        return {$unset: ''};
+                    }
+                }
+                // updates
+                else if (!this.isSet) {
+                    if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return content.value;
+                }
+                else {
+                    return content.value;
+                }
             }
+            //else if (type.value == "Quality") {
+            //    console.log("Trying to Unset requiredDate");
+            //    console.log(this.isSet);
+            //    if (this.isSet) {
+            //        console.log("Unsetting to blank");
+            //        //return {$unset: ''};
+            //        return {$unset: ''};
+            //    }
+            //    else if (!this.isSet) {
+            //        console.log("Unsetting via unset()");
+            //        if (!this.isSet && this.value != null || this.value != "") {
+            //            console.log("1");
+            //            return {$unset: ''};
+            //        }
+            //        else if (!this.isSet || this.value === null || this.value === "") {
+            //            console.log("2");
+            //
+            //            return this.unset();
+            //        }
+            //        else {
+            //            console.log("3");
+            //
+            //            return {$unset: ''};
+            //        }
+            //        console.log("4");
+            //        //this.unset();
+            //        //return {$unset: ''};
+            //    }
+            //    else {
+            //        console.log("5");
+            //        this.unset();
+            //    }
+            //    console.log("6");
+            //    return {$unset: ''};
+            //}
         }
-
-
     },
     actualDate: {
         type: Date,
@@ -677,53 +715,73 @@ EventSchema = new SimpleSchema({
         optional: true,
         custom: function () {
             if (Meteor.isClient) {
+                console.log(this.field("actualDate"));
                 var shouldBeRequired = this.siblingField('eventType').value;
-                console.log("Actual Date Info");
-                console.log("certType.value: " + shouldBeRequired);
-                console.log("reason - this.value: " + this.value);
-                console.log("this.operator: " + this.operator);
-                console.log("this.isSet: " + this.isSet);
                 if (shouldBeRequired == "Delivery") {
                     // inserts
                     if (!this.operator) {
-                        console.log("Number 1");
                         if (!this.isSet || this.value === null || this.value === "") return "required";
                     }
                     // updates
                     else if (this.isSet) {
-                        console.log("Number 2");
-
                         if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return "required";
                         if (this.operator === "$unset") return "required";
                         if (this.operator === "$rename") return "required";
                     }
                 }
-                console.log("Number 3");
-
             }
         },
         autoform: {
             type: function () {
-                if (AutoForm.getFieldValue("eventType") == "Quality") {
+                if (AutoForm.getFieldValue("eventType") != "Delivery") {
                     return "hidden";
                 }
             }
         },
         autoValue: function () {
             var type = this.siblingField("eventType");
-            var content = this.siblingField("actualDate");
+            var content = this.siblingField("requiredDate");
+            console.log(type.value);
+            console.log(content.value);
             if (type.value == "Delivery") {
-                console.log("AutoValue Info");
-                console.log("content.value: " + content.value);
-                console.log("type.value: " + type.value);
-                return content.value;
+                console.log(this.operator);
+                console.log(!this.operator);
+                console.log(this.isSet);
+                //insert
+                if (!this.operator) {
+                    if (!this.isSet || this.value === null || this.value === "") {
+                        console.log("7");
+                        return content.value;
+                    }
+                }
+                // updates
+                else if (this.isSet) {
+                    if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return content.value;
+                }
+                else {
+                    return content.value;
+                }
             }
-            else {
-                console.log("Unset actualDate");
-                return {$unset: ''};
+            else if (type.value == "Quality") {
+                console.log(this.operator);
+                console.log(!this.operator);
+                console.log(this.isSet);
+                //insert
+                if (this.operator) {
+                    if (!this.isSet || this.value === null || this.value === "") {
+                        console.log("15");
+                        return {$unset: ''};
+                    }
+                }
+                // updates
+                else if (!this.isSet) {
+                    if (this.operator === "$set" && this.value === null || this.value === "" || this.value === undefined) return content.value;
+                }
+                else {
+                    return content.value;
+                }
             }
         }
-
     },
     rootCause: {
         type: String,
@@ -742,46 +800,6 @@ EventSchema = new SimpleSchema({
                 ];
             }
         }
-        //,
-        //autoValue: function () {
-        //    var type = this.field("statusOption");
-        //    var content = this.field("certification.0.expirationDate");
-        //    console.log("StatusOption Info");
-        //    console.log("type:" + type);
-        //    //console.log("Doc Id: " + EventsTest.find({_id: this.docId}));
-        //    //console.log("Status Option: " + EventsTest.find({_id: Session.get("eventID")}).fetch()[0].statusOption);
-        //    //console.log(EventsTest.find({_id: this._id}).fetch());
-        //    //var status = EventsTest.find({_id: Session.get("eventID")}).fetch()[0].statusOption;
-        //    //return [
-        //    //    {label: "Open", value: 1},
-        //    //    {label: "Pending", value: 0},
-        //    //    {label: "Closed", value: -1}
-        //    //];
-        //    //if (status == "1") {
-        //    //    return
-        //    //}
-        //    //return "Deez Buts";
-        //    //switch (status) {
-        //    //    case "1":
-        //    //        return "Open";
-        //    //        break;
-        //    //    case "0":
-        //    //        return "Pending";
-        //    //        break;
-        //    //    case "-1":
-        //    //        return "Closed";
-        //    //        break;
-        //    //
-        //    //}
-        //    //if (type.value != "None") {
-        //    //    var d = new Date (content);
-        //    //    console.log(content);
-        //    //    return type.value;
-        //    //}
-        //    //else {
-        //    //    this.unset();
-        //    //}
-        //}
     }
 });
 
@@ -821,8 +839,6 @@ Router.configure({
 });
 
 if (Meteor.isClient) {
-    //Meteor.subscribe('theCompanies');
-    Meteor.subscribe('theEvents');
     Meteor.subscribe('userList');
     Meteor.subscribe('companies_Test');
     Meteor.subscribe('events_Test');
@@ -841,16 +857,12 @@ if (Meteor.isClient) {
                     "hideDuration": "1000",
                     "timeOut": "5000",
                     "extendedTimeOut": "1000",
-
                     "showEasing": "swing",
                     "hideEasing": "linear",
                     "showMethod": "fadeIn",
                     "hideMethod": "fadeOut"
                 };
-                //AutoForm.resetForm(this.formId);
                 if (Roles.userIsInRole(Meteor.userId(), 'supplier')) {
-                    //console.log(result)
-                    //var companyName = CompaniesTest.find({id: result}).fetch()[0].companyName;
                     var options = {
                         from: "sms@tandlautomatics.com",
                         to: "sms@tandlautomatics.com",
@@ -868,19 +880,25 @@ if (Meteor.isClient) {
                 }
             },
             onError: function (insert, error) {
-                console.log(error);
+                console.log(error.reason);
                 return error;
             }
         }
     });
     AutoForm.hooks({
         updateCompanyForm: {
-            //before: {
-            //    update: function (doc) {
-            //        AutoForm.resetForm(doc);
-            //        return doc;
-            //    }
-            //},
+            before: {
+                'method-update': function (doc) {
+                    // For some reason all translations are unset here for fields that were not in form
+                    if (doc['$unset']) {
+                        doc['$unset'] = _.pick(doc['$unset'], function (item, key) {
+                            return key.indexOf('i18n.') !== 0;
+                        });
+                    }
+                    ;
+                    return doc;
+                },
+            },
             onSuccess: function (insert, result) {
                 toastr.options = {
                     "closeButton": false,
@@ -894,18 +912,18 @@ if (Meteor.isClient) {
                     "hideDuration": "1000",
                     "timeOut": "5000",
                     "extendedTimeOut": "1000",
-
                     "showEasing": "swing",
                     "hideEasing": "linear",
                     "showMethod": "fadeIn",
                     "hideMethod": "fadeOut"
                 };
-                //AutoForm.resetForm(this.result);
                 toastr.success("Company Details Updated", "Update Success");
                 Router.go('/companies');
-
+            },
+            onError: function (insert, error) {
+                console.log(error);
+                return error;
             }
-
         }
     });
     AutoForm.hooks({
@@ -923,21 +941,18 @@ if (Meteor.isClient) {
                     "hideDuration": "1000",
                     "timeOut": "5000",
                     "extendedTimeOut": "1000",
-
                     "showEasing": "swing",
                     "hideEasing": "linear",
                     "showMethod": "fadeIn",
                     "hideMethod": "fadeOut"
                 };
-                Router.go('/events');
-
                 toastr.success("Successfully Added New Event", "Event Submit Success");
+                Router.go('/events');
             },
             onError: function (insert, error) {
-                console.log(error);
+                console.log(error.reason);
                 return error;
             }
-
         }
     });
     AutoForm.hooks({
@@ -955,16 +970,17 @@ if (Meteor.isClient) {
                     "hideDuration": "1000",
                     "timeOut": "5000",
                     "extendedTimeOut": "1000",
-
                     "showEasing": "swing",
                     "hideEasing": "linear",
                     "showMethod": "fadeIn",
                     "hideMethod": "fadeOut"
                 };
-                //AutoForm.resetForm(this.result);
                 toastr.success("Event Details Updated", "Update Success");
                 Router.go('/events');
-
+            },
+            onError: function (insert, error) {
+                console.log(error.reason);
+                return error;
             }
         }
     });
@@ -1008,7 +1024,6 @@ if (Meteor.isClient) {
                         }
                     });
             }
-
         }),
         Template.navigation.events({
             'click .logout': function () {
@@ -1036,7 +1051,6 @@ if (Meteor.isClient) {
                     "showMethod": "fadeIn",
                     "hideMethod": "fadeOut"
                 };
-
                 var html = Blaze.toHTML(Template.registerEmail);
                 var options = {
                     from: 'sms@tandlautomatics.com',
@@ -1052,12 +1066,9 @@ if (Meteor.isClient) {
                 var companyID = this._id;
                 Session.set('selectedCompany', companyID);
                 e.stopPropagation();
-                //var selectedCompany = Session.get('selectedCompany');
-                //console.log(selectedCompany);
                 var confirm = window.confirm("Send All Feedback?");
                 if (confirm) {
                     var companyList = CompaniesTest.find().fetch();
-                    //console.log(companyList);
                     var start = new Date();
                     var start1 = moment(start).format("YYYY-MM-DD");
                     var end = new Date(new Date(start).setMonth(start.getMonth() - 12));
@@ -1083,12 +1094,8 @@ if (Meteor.isClient) {
                                 eventDate: {$lte: start1, $gte: end1}
                             }, {sort: {statusOption: -1, eventDate: -1}}).fetch()
                         }
-                        console.log(data);
-
                         var html = Blaze.toHTMLWithData(Template.feedbackEmail, data);
-                        //SyncedCron.nextScheduledAtDate(jobName);
                         Meteor.call('sendFeedbackEmail', selectedCompany, html);
-                        //console.log(FutureTasks.find().fetch());
                     });
                 }
             }
@@ -1151,7 +1158,6 @@ if (Meteor.isClient) {
                             eventDate: {$lte: start1, $gte: end1},
                             statusOption: "1"
                         }, {sort: {statusOption: -1, eventDate: -1}}).count();
-                    //console.log(num);
                     Session.set('eventNumber', num);
                     var dataContext = {
                         eventItems: EventsTest.find({
@@ -1159,191 +1165,53 @@ if (Meteor.isClient) {
                             eventDate: {$lte: start1, $gte: end1}
                         }, {sort: {statusOption: -1, eventDate: -1}}).fetch()
                     };
-                    //console.log(dataContext.eventItems);
-                    //console.log(start);
-                    //console.log(start1);
-                    //console.log(end);
-                    //console.log(end1);
                     var html = Blaze.toHTMLWithData(Template.feedbackEmail, dataContext);
-
                     var data = {
                         event: EventsTest.find({companyName: this.companyName}, {sort: {statusOption: -1}}).fetch()
                     };
-
-                    //console.log(data);
-                    //console.log(html);
                     Meteor.call('sendFeedbackEmail', selectedCompany, html);
-                    //Meteor.call('removeCompanyData', selectedCompany);
                 }
             }
         }),
         Template.companyListDisplay.helpers({
-            //'company': function () {
-            //    return CompanyList.find({}, {sort: {companyName: 1}});
-            //},
             'company': function () {
                 return CompaniesTest.find({}, {sort: {companyName: 1}});
-            }
-            //,
-            //'selectedClass': function () {
-            //    var companyID = this._id;
-            //    var selectedCompany = Session.get('selectedCompany');
-            //    if (companyID == selectedCompany) {
-            //        return "selected";
-            //    }
-            //},
-            //'showSelectedCompany': function () {
-            //    var selectedCompany = Session.get('selectedCompany');
-            //    return CompanyList.findOne(selectedCompany);
-            //}
-        }),
-        Template.addCompanyForm.helpers({
-            'showOption1': function () {
-                return Session.get("showPullDown1");
-            },
-            'showOption2': function () {
-                return Session.get("showPullDown2");
-            },
-            'showOption3': function () {
-                return Session.get("showPullDown3");
-            },
-            'showOption4': function () {
-                return Session.get("showPullDown4");
-            },
-            'showOption5': function () {
-                return Session.get("showPullDown5");
-            },
-            'companyNameValid': function () {
-                if (document.getElementById("companyName").value == "") {
-                    return false;
-                }
-                return true;
             }
         }),
         Template.detailCompany.helpers({
             '[name=insertCompanyForm]': function () {
                 return CompaniesTest.findOne({_id: this._id});
             }
-            //,
-            //'showOption1': function () {
-            //    if (CompanyList.find({_id: this._id}).fetch()[0].cert[0].certStatus == true) {
-            //        return true;
-            //    }
-            //},
-            //'showOption2': function () {
-            //    if (CompanyList.find({_id: this._id}).fetch()[0].cert[1].certStatus == true) {
-            //        return true;
-            //    }
-            //},
-            //'showOption3': function () {
-            //    if (CompanyList.find({_id: this._id}).fetch()[0].cert[2].certStatus == true) {
-            //        return true;
-            //    }
-            //},
-            //'showOption4': function () {
-            //    if (CompanyList.find({_id: this._id}).fetch()[0].cert[3].certStatus == true) {
-            //        return true;
-            //    }
-            //},
-            //'showOption5': function () {
-            //    if (CompanyList.find({_id: this._id}).fetch()[0].cert[4].certStatus == true) {
-            //        return true;
-            //    }
-            //},
-            //'expirationDate1': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[0].expirationDate;
-            //},
-            //'expirationDate2': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[1].expirationDate;
-            //},
-            //'expirationDate3': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[2].expirationDate;
-            //},
-            //'expirationDate4': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[3].expirationDate;
-            //},
-            //'expirationDate5': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[0].expirationDate;
-            //},
-            //'certNumber1': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[0].certNumber;
-            //},
-            //'certNumber2': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[1].certNumber;
-            //},
-            //'certNumber3': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[2].certNumber;
-            //},
-            //'certNumber4': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[3].certNumber;
-            //},
-            //'registrar1': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[0].registrar;
-            //},
-            //'registrar2': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[1].registrar;
-            //},
-            //'registrar3': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[2].registrar;
-            //},
-            //'registrar4': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[3].registrar;
-            //},
-            //'certType4': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[3].type;
-            //},
-            //'cert5Text': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].cert[4].text;
-            //},
-            //'different': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].differentName != "";
-            //
-            //},
-            //'event': function () {
-            //    return CompanyList.find({_id: this._id}).fetch()[0].event;
-            //}
         }),
         Template.editCompany.helpers({
-            'companyDoc': function () {
+            '[name=updateCompanyForm]': function () {
                 return CompaniesTest.findOne({_id: this._id});
             }
-        })
-    Template.eventListDisplay.events({
-        'click .event': function (e) {
-            e.stopPropagation();
-            var eventID = this._id;
-            Router.go("/events/details/" + this._id);
-            Session.set('selectedEvent', eventID);
-        },
-        'click .btn-danger': function (e) {
-            var eventID = this._id;
-            Session.set('selectedEvent', eventID);
-            e.stopPropagation();
-            var selectedEvent = Session.get('selectedEvent');
-            var confirm = window.confirm("Delete this Event?");
-            if (confirm) {
-                Meteor.call('removeEventData', selectedEvent);
+        }),
+        Template.eventListDisplay.events({
+            'click .event': function (e) {
+                e.stopPropagation();
+                var eventID = this._id;
+                Router.go("/events/details/" + this._id);
+                Session.set('selectedEvent', eventID);
+            },
+            'click .btn-danger': function (e) {
+                var eventID = this._id;
+                Session.set('selectedEvent', eventID);
+                e.stopPropagation();
+                var selectedEvent = Session.get('selectedEvent');
+                var confirm = window.confirm("Delete this Event?");
+                if (confirm) {
+                    Meteor.call('removeEventData', selectedEvent);
+                }
             }
-        }
-    }),
+        }),
         Template.eventListDisplay.helpers({
             'event': function () {
                 return EventsTest.find({}, {sort: {statusOption: -1, eventDate: 1}}).map(function (document, index) {
                     document.index = index + 1;
                     return document;
                 });
-
-            },
-            'selectedClass': function () {
-                var eventID = this._id;
-                var selectedEvent = Session.get('selectedEvent');
-                if (eventID == selectedEvent) {
-                    return "selected";
-                }
-            },
-            'showSelectedEvent': function () {
-                var selectedEvent = Session.get('selectedEvent');
-                return EventList.findOne(selectedEvent);
             },
             'eventBad': function () {
                 if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
@@ -1381,44 +1249,6 @@ if (Meteor.isClient) {
                 }
             }
         }),
-        Template.addEventForm.events({
-            //'change #eventType': function (event, template) {
-            //    var eventTypeVar = document.getElementById("eventType").value;
-            //    if (eventTypeVar == "Delivery") {
-            //        Session.set('showDelivery', true);
-            //    }
-            //    else {
-            //        Session.set('showDelivery', false);
-            //    }
-            //}
-        }),
-        Template.addEventForm.helpers({
-            //'showDelivery': function () {
-            //    var currentUserID = Meteor.userId();
-            //    return Session.get("showDelivery");
-            //},
-            //'company': function () {
-            //    return CompanyList.find({}, {sort: {companyName: 1}});
-            //}
-        }),
-        Template.detailEvent.helpers({
-            //showDelivery: function () {
-            //    var docId = AutoForm.getFieldValue("eventType");
-            //    if (docId == "Delivery") {
-            //        return true;
-            //    }
-            //    else {
-            //        return false;
-            //    }
-            //}
-        }),
-        Template.editEvent.events({}),
-        Template.editEvent.helpers({
-            'eventDoc': function () {
-                console.log(EventsTest.findOne({_id: this._id}));
-                return EventsTest.findOne({_id: this._id});
-            }
-        }),
         Template.main.events({
             'click .logout': function () {
                 event.preventDefault();
@@ -1453,7 +1283,6 @@ if (Meteor.isClient) {
                     console.log(document);
                     return document;
                 });
-
             },
             'eventBad': function () {
                 if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
@@ -1492,10 +1321,6 @@ if (Meteor.isClient) {
             }
         }),
         Template.feedbackEmail.helpers({
-            //'event': function () {
-            //    return EventsTest.find({companyName: this.companyName}, {sort: {statusOption: -1}}).fetch();
-            //
-            //},
             'eventBad': function () {
                 if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
                     return true;
@@ -1572,17 +1397,13 @@ if (Meteor.isClient) {
                         eventDate: {$lte: start1, $gte: end1},
                         statusOption: "1"
                     }, {sort: {statusOption: -1, eventDate: -1}}).count();
-                //console.log(num1);
                 var rand = Session.get('eventNumber');
-                console.log(rand);
-
                 if ((2 <= rand) && (rand <= 4)) {
                     return true;
                 }
                 else {
                     return false;
                 }
-
             },
             'red': function () {
                 var start = new Date();
@@ -1601,49 +1422,7 @@ if (Meteor.isClient) {
                         statusOption: "1"
                     }, {sort: {statusOption: -1, eventDate: -1}}).count();
                 var rand = Session.get('eventNumber');
-                console.log(rand);
-
                 if (rand > 4) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-        }),
-        Template.insertCompanyForm.helpers({
-            noStatus: function () {
-                var docId = (AutoForm.getFieldValue("salesPerson.status") || AutoForm.getFieldValue("qualityPerson.status") || AutoForm.getFieldValue("logisticsPerson.status"));
-                if (docId) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            },
-            otherCert: function () {
-                var docId = (AutoForm.getFieldValue("certification.0.certType") == "Other");
-                if (docId) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            },
-            noneCert: function () {
-                var docId = (AutoForm.getFieldValue("certification.0.certType") == "None");
-                if (docId) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-        }),
-        Template.insertEventForm.helpers({
-            showDelivery: function () {
-                var docId = AutoForm.getFieldValue("eventType");
-                if (docId == "Delivery") {
                     return true;
                 }
                 else {
@@ -1654,24 +1433,18 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
-    SyncedCron.config({
-        collectionName: 'cronHistory'
-    });
     Meteor.startup(function () {
         //EMAIL 1
         process.env.MAIL_URL = 'smtp://postmaster%40sandbox9a11769c25e04579a3d65d9e8f4e20cd.mailgun.org:b54cb40a370534e4f1ff467f7e836cf3@smtp.mailgun.org:587';
         //BACKUP EMAIL 2
         //process.env.MAIL_URL = 'smtp://postmaster@sandboxf72dcb6d24b74639b5832e8ecba2b886.mailgun.org:23862cf6d8d1a0c7f81fb5bf3565f130@smtp.mailgun.org:587';
         //process.env.MAIL_URL = 'stmp://tpham:8ofFic1al~@tandlautomatics.com:25';
-
         if (!Meteor.users.findOne()) {
             var users = [
                 {name: "Admin User", username: "admin", roles: ['admin']},
                 {name: "Employee User", username: "employee", roles: ['employee']},
                 {name: "Supplier User", username: "supplier", roles: ['supplier']}
-
             ];
-
             _.each(users, function (user) {
                 var id = Accounts.createUser({
                     username: user.username,
@@ -1690,52 +1463,7 @@ if (Meteor.isServer) {
                 }
             });
         }
-        //FutureTasks.find().forEach(function (mail) {
-        //    if (mail.date < new Date()) {
-        //        Meteor.call('scheduleMail', mail);
-        //    } else {
-        //        Meteor.call('addTask', mail._id, mail);
-        //    }
-        //});
-        //SyncedCron.start();
     });
-    //SyncedCron.add({
-    //    name: "Quarterly Feedback Email 1",
-    //    schedule: function (parser) {
-    //        //return parser.recur().on(details.date).fullDate();
-    //        return parser.text("Every 1 minute");
-    //    },
-    //    job: function () {
-    //        console.log("I am the best");
-    //        //sendFeedbackEmail(selectedCompany, html);
-    //        //FutureTasks.remove(id);
-    //        //SyncedCron.remove(id);
-    //        //return id;
-    //    }
-    //});
-
-    //Meteor.publish('theCompanies', function () {
-    //    if (Roles.userIsInRole(this.userId, ['admin', 'employee'])) {
-    //        var currentUserID = this.userId;
-    //        return CompanyList.find({});
-    //    }
-    //    else {
-    //        this.stop();
-    //        return;
-    //    }
-    //});
-
-    Meteor.publish('theEvents', function () {
-        if (Roles.userIsInRole(this.userId, ['admin', 'employee'])) {
-            var currentUserID = this.userId;
-            return EventList.find({});
-        }
-        else {
-            this.stop();
-            return;
-        }
-    });
-
     Meteor.publish('companies_Test', function () {
         if (Roles.userIsInRole(this.userId, ['admin', 'employee'])) {
             var currentUserID = this.userId;
@@ -1854,37 +1582,9 @@ if (Meteor.isServer) {
                     i++;
                 }
             }
-        },
-        'addTask': function (thisId, options) {
-            SyncedCron.add({
-                name: "Quarterly Feedback Email",
-                schedule: function (parser) {
-                    //return parser.recur().on(details.date).fullDate();
-                    return parser.text("Every 3 Months");
-                },
-                job: function () {
-                    //console.log("I am the best");
-                    //sendFeedbackEmail(selectedCompany, html);
-                    Email.send(options);
-                    FutureTasks.remove(id);
-                    SyncedCron.remove(id);
-                    return id;
-                }
-            });
-
-        },
-        'scheduleMail': function (options) {
-            if (options.date < new Date()) {
-                Email.send(options);
-            } else {
-                var thisId = FutureTasks.insert(options);
-                Meteor.call('addTask', thisId, options);
-            }
-            return true;
         }
     });
 }
-
 
 Router.route('/login');
 
