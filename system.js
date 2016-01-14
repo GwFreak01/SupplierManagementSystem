@@ -1,15 +1,19 @@
-//Rolling Yearly Cummitalive Events
-//Q1'14-Q1'15 -> Q2'14-Q2'15
+//Rolling Yearly Cummitalive Events DONE
+//Q1'14-Q1'15 -> Q2'14-Q2'15 DONE
 //Bill, Mark, Dan, Vince - SMS App Icon
 //Jan 6 - Finalize Report Function and check on outstanding suppliers not yet registered
 //Jan 13 - Roll out final process to T&L Users (Icons on Desktops + Training)
 
-SimpleSchema.debug = true;
+//This is to debug the schema's errors from validation
+//SimpleSchema.debug = true;
 
+//Collection of Company Objects
 CompaniesTest = new Mongo.Collection("companies_Test");
 
+//Collection of Events Objects
 EventsTest = new Mongo.Collection("events_Test");
 
+//Company Schema used for validation and templating
 CompaniesSchema = new SimpleSchema({
     companyName: {
         type: String,
@@ -125,6 +129,8 @@ CompaniesSchema = new SimpleSchema({
                 placeholder: "XXX-XXX-XXXX"
             }
         }
+        //,
+        //regEx: /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/
     },
     "salesPerson.status": {
         type: Boolean,
@@ -157,7 +163,9 @@ CompaniesSchema = new SimpleSchema({
                 placeholder: "XXX-XXX-XXXX"
             }
         }
-    },
+        //,
+        //regEx: /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/
+},
     "qualityPerson.status": {
         type: Boolean,
         label: "Check here for this person to receive the Quarterly Performance Reports",
@@ -475,6 +483,7 @@ CompaniesSchema = new SimpleSchema({
     }
 });
 
+//Event Schema used for validation and templating
 EventSchema = new SimpleSchema({
     companyName: {
         type: String,
@@ -670,41 +679,7 @@ EventSchema = new SimpleSchema({
                     return content.value;
                 }
             }
-            //else if (type.value == "Quality") {
-            //    console.log("Trying to Unset requiredDate");
-            //    console.log(this.isSet);
-            //    if (this.isSet) {
-            //        console.log("Unsetting to blank");
-            //        //return {$unset: ''};
-            //        return {$unset: ''};
-            //    }
-            //    else if (!this.isSet) {
-            //        console.log("Unsetting via unset()");
-            //        if (!this.isSet && this.value != null || this.value != "") {
-            //            console.log("1");
-            //            return {$unset: ''};
-            //        }
-            //        else if (!this.isSet || this.value === null || this.value === "") {
-            //            console.log("2");
-            //
-            //            return this.unset();
-            //        }
-            //        else {
-            //            console.log("3");
-            //
-            //            return {$unset: ''};
-            //        }
-            //        console.log("4");
-            //        //this.unset();
-            //        //return {$unset: ''};
-            //    }
-            //    else {
-            //        console.log("5");
-            //        this.unset();
-            //    }
-            //    console.log("6");
-            //    return {$unset: ''};
-            //}
+
         }
     },
     actualDate: {
@@ -801,45 +776,24 @@ EventSchema = new SimpleSchema({
     }
 });
 
+//Assigns Company Collection to specific Company Schema
 CompaniesTest.attachSchema(CompaniesSchema);
 
+//Assigns Events Collection to specific Company Schema
 EventsTest.attachSchema(EventSchema);
 
-//CompaniesTest.insert({
-//    companyName: "T&L Automatics",
-//    companyAddress: "770 Emerson",
-//    salesName: "Thanh Pham",
-//    salesEmail: "gwfreak01@gmail.com",
-//    salesPhone: "9406132066",
-//    qualityName: "Thanh Pham",
-//    qualityEmail: "gwfreak01@gmail.com",
-//    qualityPhone: "9406132066",
-//    logisticsName: "Thanh Pham",
-//    logisticsEmail: "gwfreak01@gmail.com",
-//    logisticsPhone: "9406132066",
-//    itemDescription: "Pipes and Bombs",
-//    certification: [{
-//        certType: "1",
-//        expirationDate: "3/4/2015",
-//        certNumber: "1234",
-//        registrar: "Thanh Pham"
-//
-//    }, {
-//        certType: "2",
-//        expirationDate: "3/5/2016",
-//        certNumber: "12341234",
-//        registrar: "Thanh Pham"
-//    }]
-//});
 
+//Configures the main layout of Web App
 Router.configure({
     layoutTemplate: 'main'
 });
-
+//Client Side Information
 if (Meteor.isClient) {
+    //Clients are able to access MongoDB Collections with permissions
     Meteor.subscribe('userList');
     Meteor.subscribe('companies_Test');
     Meteor.subscribe('events_Test');
+
     AutoForm.hooks({
         insertCompanyForm: {
             onSuccess: function (insert, result) {
@@ -1068,11 +1022,7 @@ if (Meteor.isClient) {
                 if (confirm) {
                     var companyList = CompaniesTest.find().fetch();
                     var start = new Date();
-                    //var start1 = moment(start).format("YYYY-MM-DD");
-                    var start1 = moment(start);
                     var end = new Date(new Date(start).setMonth(start.getMonth() - 12));
-                    //var end1 = moment(end).format("YYYY-MM-DD");
-                    var end1 = moment(end);
                     _.each(companyList, function (company) {
                         var selectedCompany = company._id;
                         var num = 0;
@@ -1144,13 +1094,9 @@ if (Meteor.isClient) {
                 var confirm = window.confirm("Send Feedback?");
                 if (confirm) {
                     var start = new Date();
-                    //var start1 = moment(start).format("YYYY-MM-DD");
                     var start1 = moment(start);
-                    console.log("Start Date: " + start);
                     var end = new Date(new Date(start).setMonth(start.getMonth() - 12));
-                    //var end1 = moment(end).format("YYYY-MM-DD");
                     var end1 = moment(end);
-                    console.log("End Date: " + end);
                     var num = 0;
                     num = num + EventsTest.find({
                             companyName: this.companyName,
@@ -1219,28 +1165,13 @@ if (Meteor.isClient) {
                 });
             },
             'eventBad': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1");
             },
             'eventMid': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0");
             },
             'eventGood': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1");
             },
             'statusOptionConverter': function () {
                 if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
@@ -1256,35 +1187,17 @@ if (Meteor.isClient) {
         }),
         Template.insertEventForm.helpers({
             'showDelivery': function () {
-                var docId = AutoForm.getFieldValue("eventType");
-                if (docId == "Delivery") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (AutoForm.getFieldValue("eventType") == "Delivery");
             }
         }),
         Template.detailEvent.helpers({
             'showDelivery': function () {
-                var docId = AutoForm.getFieldValue("eventType");
-                if (docId == "Delivery") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (AutoForm.getFieldValue("eventType") == "Delivery");
             }
         }),
         Template.editEvent.helpers({
             'showDelivery': function () {
-                var docId = AutoForm.getFieldValue("eventType");
-                if (docId == "Delivery") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (AutoForm.getFieldValue("eventType") == "Delivery");
             }
         }),
         Template.main.events({
@@ -1323,28 +1236,13 @@ if (Meteor.isClient) {
                 });
             },
             'eventBad': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1");
             },
             'eventMid': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0");
             },
             'eventGood': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1");
             },
             'statusOptionConverter': function () {
                 if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
@@ -1360,28 +1258,13 @@ if (Meteor.isClient) {
         }),
         Template.feedbackEmail.helpers({
             'eventBad': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1");
             },
             'eventMid': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0");
             },
             'eventGood': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1");
             },
             'statusOptionConverter': function () {
                 if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
@@ -1396,11 +1279,7 @@ if (Meteor.isClient) {
             },
             'green': function () {
                 var start = new Date();
-                //var start1 = moment(start).format("YYYY-MM-DD");
-                var start1 = moment(start);
                 var end = new Date(new Date(start).setMonth(start.getMonth() - 12));
-                //var end1 = moment(end).format("YYYY-MM-DD");
-                var end1 = moment(end);
                 var num = EventsTest.find({
                     companyName: this.companyName,
                     eventDate: {$lte: start, $gte: end},
@@ -1414,20 +1293,11 @@ if (Meteor.isClient) {
                 }, {sort: {statusOption: -1, eventDate: -1}}).count();
                 var rand = Session.get('eventNumber');
                 console.log(rand);
-                if (rand < 2) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (rand < 2);
             },
             'yellow': function () {
                 var start = new Date();
-                //var start1 = moment(start).format("YYYY-MM-DD");
-                var start1 = moment(start);
                 var end = new Date(new Date(start).setMonth(start.getMonth() - 12));
-                //var end1 = moment(end).format("YYYY-MM-DD");
-                var end1 = moment(end);
                 var num1 = 0;
                 num1 = num1 + EventsTest.find({
                         companyName: this.companyName,
@@ -1440,20 +1310,11 @@ if (Meteor.isClient) {
                         statusOption: "1"
                     }, {sort: {statusOption: -1, eventDate: -1}}).count();
                 var rand = Session.get('eventNumber');
-                if ((2 <= rand) && (rand <= 4)) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return ((2 <= rand) && (rand <= 4));
             },
             'red': function () {
                 var start = new Date();
-                //var start1 = moment(start).format("YYYY-MM-DD");
-                var start1 = moment(start);
                 var end = new Date(new Date(start).setMonth(start.getMonth() - 12));
-                //var end1 = moment(end).format("YYYY-MM-DD");
-                var end1 = moment(end);
                 var num2 = 0;
                 num2 = num2 + EventsTest.find({
                         companyName: this.companyName,
@@ -1466,24 +1327,44 @@ if (Meteor.isClient) {
                         statusOption: "1"
                     }, {sort: {statusOption: -1, eventDate: -1}}).count();
                 var rand = Session.get('eventNumber');
-                if (rand > 4) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (rand > 4);
             }
         })
 }
 
 if (Meteor.isServer) {
+    Meteor.setInterval(function () {
+        console.log("test");
+    }, 60000);
+
+    SyncedCron.config({
+        collectionName: "emailJobs"
+    });
+
+    SyncedCron.add({
+        name: "Email Job",
+        'schedule': function (parser) {
+            return parser.text("Every 10 Second");
+        },
+        'job': function (intendedAt) {
+            var today = new Date();
+            console.log("This is it!");
+            //console.log(SyncedChron._collection.findOne());
+            //SyncedCron.emailJobs.find({}).fetch();
+            //Email.send();
+        }
+    });
     Meteor.startup(function () {
+        SyncedCron.start();
         //EMAIL 1
         process.env.MAIL_URL = 'smtp://postmaster%40sandbox9a11769c25e04579a3d65d9e8f4e20cd.mailgun.org:b54cb40a370534e4f1ff467f7e836cf3@smtp.mailgun.org:587';
         //BACKUP EMAIL 2
         //process.env.MAIL_URL = 'smtp://postmaster@sandboxf72dcb6d24b74639b5832e8ecba2b886.mailgun.org:23862cf6d8d1a0c7f81fb5bf3565f130@smtp.mailgun.org:587';
-        //process.env.MAIL_URL = 'stmp://tpham:8ofFic1al~@tandlautomatics.com:25';
-        if (!Meteor.users.findOne()) {
+        //process.env.MAIL_URL = 'smtp://tpham:8ofFic1al~@tandlautomatics.com:25';
+        //Accounts.setPassword("a3kfibffCKYHi7Eaw","tlsms");
+        //Accounts.setPassword("3gjAt8dz5a4yeosT7","tlemployee");
+        //console.log(Meteor.users.find({}).fetch());
+        if (!Meteor.users.find()) {
             var users = [
                 {name: "Admin User", username: "admin", roles: ['admin']},
                 {name: "Employee User", username: "employee", roles: ['employee']},
@@ -1496,6 +1377,11 @@ if (Meteor.isServer) {
                         password: "tlsms",
                         profile: {name: user.name}
                     });
+                    if (user.roles.length > 0) {
+                        // Need _id of existing user record so this call must come
+                        // after `Accounts.createUser` or `Accounts.onCreate`
+                        Roles.addUsersToRoles(id, user.roles, Roles.GLOBAL_GROUP);
+                    }
                 }
                 else if (user.username == "employee") {
                     var id = Accounts.createUser({
@@ -1503,21 +1389,21 @@ if (Meteor.isServer) {
                         password: "tlemployee",
                         profile: {name: user.name}
                     });
+                    if (user.roles.length > 0) {
+                        // Need _id of existing user record so this call must come
+                        // after `Accounts.createUser` or `Accounts.onCreate`
+                        Roles.addUsersToRoles(id, user.roles);
+                    }
                 }
-                else if (user.username == "supplier"){
+                else if (user.username == "supplier") {
                     var id = Accounts.createUser({
                         username: user.username,
                         password: "apple1",
                         profile: {name: user.name}
                     });
-                }
-                if (user.roles.length > 0) {
-                    // Need _id of existing user record so this call must come
-                    // after `Accounts.createUser` or `Accounts.onCreate`
-                    if (user.username == "admin") {
-                        Roles.addUsersToRoles(id, user.roles, Roles.GLOBAL_GROUP);
-                    }
-                    else {
+                    if (user.roles.length > 0) {
+                        // Need _id of existing user record so this call must come
+                        // after `Accounts.createUser` or `Accounts.onCreate`
                         Roles.addUsersToRoles(id, user.roles);
                     }
                 }
@@ -1531,7 +1417,6 @@ if (Meteor.isServer) {
         }
         else {
             this.stop();
-            return;
         }
     });
 
@@ -1542,7 +1427,6 @@ if (Meteor.isServer) {
         }
         else {
             this.stop();
-            return;
         }
     });
 
@@ -1553,7 +1437,6 @@ if (Meteor.isServer) {
         }
         else {
             this.stop();
-            return;
         }
     });
 
@@ -1629,11 +1512,8 @@ if (Meteor.isServer) {
                             replyTo: 'sms@tandlautomatics.com',
                             subject: 'Quarterly Feedback - T&L Supplier Management Application',
                             html: html,
-                            date: new Date()
-                            //,
-                            //cc: ["gwfreak01@gmail.com", "bill@tandlautomatics.com"]
+                            cc: ["sms@tandlautomatics.com"]
                         };
-                        //Meteor.call('scheduleMail', options);
                         Email.send(options);
                     }
                     else {
@@ -1646,6 +1526,7 @@ if (Meteor.isServer) {
     });
 }
 
+//Routing Functionality that sets up the URLs
 Router.route('/login');
 
 Router.route('/register', {
@@ -1731,7 +1612,6 @@ Router.route('/events/edit/:_id', {
     },
     data: function () {
         var currentList = this.params._id;
-        //Session.set("eventID", currentList);
         return EventsTest.findOne({_id: currentList});
     }
 });
