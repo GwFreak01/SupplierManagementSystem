@@ -129,6 +129,8 @@ CompaniesSchema = new SimpleSchema({
                 placeholder: "XXX-XXX-XXXX"
             }
         }
+        //,
+        //regEx: /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/
     },
     "salesPerson.status": {
         type: Boolean,
@@ -161,7 +163,9 @@ CompaniesSchema = new SimpleSchema({
                 placeholder: "XXX-XXX-XXXX"
             }
         }
-    },
+        //,
+        //regEx: /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/
+},
     "qualityPerson.status": {
         type: Boolean,
         label: "Check here for this person to receive the Quarterly Performance Reports",
@@ -1161,28 +1165,13 @@ if (Meteor.isClient) {
                 });
             },
             'eventBad': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1");
             },
             'eventMid': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0");
             },
             'eventGood': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1");
             },
             'statusOptionConverter': function () {
                 if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
@@ -1198,35 +1187,17 @@ if (Meteor.isClient) {
         }),
         Template.insertEventForm.helpers({
             'showDelivery': function () {
-                var docId = AutoForm.getFieldValue("eventType");
-                if (docId == "Delivery") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (AutoForm.getFieldValue("eventType") == "Delivery");
             }
         }),
         Template.detailEvent.helpers({
             'showDelivery': function () {
-                var docId = AutoForm.getFieldValue("eventType");
-                if (docId == "Delivery") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (AutoForm.getFieldValue("eventType") == "Delivery");
             }
         }),
         Template.editEvent.helpers({
             'showDelivery': function () {
-                var docId = AutoForm.getFieldValue("eventType");
-                if (docId == "Delivery") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (AutoForm.getFieldValue("eventType") == "Delivery");
             }
         }),
         Template.main.events({
@@ -1265,28 +1236,13 @@ if (Meteor.isClient) {
                 });
             },
             'eventBad': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1");
             },
             'eventMid': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0");
             },
             'eventGood': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1");
             },
             'statusOptionConverter': function () {
                 if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
@@ -1302,28 +1258,13 @@ if (Meteor.isClient) {
         }),
         Template.feedbackEmail.helpers({
             'eventBad': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1");
             },
             'eventMid': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "0");
             },
             'eventGood': function () {
-                if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1") {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "-1");
             },
             'statusOptionConverter': function () {
                 if (EventsTest.find({_id: this._id}, {sort: {statusOption: 1}}).fetch()[0].statusOption == "1") {
@@ -1352,12 +1293,7 @@ if (Meteor.isClient) {
                 }, {sort: {statusOption: -1, eventDate: -1}}).count();
                 var rand = Session.get('eventNumber');
                 console.log(rand);
-                if (rand < 2) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (rand < 2);
             },
             'yellow': function () {
                 var start = new Date();
@@ -1374,12 +1310,7 @@ if (Meteor.isClient) {
                         statusOption: "1"
                     }, {sort: {statusOption: -1, eventDate: -1}}).count();
                 var rand = Session.get('eventNumber');
-                if ((2 <= rand) && (rand <= 4)) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return ((2 <= rand) && (rand <= 4));
             },
             'red': function () {
                 var start = new Date();
@@ -1396,18 +1327,35 @@ if (Meteor.isClient) {
                         statusOption: "1"
                     }, {sort: {statusOption: -1, eventDate: -1}}).count();
                 var rand = Session.get('eventNumber');
-                if (rand > 4) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return (rand > 4);
             }
         })
 }
 
 if (Meteor.isServer) {
+    Meteor.setInterval(function () {
+        console.log("test");
+    }, 60000);
+
+    SyncedCron.config({
+        collectionName: "emailJobs"
+    });
+
+    SyncedCron.add({
+        name: "Email Job",
+        'schedule': function (parser) {
+            return parser.text("Every 10 Second");
+        },
+        'job': function (intendedAt) {
+            var today = new Date();
+            console.log("This is it!");
+            //console.log(SyncedChron._collection.findOne());
+            //SyncedCron.emailJobs.find({}).fetch();
+            //Email.send();
+        }
+    });
     Meteor.startup(function () {
+        SyncedCron.start();
         //EMAIL 1
         process.env.MAIL_URL = 'smtp://postmaster%40sandbox9a11769c25e04579a3d65d9e8f4e20cd.mailgun.org:b54cb40a370534e4f1ff467f7e836cf3@smtp.mailgun.org:587';
         //BACKUP EMAIL 2
@@ -1429,6 +1377,11 @@ if (Meteor.isServer) {
                         password: "tlsms",
                         profile: {name: user.name}
                     });
+                    if (user.roles.length > 0) {
+                        // Need _id of existing user record so this call must come
+                        // after `Accounts.createUser` or `Accounts.onCreate`
+                        Roles.addUsersToRoles(id, user.roles, Roles.GLOBAL_GROUP);
+                    }
                 }
                 else if (user.username == "employee") {
                     var id = Accounts.createUser({
@@ -1436,6 +1389,11 @@ if (Meteor.isServer) {
                         password: "tlemployee",
                         profile: {name: user.name}
                     });
+                    if (user.roles.length > 0) {
+                        // Need _id of existing user record so this call must come
+                        // after `Accounts.createUser` or `Accounts.onCreate`
+                        Roles.addUsersToRoles(id, user.roles);
+                    }
                 }
                 else if (user.username == "supplier") {
                     var id = Accounts.createUser({
@@ -1443,14 +1401,9 @@ if (Meteor.isServer) {
                         password: "apple1",
                         profile: {name: user.name}
                     });
-                }
-                if (user.roles.length > 0) {
-                    // Need _id of existing user record so this call must come
-                    // after `Accounts.createUser` or `Accounts.onCreate`
-                    if (user.username == "admin") {
-                        Roles.addUsersToRoles(id, user.roles, Roles.GLOBAL_GROUP);
-                    }
-                    else {
+                    if (user.roles.length > 0) {
+                        // Need _id of existing user record so this call must come
+                        // after `Accounts.createUser` or `Accounts.onCreate`
                         Roles.addUsersToRoles(id, user.roles);
                     }
                 }
@@ -1464,7 +1417,6 @@ if (Meteor.isServer) {
         }
         else {
             this.stop();
-            return;
         }
     });
 
@@ -1475,7 +1427,6 @@ if (Meteor.isServer) {
         }
         else {
             this.stop();
-            return;
         }
     });
 
@@ -1486,7 +1437,6 @@ if (Meteor.isServer) {
         }
         else {
             this.stop();
-            return;
         }
     });
 
