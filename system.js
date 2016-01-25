@@ -3,6 +3,8 @@
 //Bill, Mark, Dan, Vince - SMS App Icon
 //Jan 6 - Finalize Report Function and check on outstanding suppliers not yet registered
 //Jan 13 - Roll out final process to T&L Users (Icons on Desktops + Training)
+//http://107.170.167.85/ is old official server
+//http://tandlautomatics.com:3300/ or http://10.220.36.12:3300/ This is new official server
 
 //This is to debug the schema's errors from validation
 //SimpleSchema.debug = true;
